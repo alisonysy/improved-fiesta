@@ -9,7 +9,7 @@ const session = require('koa-session');
 dotenv.config();
 const { default: graphQLProxy } = require('@shopify/koa-shopify-graphql-proxy');
 const Router = require('koa-router');
-const {receiveWebhook, registerWebhook} = require('@shopify/koa-shopify-webhooks');
+const { receiveWebhook, registerWebhook } = require('@shopify/koa-shopify-webhooks');
 const { ApiVersion } = require('@shopify/koa-shopify-graphql-proxy');
 const getSubscriptionUrl = require('./server/getSubscriptionUrl');
 
@@ -30,42 +30,42 @@ app.prepare().then(() => {
     createShopifyAuth({
       apiKey: SHOPIFY_API_KEY,
       secret: SHOPIFY_API_SECRET_KEY,
-      scopes:['read_products','write_products'],
+      scopes: ['read_products', 'write_products'],
       async afterAuth(ctx) {
         const { shop, accessToken } = ctx.session;
-        ctx.cookies.set('shopOrigin',shop,{httpOnly:false});
+        ctx.cookies.set('shopOrigin', shop, { httpOnly: false });
 
         const registration = await registerWebhook({
-          address:`${HOST}/webhooks/products/create`,
-          topic:'PRODUCTS_CREATE',
+          address: `${HOST}/webhooks/products/create`,
+          topic: 'PRODUCTS_CREATE',
           accessToken,
           shop
         });
 
-        if(registration.success){
+        if (registration.success) {
           console.log('successfully registered webhook!');
-        }else {
-          console.log('failed to register webhook',registration.result);
+        } else {
+          console.log('failed to register webhook', registration.result);
         }
         await getSubscriptionUrl(ctx, accessToken, shop);
       },
     }),
   );
 
-  const webhook = receiveWebhook({secret: SHOPIFY_API_SECRET_KEY});
+  const webhook = receiveWebhook({ secret: SHOPIFY_API_SECRET_KEY });
 
-  router.post('/webhooks/products/create',webhook, (ctx) =>{
-    console.log('received webhook: ',ctx.state.webhook);
+  router.post('/webhooks/products/create', webhook, (ctx) => {
+    console.log('received webhook: ', ctx.state.webhook);
   })
-  
-  server.use(graphQLProxy({version:ApiVersion.July19}));
+
+  server.use(graphQLProxy({ version: ApiVersion.July19 }));
   router.get('*', verifyRequest(), async (ctx) => {
     await handle(ctx.req, ctx.res);
     ctx.respond = false;
     ctx.res.statusCode = 200;
-   });
-   server.use(router.allowedMethods());
-   server.use(router.routes());
+  });
+  server.use(router.allowedMethods());
+  server.use(router.routes());
 
   server.listen(port, () => {
     console.log(`> It's ready on http://localhost:${port}`);
