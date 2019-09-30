@@ -1,29 +1,24 @@
 import { Card, DisplayText, Stack, TextField, Button, Form, FormLayout } from '@shopify/polaris';
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import ImageDropZone from '../snippets/imageDropZone';
+import '../css/fonts.css';
 
 function BackgroundSetting(props){
-  const [bgColor, setBgColor] = useState('');
-  const [bgOpacity, setBgOpacity] = useState('');
+  const [bgColor, setBgColor] = useState('#000');
+  const [bgOpacity, setBgOpacity] = useState('100');
 
-  const [txtColor, setTxtColor] = useState('');
-  const [specialColor, setSpecialColor] = useState('');
+  const [txtColor, setTxtColor] = useState('#b31219');
+  const [specialColor, setSpecialColor] = useState('#fff');
 
-  const handleBgColorChange = (val) => {
-    setBgColor(val);
-  };
 
-  const handleBgOpacity = (val) => {
-    setBgOpacity(val)
-  }
-
-  const handleTxtColorChange = (val) => {
-    setTxtColor(val)
-  }
-
-  const handleSpecialTxtColorChange = (val) => {
-    setSpecialColor(val)
-  }
+  useEffect(()=>{
+    props.handleStyleConfig({
+      bgColor:bgColor,
+      bgOpacity:bgOpacity,
+      txtColor:txtColor,
+      specialColor:specialColor
+    },undefined);
+  },[bgColor,bgOpacity,txtColor,specialColor])
 
   return (
     <Card.Section>
@@ -33,7 +28,7 @@ function BackgroundSetting(props){
           <div style={{height:'25px',width:'25px',borderWidth:'1px',borderStyle:'solid',borderColor:'#ddd',display:'inline-block',backgroundColor:bgColor}}></div>
           <TextField 
             value={bgColor}
-            onChange={handleBgColorChange}
+            onChange={nw => setBgColor(nw)}
           />
         </div>
         <div>
@@ -41,7 +36,7 @@ function BackgroundSetting(props){
           <div style={{display:'inline-block'}}>{bgOpacity}</div>
           <TextField 
             value={bgOpacity}
-            onChange={handleBgOpacity}
+            onChange={nw => setBgOpacity(nw)}
             type="number"
             helpText="0 is transparent, 100 is opaque."
           />
@@ -53,7 +48,7 @@ function BackgroundSetting(props){
           <div style={{height:'25px',width:'25px',borderWidth:'1px',borderStyle:'solid',borderColor:'#ddd',display:'inline-block',backgroundColor:txtColor}}></div>
           <TextField 
             value={txtColor}
-            onChange={handleTxtColorChange}
+            onChange={nw => setTxtColor(nw)}
           />
         </div>
         <div>
@@ -61,7 +56,7 @@ function BackgroundSetting(props){
           <div style={{height:'25px',width:'25px',borderWidth:'1px',borderStyle:'solid',borderColor:'#ddd',display:'inline-block',backgroundColor:specialColor}}></div>
           <TextField 
             value={specialColor}
-            onChange={handleSpecialTxtColorChange}
+            onChange={nw => setSpecialColor(nw)}
           />
         </div>
       </Stack>
@@ -70,19 +65,31 @@ function BackgroundSetting(props){
 }
 
 function Fonts(props){
-  const [fontSize,setFontSize] = useState(16);
+  const [fontSize,setFontSize] = useState(18);
   const [padding,setPadding] = useState(10);
+  const [fontFam,setFontFam] = useState('sans-serif');
 
-  const handleFontFam = (val) => {
-  }
+  const handleFontFam = useCallback(
+    (val) => {
+      setFontFam(val);
+      props.handleStyleConfig(undefined,{fontFamily:val});
+    },
+    [fontFam]
+  )
 
   const handleFontSize = useCallback(
-    (val) => {console.log(val);setFontSize(val);},
+    (val) => {
+      setFontSize(val);
+      props.handleStyleConfig(undefined,{fontSize:val})
+    },
     []
   );
 
   const handlePadding = useCallback(
-    (val) => {console.log(val);setPadding(val);},
+    (val) => {
+      setPadding(val);
+      props.handleStyleConfig(undefined,{barPadding:val})
+    },
     []
   );
 
@@ -90,6 +97,7 @@ function Fonts(props){
     <Card.Section>
       <div>Font family:</div>
       <Button onClick={() => handleFontFam('Montserrat')}>Montserrat</Button>
+      <Button onClick={() => handleFontFam('sans-serif')}>Sans serif</Button>
       <TextField 
         label="Font size:"
         suffix="px"
@@ -111,7 +119,33 @@ function Fonts(props){
 class StyleConfigPage extends React.Component{
   constructor(props){
     super(props);
-    this.state = {}
+    this.state = {
+      colorConfig:{},
+      fontConfig:{},
+      bgImg:{}
+    }
+    this.handleStyleConfig = this.handleStyleConfig.bind(this);
+    this.uploadBgImg = this.uploadBgImg.bind(this);
+  }
+
+  handleStyleConfig(colorCf,fontCf){
+    this.setState((state)=>{
+      if(colorCf===undefined){
+        fontCf = {...state.fontConfig,...fontCf};
+        return {colorConfig:state.colorConfig,fontConfig:fontCf}
+      }else if(fontCf === undefined){
+        colorCf = {...state.colorConfig,...colorCf};
+        return {colorConfig:colorCf,fontConfig:state.fontConfig}
+      }
+    },function(){
+      this.props.handleStyleConfig(this.state.colorConfig,this.state.fontConfig);
+    })
+  }
+
+  uploadBgImg(bgFile){
+    this.setState({bgImg:bgFile},function(){
+      this.props.uploadBgImg(this.state.bgImg)
+    })
   }
 
   render(){
@@ -120,9 +154,9 @@ class StyleConfigPage extends React.Component{
         <Form>
           <FormLayout>
             <DisplayText>Style Configuration</DisplayText>
-            <BackgroundSetting />
-            <ImageDropZone />
-            <Fonts />
+            <BackgroundSetting handleStyleConfig={this.handleStyleConfig}/>
+            <ImageDropZone uploadBgImg={this.uploadBgImg}/>
+            <Fonts  handleStyleConfig={this.handleStyleConfig}/>
           </FormLayout>
         </Form>
       </Card>

@@ -1,3 +1,4 @@
+import '../css/fonts.css';
 
 class PreviewBar extends React.Component{
   constructor(props){
@@ -5,8 +6,12 @@ class PreviewBar extends React.Component{
     this.state = {animReq:null};
     this.htmlRef = React.createRef();
     this.closeBtn = React.createRef();
+    this.topBar = React.createRef();
     this.injectHtml = this.injectHtml.bind(this);
     this.setAnimation = this.setAnimation.bind(this);
+    this.renderBarFirstLine = this.renderBarFirstLine.bind(this);
+    this.renderInnerBar = this.renderInnerBar.bind(this);
+    this._hexToRgba = this._hexToRgba.bind(this);
   }
 
   setAnimation(el,childToQuery){
@@ -73,6 +78,8 @@ class PreviewBar extends React.Component{
         }
       }
     }
+
+    console.log('finished top bar',this.topBar.current);
   }
 
 
@@ -87,23 +94,73 @@ class PreviewBar extends React.Component{
     )
   }
 
+  renderBarFirstLine(barConfig){
+    const {goal,inpTxt,spColor} = barConfig;
+    return (
+      <span>{inpTxt}<span style={{color:spColor,fontWeight:400}}>${goal}</span></span>
+    )
+  }
+
+  renderInnerBar(barConfig){
+    const {inpTxt,addedHtml,ftColor,goal,opacity,bgImg,fontFamily,paddingUpDown,fontSize} = barConfig;
+    let {bgColor} = barConfig,imgSize=bgImg.size,imgUrl;
+    let padding = paddingUpDown? `${paddingUpDown}px 5px` : '8px 5px';
+
+    if(opacity !== 100){
+      bgColor = this._hexToRgba(bgColor,opacity);
+    }
+    
+    if(imgSize){
+      imgUrl = 'url("'+window.URL.createObjectURL(bgImg)+'")';
+    }
+    
+    return (
+      <div style={{padding:padding,fontSize:fontSize? fontSize+'px' : '18px',lineHeight:'22.5px',textAlign:'center',position:'relative',backgroundColor:bgColor,color:ftColor,backgroundImage:imgUrl,fontFamily:fontFamily}}>
+        { goal?
+          this.renderBarFirstLine(barConfig)
+          :
+          inpTxt
+        }
+        { addedHtml?
+            this.injectHtml(addedHtml) 
+            :
+            null
+        }
+        <div style={{position:'absolute',top:'8px',right:'8px',cursor:'pointer'}} ref={this.closeBtn}>X</div>
+      </div>
+    )
+  }
+
+  _hexToRgba(h,op){
+    let r = 0, g = 0, b = 0;
+
+    // 3 digits
+    if (h.length == 4) {
+      r = "0x" + h[1] + h[1];
+      g = "0x" + h[2] + h[2];
+      b = "0x" + h[3] + h[3];
+
+    // 6 digits
+    } else if (h.length == 7) {
+      r = "0x" + h[1] + h[2];
+      g = "0x" + h[3] + h[4];
+      b = "0x" + h[5] + h[6];
+    }
+    
+    return "rgba("+ +r + "," + +g + "," + +b + "," + op/100 + ")";
+  }
+
   render(){
-    const {bgColor, ftColor } = this.props.barConfig;
     return (
       <div style={{margin:'20px 0'}}>
-        <div style={{padding:'8px 5px',fontSize:'18px',lineHeight:'22.5px',textAlign:'center',position:'relative',backgroundColor:bgColor,color:ftColor}}>
-          { this.props.barConfig.goal?
-            this.props.barConfig.inpTxt + '$' + this.props.barConfig.goal
+        <div ref={this.topBar}>
+          { this.props.barLink.url.length !== 0 ?
+            <a href={this.props.barLink.url} target={this.props.barLink.openNew? "_blank" : "_self"} style={{textDecoration:'none',color:'initial'}}>
+              { this.renderInnerBar(this.props.barConfig) }
+            </a>
             :
-            this.props.barConfig.inpTxt
+            this.renderInnerBar(this.props.barConfig)
           }
-          {/* #question: how to turn user input into raw html */}
-          { this.props.barConfig.addedHtml?
-              this.injectHtml(this.props.barConfig.addedHtml) 
-              :
-              null
-          }
-          <div style={{position:'absolute',top:'8px',right:'8px',cursor:'pointer'}} ref={this.closeBtn}>X</div>
         </div>
       </div>
     )

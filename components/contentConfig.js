@@ -169,10 +169,10 @@ function SetPosition(props){
   const [isSelected,setSelected] = useState(['push-down']);
 
   const choices = [
-    {label:'Top bar pushes down the rest of the page',value:'push-down'},
-    {label:'Top bar pushes down the rest of the page (always visible while scrolling)', value:'push-down-visible'},
-    {label:'Top bar overlaps top of the page',value:'overlap'},
-    {label:'Top bar overlaps top of the page (always visible while scrolling)',value:'overlap-visible'},
+    {label:'Top bar pushes down the rest of the page',value:'push-down'}, //body padding-top equals to the height of the bar, position: absolute
+    {label:'Top bar pushes down the rest of the page (always visible while scrolling)', value:'push-down-visible'}, // body padding-top, and position: -webkit-sticky
+    {label:'Top bar overlaps top of the page',value:'overlap'}, //no padding-top for body
+    {label:'Top bar overlaps top of the page (always visible while scrolling)',value:'overlap-visible'}, //no padding-top for body, and position:sticky
     {
       label:'Manual placement',
       value:'manual',

@@ -1,70 +1,61 @@
-import { DropZone, Banner, Stack, List, Thumbnail, Caption } from '@shopify/polaris';
+import { DropZone, Banner, Stack, List, Thumbnail, Caption, Card } from '@shopify/polaris';
 
 class ImageDropZone extends React.Component{
   constructor(props){
     super(props)
     this.state = {
-      files: [],
-      rejectedFiles: [],
-      hasError: false,
     }
+    this.inputRef = React.createRef();
+    this.handleInpImg = this.handleInpImg.bind(this);
+  }
+
+  componentDidUpdate(){
+    const inputBtn = this.inputRef.current;
+    const self = this;
+    inputBtn.addEventListener('change',function(e){
+      self.handleInpImg(inputBtn);
+    });
+  }
+
+  handleInpImg(tg){
+    let img = tg.files[0],imgs,al;
+    let imgWrapper = document.createElement('img');
+    let delBtn = document.createElement('button');
+    const self = this;
+    imgs = tg.parentNode.querySelector('.imgs');
+
+    // delete button handling
+    delBtn.textContent = 'Delete Image';
+    delBtn.addEventListener('click',function(e){
+      e.preventDefault();
+      let uploadedImg = imgs.querySelector('img');
+      imgs.removeChild(uploadedImg);
+      imgs.removeChild(delBtn);
+      self.props.uploadBgImg({});
+    });
+    imgWrapper.src = window.URL.createObjectURL(img);
+
+    al = imgs.querySelector('img');
+    if(al){
+      imgs.removeChild(al);
+      imgs.insertAdjacentElement('afterbegin',imgWrapper);
+    }else{
+      imgs.insertAdjacentElement('afterbegin',imgWrapper);
+      imgs.insertAdjacentElement('beforeend',delBtn);
+    }
+    
+    this.props.uploadBgImg(img);
   }
 
   render(){
-    const {files, hasError, rejectedFiles} = this.state;
-
-    const fileUpload = !files.length && <DropZone.FileUpload />;
-    const uploadedFiles = files.length > 0 && (
-      <Stack vertical>
-        {files.map((file, index) => (
-          <Stack alignment="center" key={index}>
-            <Thumbnail
-              size="small"
-              alt={file.name}
-              source={window.URL.createObjectURL(file)}
-            />
-            <div>
-              {file.name} <Caption>{file.size} bytes</Caption>
-            </div>
-          </Stack>
-        ))}
-      </Stack>
-    );
-
-    const errorMessage = hasError && (
-      <Banner
-        title="The following images couldn’t be uploaded:"
-        status="critical"
-      >
-        <List type="bullet">
-          {rejectedFiles.map((file, index) => (
-            <List.Item key={index}>
-              {`"${file.name}" is not supported. File type must be .gif, .jpg, .png or .svg.`}
-            </List.Item>
-          ))}
-        </List>
-      </Banner>
-    );
-
     return (
-      <Stack vertical>
-        {errorMessage}
-        <DropZone
-          accept="image/*"
-          type="image"
-          onDrop={(files, acceptedFiles, rejectedFiles) => {
-            this.setState({
-              files: [...this.state.files, ...acceptedFiles],
-              rejectedFiles: rejectedFiles,
-              hasError: rejectedFiles.length > 0,
-            });
-          }}
-          label="Click the drop zone to continue uploading more images: "
-        >
-          {uploadedFiles}
-          {fileUpload}
-        </DropZone>
-      </Stack>
+      <Card.Section>
+        <label htmlFor="backgroundImg">Click the drop zone to continue uploading more images:</label>
+        <div>
+          <input id="backgroundImg" type="file" accept="image/*" name="bgImg" ref={this.inputRef}/>
+          <div className="imgs"></div>
+        </div>
+      </Card.Section>
     );
   }
 }

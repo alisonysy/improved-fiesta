@@ -1,3 +1,4 @@
+@import url(https://fonts.googleapis.com/css?family=Montserrat&display=swap);
 :root{
   --polaris-version-number:'4.2.1'; }
 
@@ -7712,6 +7713,8 @@ body{
 @media (max-width: 48.0525em){
   .Polaris-TopBar__SecondaryMenu{
     display:none; } }
+
+
 
 
 /*# sourceMappingURL=styles.chunk.css.map*/
