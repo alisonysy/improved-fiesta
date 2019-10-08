@@ -1,14 +1,31 @@
-import { Card, DisplayText, Stack, TextField, Button, Form, FormLayout } from '@shopify/polaris';
+import { Card, DisplayText, Stack, TextField, Button, Form, FormLayout} from '@shopify/polaris';
 import { useState, useCallback, useEffect } from 'react';
 import ImageDropZone from '../snippets/imageDropZone';
 import '../css/fonts.css';
 
 function BackgroundSetting(props){
+  const rgbToHex = (rgb) => {
+    if(rgb.includes('#')) return rgb;
+    let regExp = /\(\s*(\d+),\s*(\d+),\s*(\d+)\)/;
+    let re = rgb.match(regExp);
+    let r=parseInt(re[1]).toString(16),
+        g=parseInt(re[2]).toString(16),
+        b=parseInt(re[3]).toString(16);
+    if (r.length == 1)
+      r = "0" + r;
+    if (g.length == 1)
+      g = "0" + g;
+    if (b.length == 1)
+      b = "0" + b;
+    return "#" + r + g + b;
+
+  };
   const [bgColor, setBgColor] = useState('#000');
   const [bgOpacity, setBgOpacity] = useState('100');
 
   const [txtColor, setTxtColor] = useState('#b31219');
   const [specialColor, setSpecialColor] = useState('#fff');
+  let bgColorFrmProps = props.colorConfig.bgColor, txtColorFrmProps = props.colorConfig.txtColor;
 
 
   useEffect(()=>{
@@ -18,13 +35,23 @@ function BackgroundSetting(props){
       txtColor:txtColor,
       specialColor:specialColor
     },undefined);
-  },[bgColor,bgOpacity,txtColor,specialColor])
+  },[bgColor,bgOpacity,txtColor,specialColor]);
+
+  useEffect(()=>{
+    setBgColor(rgbToHex(bgColorFrmProps));
+  },[bgColorFrmProps]);
+
+  useEffect(()=>{
+    setTxtColor(rgbToHex(txtColorFrmProps));
+  },[txtColorFrmProps])
+
+  
 
   return (
     <Card.Section>
       <Stack>
         <div>
-          <h3>Background color:</h3>
+          <h3>Background color:{bgColor}</h3>
           <div style={{height:'25px',width:'25px',borderWidth:'1px',borderStyle:'solid',borderColor:'#ddd',display:'inline-block',backgroundColor:bgColor}}></div>
           <TextField 
             value={bgColor}
@@ -44,7 +71,7 @@ function BackgroundSetting(props){
       </Stack>
       <Stack>
         <div>
-          <h3>Text color:</h3>
+          <h3>Text color:{txtColor}</h3>
           <div style={{height:'25px',width:'25px',borderWidth:'1px',borderStyle:'solid',borderColor:'#ddd',display:'inline-block',backgroundColor:txtColor}}></div>
           <TextField 
             value={txtColor}
@@ -149,12 +176,13 @@ class StyleConfigPage extends React.Component{
   }
 
   render(){
+    console.log('passed from index',this.props.styleConfig)
     return (
       <Card>
         <Form>
           <FormLayout>
             <DisplayText>Style Configuration</DisplayText>
-            <BackgroundSetting handleStyleConfig={this.handleStyleConfig}/>
+            <BackgroundSetting handleStyleConfig={this.handleStyleConfig} {...this.props.styleConfig}/>
             <ImageDropZone uploadBgImg={this.uploadBgImg}/>
             <Fonts  handleStyleConfig={this.handleStyleConfig}/>
           </FormLayout>

@@ -545,7 +545,8 @@ class CustomCodePage extends react__WEBPACK_IMPORTED_MODULE_0___default.a.Compon
   }
 
   handleCustomCode(val) {
-    console.log(val);
+    console.log(val); // should have <script> or <style> tag,append the tags to the document body
+
     this.setState(() => {
       return {
         customCode: val
@@ -561,7 +562,7 @@ class CustomCodePage extends react__WEBPACK_IMPORTED_MODULE_0___default.a.Compon
     }, "Custom code"), __jsx("textarea", {
       rows: "10",
       cols: "80",
-      placeholder: "The code here can only modify the bar style",
+      placeholder: "Please put your custom codes here...",
       style: {
         marginLeft: '10px'
       }
@@ -669,40 +670,62 @@ class PreviewPage extends react__WEBPACK_IMPORTED_MODULE_0___default.a.Component
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony import */ var _babel_runtime_corejs2_helpers_esm_objectSpread__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @babel/runtime-corejs2/helpers/esm/objectSpread */ "./node_modules/@babel/runtime-corejs2/helpers/esm/objectSpread.js");
-/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! react */ "react");
-/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_1__);
-/* harmony import */ var _shopify_polaris__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! @shopify/polaris */ "@shopify/polaris");
-/* harmony import */ var _shopify_polaris__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(_shopify_polaris__WEBPACK_IMPORTED_MODULE_2__);
-/* harmony import */ var _snippets_imageDropZone__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../snippets/imageDropZone */ "./snippets/imageDropZone.js");
-/* harmony import */ var _css_fonts_css__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../css/fonts.css */ "./css/fonts.css");
-/* harmony import */ var _css_fonts_css__WEBPACK_IMPORTED_MODULE_4___default = /*#__PURE__*/__webpack_require__.n(_css_fonts_css__WEBPACK_IMPORTED_MODULE_4__);
+/* harmony import */ var _babel_runtime_corejs2_helpers_esm_extends__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @babel/runtime-corejs2/helpers/esm/extends */ "./node_modules/@babel/runtime-corejs2/helpers/esm/extends.js");
+/* harmony import */ var _babel_runtime_corejs2_helpers_esm_objectSpread__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @babel/runtime-corejs2/helpers/esm/objectSpread */ "./node_modules/@babel/runtime-corejs2/helpers/esm/objectSpread.js");
+/* harmony import */ var _babel_runtime_corejs2_core_js_parse_int__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! @babel/runtime-corejs2/core-js/parse-int */ "./node_modules/@babel/runtime-corejs2/core-js/parse-int.js");
+/* harmony import */ var _babel_runtime_corejs2_core_js_parse_int__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(_babel_runtime_corejs2_core_js_parse_int__WEBPACK_IMPORTED_MODULE_2__);
+/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! react */ "react");
+/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_3___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_3__);
+/* harmony import */ var _shopify_polaris__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! @shopify/polaris */ "@shopify/polaris");
+/* harmony import */ var _shopify_polaris__WEBPACK_IMPORTED_MODULE_4___default = /*#__PURE__*/__webpack_require__.n(_shopify_polaris__WEBPACK_IMPORTED_MODULE_4__);
+/* harmony import */ var _snippets_imageDropZone__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ../snippets/imageDropZone */ "./snippets/imageDropZone.js");
+/* harmony import */ var _css_fonts_css__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ../css/fonts.css */ "./css/fonts.css");
+/* harmony import */ var _css_fonts_css__WEBPACK_IMPORTED_MODULE_6___default = /*#__PURE__*/__webpack_require__.n(_css_fonts_css__WEBPACK_IMPORTED_MODULE_6__);
 
 
-var __jsx = react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement;
+
+
+var __jsx = react__WEBPACK_IMPORTED_MODULE_3___default.a.createElement;
 
 
 
 
 
 function BackgroundSetting(props) {
+  const rgbToHex = rgb => {
+    if (rgb.includes('#')) return rgb;
+    let regExp = /\(\s*(\d+),\s*(\d+),\s*(\d+)\)/;
+    let re = rgb.match(regExp);
+
+    let r = _babel_runtime_corejs2_core_js_parse_int__WEBPACK_IMPORTED_MODULE_2___default()(re[1]).toString(16),
+        g = _babel_runtime_corejs2_core_js_parse_int__WEBPACK_IMPORTED_MODULE_2___default()(re[2]).toString(16),
+        b = _babel_runtime_corejs2_core_js_parse_int__WEBPACK_IMPORTED_MODULE_2___default()(re[3]).toString(16);
+
+    if (r.length == 1) r = "0" + r;
+    if (g.length == 1) g = "0" + g;
+    if (b.length == 1) b = "0" + b;
+    return "#" + r + g + b;
+  };
+
   const {
     0: bgColor,
     1: setBgColor
-  } = Object(react__WEBPACK_IMPORTED_MODULE_1__["useState"])('#000');
+  } = Object(react__WEBPACK_IMPORTED_MODULE_3__["useState"])('#000');
   const {
     0: bgOpacity,
     1: setBgOpacity
-  } = Object(react__WEBPACK_IMPORTED_MODULE_1__["useState"])('100');
+  } = Object(react__WEBPACK_IMPORTED_MODULE_3__["useState"])('100');
   const {
     0: txtColor,
     1: setTxtColor
-  } = Object(react__WEBPACK_IMPORTED_MODULE_1__["useState"])('#b31219');
+  } = Object(react__WEBPACK_IMPORTED_MODULE_3__["useState"])('#b31219');
   const {
     0: specialColor,
     1: setSpecialColor
-  } = Object(react__WEBPACK_IMPORTED_MODULE_1__["useState"])('#fff');
-  Object(react__WEBPACK_IMPORTED_MODULE_1__["useEffect"])(() => {
+  } = Object(react__WEBPACK_IMPORTED_MODULE_3__["useState"])('#fff');
+  let bgColorFrmProps = props.colorConfig.bgColor,
+      txtColorFrmProps = props.colorConfig.txtColor;
+  Object(react__WEBPACK_IMPORTED_MODULE_3__["useEffect"])(() => {
     props.handleStyleConfig({
       bgColor: bgColor,
       bgOpacity: bgOpacity,
@@ -710,7 +733,13 @@ function BackgroundSetting(props) {
       specialColor: specialColor
     }, undefined);
   }, [bgColor, bgOpacity, txtColor, specialColor]);
-  return __jsx(_shopify_polaris__WEBPACK_IMPORTED_MODULE_2__["Card"].Section, null, __jsx(_shopify_polaris__WEBPACK_IMPORTED_MODULE_2__["Stack"], null, __jsx("div", null, __jsx("h3", null, "Background color:"), __jsx("div", {
+  Object(react__WEBPACK_IMPORTED_MODULE_3__["useEffect"])(() => {
+    setBgColor(rgbToHex(bgColorFrmProps));
+  }, [bgColorFrmProps]);
+  Object(react__WEBPACK_IMPORTED_MODULE_3__["useEffect"])(() => {
+    setTxtColor(rgbToHex(txtColorFrmProps));
+  }, [txtColorFrmProps]);
+  return __jsx(_shopify_polaris__WEBPACK_IMPORTED_MODULE_4__["Card"].Section, null, __jsx(_shopify_polaris__WEBPACK_IMPORTED_MODULE_4__["Stack"], null, __jsx("div", null, __jsx("h3", null, "Background color:", bgColor), __jsx("div", {
     style: {
       height: '25px',
       width: '25px',
@@ -720,19 +749,19 @@ function BackgroundSetting(props) {
       display: 'inline-block',
       backgroundColor: bgColor
     }
-  }), __jsx(_shopify_polaris__WEBPACK_IMPORTED_MODULE_2__["TextField"], {
+  }), __jsx(_shopify_polaris__WEBPACK_IMPORTED_MODULE_4__["TextField"], {
     value: bgColor,
     onChange: nw => setBgColor(nw)
   })), __jsx("div", null, __jsx("h3", null, "Background opacity:"), __jsx("div", {
     style: {
       display: 'inline-block'
     }
-  }, bgOpacity), __jsx(_shopify_polaris__WEBPACK_IMPORTED_MODULE_2__["TextField"], {
+  }, bgOpacity), __jsx(_shopify_polaris__WEBPACK_IMPORTED_MODULE_4__["TextField"], {
     value: bgOpacity,
     onChange: nw => setBgOpacity(nw),
     type: "number",
     helpText: "0 is transparent, 100 is opaque."
-  }))), __jsx(_shopify_polaris__WEBPACK_IMPORTED_MODULE_2__["Stack"], null, __jsx("div", null, __jsx("h3", null, "Text color:"), __jsx("div", {
+  }))), __jsx(_shopify_polaris__WEBPACK_IMPORTED_MODULE_4__["Stack"], null, __jsx("div", null, __jsx("h3", null, "Text color:", txtColor), __jsx("div", {
     style: {
       height: '25px',
       width: '25px',
@@ -742,7 +771,7 @@ function BackgroundSetting(props) {
       display: 'inline-block',
       backgroundColor: txtColor
     }
-  }), __jsx(_shopify_polaris__WEBPACK_IMPORTED_MODULE_2__["TextField"], {
+  }), __jsx(_shopify_polaris__WEBPACK_IMPORTED_MODULE_4__["TextField"], {
     value: txtColor,
     onChange: nw => setTxtColor(nw)
   })), __jsx("div", null, __jsx("h3", null, "Special text color:"), __jsx("div", {
@@ -755,7 +784,7 @@ function BackgroundSetting(props) {
       display: 'inline-block',
       backgroundColor: specialColor
     }
-  }), __jsx(_shopify_polaris__WEBPACK_IMPORTED_MODULE_2__["TextField"], {
+  }), __jsx(_shopify_polaris__WEBPACK_IMPORTED_MODULE_4__["TextField"], {
     value: specialColor,
     onChange: nw => setSpecialColor(nw)
   }))));
@@ -765,44 +794,44 @@ function Fonts(props) {
   const {
     0: fontSize,
     1: setFontSize
-  } = Object(react__WEBPACK_IMPORTED_MODULE_1__["useState"])(18);
+  } = Object(react__WEBPACK_IMPORTED_MODULE_3__["useState"])(18);
   const {
     0: padding,
     1: setPadding
-  } = Object(react__WEBPACK_IMPORTED_MODULE_1__["useState"])(10);
+  } = Object(react__WEBPACK_IMPORTED_MODULE_3__["useState"])(10);
   const {
     0: fontFam,
     1: setFontFam
-  } = Object(react__WEBPACK_IMPORTED_MODULE_1__["useState"])('sans-serif');
-  const handleFontFam = Object(react__WEBPACK_IMPORTED_MODULE_1__["useCallback"])(val => {
+  } = Object(react__WEBPACK_IMPORTED_MODULE_3__["useState"])('sans-serif');
+  const handleFontFam = Object(react__WEBPACK_IMPORTED_MODULE_3__["useCallback"])(val => {
     setFontFam(val);
     props.handleStyleConfig(undefined, {
       fontFamily: val
     });
   }, [fontFam]);
-  const handleFontSize = Object(react__WEBPACK_IMPORTED_MODULE_1__["useCallback"])(val => {
+  const handleFontSize = Object(react__WEBPACK_IMPORTED_MODULE_3__["useCallback"])(val => {
     setFontSize(val);
     props.handleStyleConfig(undefined, {
       fontSize: val
     });
   }, []);
-  const handlePadding = Object(react__WEBPACK_IMPORTED_MODULE_1__["useCallback"])(val => {
+  const handlePadding = Object(react__WEBPACK_IMPORTED_MODULE_3__["useCallback"])(val => {
     setPadding(val);
     props.handleStyleConfig(undefined, {
       barPadding: val
     });
   }, []);
-  return __jsx(_shopify_polaris__WEBPACK_IMPORTED_MODULE_2__["Card"].Section, null, __jsx("div", null, "Font family:"), __jsx(_shopify_polaris__WEBPACK_IMPORTED_MODULE_2__["Button"], {
+  return __jsx(_shopify_polaris__WEBPACK_IMPORTED_MODULE_4__["Card"].Section, null, __jsx("div", null, "Font family:"), __jsx(_shopify_polaris__WEBPACK_IMPORTED_MODULE_4__["Button"], {
     onClick: () => handleFontFam('Montserrat')
-  }, "Montserrat"), __jsx(_shopify_polaris__WEBPACK_IMPORTED_MODULE_2__["Button"], {
+  }, "Montserrat"), __jsx(_shopify_polaris__WEBPACK_IMPORTED_MODULE_4__["Button"], {
     onClick: () => handleFontFam('sans-serif')
-  }, "Sans serif"), __jsx(_shopify_polaris__WEBPACK_IMPORTED_MODULE_2__["TextField"], {
+  }, "Sans serif"), __jsx(_shopify_polaris__WEBPACK_IMPORTED_MODULE_4__["TextField"], {
     label: "Font size:",
     suffix: "px",
     type: "number",
     value: fontSize,
     onChange: handleFontSize
-  }), __jsx(_shopify_polaris__WEBPACK_IMPORTED_MODULE_2__["TextField"], {
+  }), __jsx(_shopify_polaris__WEBPACK_IMPORTED_MODULE_4__["TextField"], {
     label: "Bar padding:",
     suffix: "px",
     type: "number",
@@ -811,7 +840,7 @@ function Fonts(props) {
   }));
 }
 
-class StyleConfigPage extends react__WEBPACK_IMPORTED_MODULE_1___default.a.Component {
+class StyleConfigPage extends react__WEBPACK_IMPORTED_MODULE_3___default.a.Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -826,13 +855,13 @@ class StyleConfigPage extends react__WEBPACK_IMPORTED_MODULE_1___default.a.Compo
   handleStyleConfig(colorCf, fontCf) {
     this.setState(state => {
       if (colorCf === undefined) {
-        fontCf = Object(_babel_runtime_corejs2_helpers_esm_objectSpread__WEBPACK_IMPORTED_MODULE_0__["default"])({}, state.fontConfig, fontCf);
+        fontCf = Object(_babel_runtime_corejs2_helpers_esm_objectSpread__WEBPACK_IMPORTED_MODULE_1__["default"])({}, state.fontConfig, fontCf);
         return {
           colorConfig: state.colorConfig,
           fontConfig: fontCf
         };
       } else if (fontCf === undefined) {
-        colorCf = Object(_babel_runtime_corejs2_helpers_esm_objectSpread__WEBPACK_IMPORTED_MODULE_0__["default"])({}, state.colorConfig, colorCf);
+        colorCf = Object(_babel_runtime_corejs2_helpers_esm_objectSpread__WEBPACK_IMPORTED_MODULE_1__["default"])({}, state.colorConfig, colorCf);
         return {
           colorConfig: colorCf,
           fontConfig: state.fontConfig
@@ -852,9 +881,10 @@ class StyleConfigPage extends react__WEBPACK_IMPORTED_MODULE_1___default.a.Compo
   }
 
   render() {
-    return __jsx(_shopify_polaris__WEBPACK_IMPORTED_MODULE_2__["Card"], null, __jsx(_shopify_polaris__WEBPACK_IMPORTED_MODULE_2__["Form"], null, __jsx(_shopify_polaris__WEBPACK_IMPORTED_MODULE_2__["FormLayout"], null, __jsx(_shopify_polaris__WEBPACK_IMPORTED_MODULE_2__["DisplayText"], null, "Style Configuration"), __jsx(BackgroundSetting, {
+    console.log('passed from index', this.props.styleConfig);
+    return __jsx(_shopify_polaris__WEBPACK_IMPORTED_MODULE_4__["Card"], null, __jsx(_shopify_polaris__WEBPACK_IMPORTED_MODULE_4__["Form"], null, __jsx(_shopify_polaris__WEBPACK_IMPORTED_MODULE_4__["FormLayout"], null, __jsx(_shopify_polaris__WEBPACK_IMPORTED_MODULE_4__["DisplayText"], null, "Style Configuration"), __jsx(BackgroundSetting, Object(_babel_runtime_corejs2_helpers_esm_extends__WEBPACK_IMPORTED_MODULE_0__["default"])({
       handleStyleConfig: this.handleStyleConfig
-    }), __jsx(_snippets_imageDropZone__WEBPACK_IMPORTED_MODULE_3__["default"], {
+    }, this.props.styleConfig)), __jsx(_snippets_imageDropZone__WEBPACK_IMPORTED_MODULE_5__["default"], {
       uploadBgImg: this.uploadBgImg
     }), __jsx(Fonts, {
       handleStyleConfig: this.handleStyleConfig
@@ -998,6 +1028,27 @@ class TemplateStyle extends react__WEBPACK_IMPORTED_MODULE_0___default.a.Compone
   constructor(props) {
     super(props);
     this.state = {};
+    this.handleClicking = this.handleClicking.bind(this);
+    this.tpItem = react__WEBPACK_IMPORTED_MODULE_0___default.a.createRef();
+  }
+
+  handleClicking(bg, ftColor) {
+    this.props.handleClickedLi(bg, ftColor);
+  }
+
+  componentDidMount() {
+    let tpUl = this.tpItem.current;
+    let tpItems = tpUl.querySelectorAll('li');
+    const self = this;
+
+    for (let n = 0; n < tpItems.length; n++) {
+      tpItems[n].addEventListener('click', function (e) {
+        let li = e.target;
+        let bg = li.style.backgroundColor,
+            ftColor = li.style.color;
+        self.handleClicking(bg, ftColor);
+      });
+    }
   }
 
   render() {
@@ -1007,11 +1058,12 @@ class TemplateStyle extends react__WEBPACK_IMPORTED_MODULE_0___default.a.Compone
         flexFlow: 'row wrap',
         padding: '0 2em',
         marginTop: '5px'
-      }
+      },
+      ref: this.tpItem
     }, __jsx(TemplateStyleItem, {
       styleT: "Basic",
       bg: "#000",
-      ft: "#fff",
+      ft: "#b31219",
       mgRt: "y"
     }), __jsx(TemplateStyleItem, {
       styleT: "Havest Good",
@@ -1043,6 +1095,17 @@ class TemplateStyle extends react__WEBPACK_IMPORTED_MODULE_0___default.a.Compone
 /***/ (function(module, exports) {
 
 
+
+/***/ }),
+
+/***/ "./node_modules/@babel/runtime-corejs2/core-js/object/assign.js":
+/*!**********************************************************************!*\
+  !*** ./node_modules/@babel/runtime-corejs2/core-js/object/assign.js ***!
+  \**********************************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+module.exports = __webpack_require__(/*! core-js/library/fn/object/assign */ "core-js/library/fn/object/assign");
 
 /***/ }),
 
@@ -1101,6 +1164,17 @@ module.exports = __webpack_require__(/*! core-js/library/fn/parse-float */ "core
 
 /***/ }),
 
+/***/ "./node_modules/@babel/runtime-corejs2/core-js/parse-int.js":
+/*!******************************************************************!*\
+  !*** ./node_modules/@babel/runtime-corejs2/core-js/parse-int.js ***!
+  \******************************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+module.exports = __webpack_require__(/*! core-js/library/fn/parse-int */ "core-js/library/fn/parse-int");
+
+/***/ }),
+
 /***/ "./node_modules/@babel/runtime-corejs2/helpers/esm/defineProperty.js":
 /*!***************************************************************************!*\
   !*** ./node_modules/@babel/runtime-corejs2/helpers/esm/defineProperty.js ***!
@@ -1127,6 +1201,39 @@ function _defineProperty(obj, key, value) {
   }
 
   return obj;
+}
+
+/***/ }),
+
+/***/ "./node_modules/@babel/runtime-corejs2/helpers/esm/extends.js":
+/*!********************************************************************!*\
+  !*** ./node_modules/@babel/runtime-corejs2/helpers/esm/extends.js ***!
+  \********************************************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return _extends; });
+/* harmony import */ var _core_js_object_assign__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../core-js/object/assign */ "./node_modules/@babel/runtime-corejs2/core-js/object/assign.js");
+/* harmony import */ var _core_js_object_assign__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_core_js_object_assign__WEBPACK_IMPORTED_MODULE_0__);
+
+function _extends() {
+  _extends = _core_js_object_assign__WEBPACK_IMPORTED_MODULE_0___default.a || function (target) {
+    for (var i = 1; i < arguments.length; i++) {
+      var source = arguments[i];
+
+      for (var key in source) {
+        if (Object.prototype.hasOwnProperty.call(source, key)) {
+          target[key] = source[key];
+        }
+      }
+    }
+
+    return target;
+  };
+
+  return _extends.apply(this, arguments);
 }
 
 /***/ }),
@@ -1183,32 +1290,29 @@ function _objectSpread(target) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony import */ var _babel_runtime_corejs2_helpers_esm_objectSpread__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @babel/runtime-corejs2/helpers/esm/objectSpread */ "./node_modules/@babel/runtime-corejs2/helpers/esm/objectSpread.js");
-/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! react */ "react");
-/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_1__);
-/* harmony import */ var _shopify_polaris__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! @shopify/polaris */ "@shopify/polaris");
-/* harmony import */ var _shopify_polaris__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(_shopify_polaris__WEBPACK_IMPORTED_MODULE_2__);
-/* harmony import */ var graphql_tag__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! graphql-tag */ "graphql-tag");
-/* harmony import */ var graphql_tag__WEBPACK_IMPORTED_MODULE_3___default = /*#__PURE__*/__webpack_require__.n(graphql_tag__WEBPACK_IMPORTED_MODULE_3__);
-/* harmony import */ var react_apollo__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! react-apollo */ "react-apollo");
-/* harmony import */ var react_apollo__WEBPACK_IMPORTED_MODULE_4___default = /*#__PURE__*/__webpack_require__.n(react_apollo__WEBPACK_IMPORTED_MODULE_4__);
-/* harmony import */ var store_js__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! store-js */ "store-js");
-/* harmony import */ var store_js__WEBPACK_IMPORTED_MODULE_5___default = /*#__PURE__*/__webpack_require__.n(store_js__WEBPACK_IMPORTED_MODULE_5__);
-/* harmony import */ var _components_barList__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ../components/barList */ "./components/barList.js");
-/* harmony import */ var _components_templateStyle__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ../components/templateStyle */ "./components/templateStyle.js");
-/* harmony import */ var _components_contentConfig__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ../components/contentConfig */ "./components/contentConfig.js");
-/* harmony import */ var _components_styleConfig__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ../components/styleConfig */ "./components/styleConfig.js");
-/* harmony import */ var _components_targetConfig__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! ../components/targetConfig */ "./components/targetConfig.js");
-/* harmony import */ var _components_customCode__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(/*! ../components/customCode */ "./components/customCode.js");
-/* harmony import */ var _components_preview__WEBPACK_IMPORTED_MODULE_12__ = __webpack_require__(/*! ../components/preview */ "./components/preview.js");
-
-
-var __jsx = react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement;
-
+/* harmony import */ var _babel_runtime_corejs2_helpers_esm_extends__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @babel/runtime-corejs2/helpers/esm/extends */ "./node_modules/@babel/runtime-corejs2/helpers/esm/extends.js");
+/* harmony import */ var _babel_runtime_corejs2_helpers_esm_objectSpread__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @babel/runtime-corejs2/helpers/esm/objectSpread */ "./node_modules/@babel/runtime-corejs2/helpers/esm/objectSpread.js");
+/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! react */ "react");
+/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_2__);
+/* harmony import */ var _shopify_polaris__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! @shopify/polaris */ "@shopify/polaris");
+/* harmony import */ var _shopify_polaris__WEBPACK_IMPORTED_MODULE_3___default = /*#__PURE__*/__webpack_require__.n(_shopify_polaris__WEBPACK_IMPORTED_MODULE_3__);
+/* harmony import */ var graphql_tag__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! graphql-tag */ "graphql-tag");
+/* harmony import */ var graphql_tag__WEBPACK_IMPORTED_MODULE_4___default = /*#__PURE__*/__webpack_require__.n(graphql_tag__WEBPACK_IMPORTED_MODULE_4__);
+/* harmony import */ var react_apollo__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! react-apollo */ "react-apollo");
+/* harmony import */ var react_apollo__WEBPACK_IMPORTED_MODULE_5___default = /*#__PURE__*/__webpack_require__.n(react_apollo__WEBPACK_IMPORTED_MODULE_5__);
+/* harmony import */ var store_js__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! store-js */ "store-js");
+/* harmony import */ var store_js__WEBPACK_IMPORTED_MODULE_6___default = /*#__PURE__*/__webpack_require__.n(store_js__WEBPACK_IMPORTED_MODULE_6__);
+/* harmony import */ var _components_barList__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ../components/barList */ "./components/barList.js");
+/* harmony import */ var _components_templateStyle__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ../components/templateStyle */ "./components/templateStyle.js");
+/* harmony import */ var _components_contentConfig__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ../components/contentConfig */ "./components/contentConfig.js");
+/* harmony import */ var _components_styleConfig__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! ../components/styleConfig */ "./components/styleConfig.js");
+/* harmony import */ var _components_targetConfig__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(/*! ../components/targetConfig */ "./components/targetConfig.js");
+/* harmony import */ var _components_customCode__WEBPACK_IMPORTED_MODULE_12__ = __webpack_require__(/*! ../components/customCode */ "./components/customCode.js");
+/* harmony import */ var _components_preview__WEBPACK_IMPORTED_MODULE_13__ = __webpack_require__(/*! ../components/preview */ "./components/preview.js");
 
 
 
-
+var __jsx = react__WEBPACK_IMPORTED_MODULE_2___default.a.createElement;
 
 
 
@@ -1216,7 +1320,12 @@ var __jsx = react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement;
 
 
 
-const INJECT_SCRIPT = graphql_tag__WEBPACK_IMPORTED_MODULE_3___default.a`
+
+
+
+
+
+const INJECT_SCRIPT = graphql_tag__WEBPACK_IMPORTED_MODULE_4___default.a`
   mutation scriptTagCreate($input: ScriptTagInput!) {
     scriptTagCreate(input: $input) {
       scriptTag {
@@ -1234,17 +1343,17 @@ function SaveUserPreference(props) {
   const [injectScriptTag, {
     data,
     error
-  }] = Object(react_apollo__WEBPACK_IMPORTED_MODULE_4__["useMutation"])(INJECT_SCRIPT);
+  }] = Object(react_apollo__WEBPACK_IMPORTED_MODULE_5__["useMutation"])(INJECT_SCRIPT);
 
   const handleInjectionSuccess = (data, b) => {
     console.log(data);
     setTimeout(b => {
       b = 'dismiss';
     }, 2500);
-    return b === 'success' ? __jsx(_shopify_polaris__WEBPACK_IMPORTED_MODULE_2__["Toast"], {
+    return b === 'success' ? __jsx(_shopify_polaris__WEBPACK_IMPORTED_MODULE_3__["Toast"], {
       content: "Saved successfully.",
       onDismiss: () => {}
-    }) : b === 'error' ? __jsx(_shopify_polaris__WEBPACK_IMPORTED_MODULE_2__["Toast"], {
+    }) : b === 'error' ? __jsx(_shopify_polaris__WEBPACK_IMPORTED_MODULE_3__["Toast"], {
       content: "Something went wrong.",
       onDismiss: () => {}
     }) : null;
@@ -1255,11 +1364,11 @@ function SaveUserPreference(props) {
       marginTop: '50px',
       height: '100px'
     }
-  }, __jsx(_shopify_polaris__WEBPACK_IMPORTED_MODULE_2__["ButtonGroup"], null, __jsx(_shopify_polaris__WEBPACK_IMPORTED_MODULE_2__["Button"], {
+  }, __jsx(_shopify_polaris__WEBPACK_IMPORTED_MODULE_3__["ButtonGroup"], null, __jsx(_shopify_polaris__WEBPACK_IMPORTED_MODULE_3__["Button"], {
     onClick: () => {
       props.handleEdit();
     }
-  }, "Cancel"), __jsx(_shopify_polaris__WEBPACK_IMPORTED_MODULE_2__["Button"], {
+  }, "Cancel"), __jsx(_shopify_polaris__WEBPACK_IMPORTED_MODULE_3__["Button"], {
     primary: true,
     onClick: e => {
       e.preventDefault();
@@ -1268,15 +1377,15 @@ function SaveUserPreference(props) {
         variables: {
           input: {
             displayScope: 'ONLINE_STORE',
-            src: 'https://5be47b78.ngrok.io/_next/static/chunks/topBarInjection.js'
+            src: 'https://8a9648bd.ngrok.io/_next/static/chunks/topBarInjection.js'
           }
         }
       });
     }
-  }, "Save")), __jsx(_shopify_polaris__WEBPACK_IMPORTED_MODULE_2__["Frame"], null, data && handleInjectionSuccess(data, 'success'), error && handleInjectionSuccess(error, 'error')));
+  }, "Save")), __jsx(_shopify_polaris__WEBPACK_IMPORTED_MODULE_3__["Frame"], null, data && handleInjectionSuccess(data, 'success'), error && handleInjectionSuccess(error, 'error')));
 }
 
-class Index extends react__WEBPACK_IMPORTED_MODULE_1___default.a.Component {
+class Index extends react__WEBPACK_IMPORTED_MODULE_2___default.a.Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -1318,7 +1427,7 @@ class Index extends react__WEBPACK_IMPORTED_MODULE_1___default.a.Component {
   }
 
   render() {
-    const emptyState = !store_js__WEBPACK_IMPORTED_MODULE_5___default.a.get('ids');
+    const emptyState = !store_js__WEBPACK_IMPORTED_MODULE_6___default.a.get('ids');
     const {
       barTxtConfig,
       barFrShGl,
@@ -1326,31 +1435,40 @@ class Index extends react__WEBPACK_IMPORTED_MODULE_1___default.a.Component {
       styleConfig,
       bgImg
     } = this.state;
-    return __jsx(_shopify_polaris__WEBPACK_IMPORTED_MODULE_2__["Page"], null, __jsx(_shopify_polaris__WEBPACK_IMPORTED_MODULE_2__["Layout"].Section, null, __jsx(_components_barList__WEBPACK_IMPORTED_MODULE_6__["default"], {
+    return __jsx(_shopify_polaris__WEBPACK_IMPORTED_MODULE_3__["Page"], null, __jsx(_shopify_polaris__WEBPACK_IMPORTED_MODULE_3__["Layout"].Section, null, __jsx(_components_barList__WEBPACK_IMPORTED_MODULE_7__["default"], {
       handleEditId: id => this.handleEditId(id)
     }), this.state.onEdit ? __jsx("div", {
       style: {
         marginTop: '3em'
       }
-    }, __jsx(_components_templateStyle__WEBPACK_IMPORTED_MODULE_7__["default"], null), __jsx(_components_preview__WEBPACK_IMPORTED_MODULE_12__["default"], {
+    }, __jsx(_components_templateStyle__WEBPACK_IMPORTED_MODULE_8__["default"], {
+      handleClickedLi: (bg, ftColor) => this.setState({
+        styleConfig: Object(_babel_runtime_corejs2_helpers_esm_objectSpread__WEBPACK_IMPORTED_MODULE_1__["default"])({}, this.state.styleConfig, {
+          colorConfig: Object(_babel_runtime_corejs2_helpers_esm_objectSpread__WEBPACK_IMPORTED_MODULE_1__["default"])({}, this.state.styleConfig.colorConfig, {
+            bgColor: bg,
+            txtColor: ftColor
+          })
+        })
+      })
+    }), __jsx(_components_preview__WEBPACK_IMPORTED_MODULE_13__["default"], {
       contentConfig: {
         barTxtConfig,
         barFrShGl,
         barLink
       },
-      styleConfig: Object(_babel_runtime_corejs2_helpers_esm_objectSpread__WEBPACK_IMPORTED_MODULE_0__["default"])({}, styleConfig),
+      styleConfig: Object(_babel_runtime_corejs2_helpers_esm_objectSpread__WEBPACK_IMPORTED_MODULE_1__["default"])({}, styleConfig),
       bgImg: bgImg
-    }), __jsx(_components_contentConfig__WEBPACK_IMPORTED_MODULE_8__["default"], {
+    }), __jsx(_components_contentConfig__WEBPACK_IMPORTED_MODULE_9__["default"], {
       handleContentConfig_msg: msg => this.setState({
-        barTxtConfig: Object(_babel_runtime_corejs2_helpers_esm_objectSpread__WEBPACK_IMPORTED_MODULE_0__["default"])({}, this.barTxtConfig, msg)
+        barTxtConfig: Object(_babel_runtime_corejs2_helpers_esm_objectSpread__WEBPACK_IMPORTED_MODULE_1__["default"])({}, this.barTxtConfig, msg)
       }),
       handleContentConfig_goal: gl => this.setState({
         barFrShGl: gl
       }),
       handleContentConfig_link: val => this.setState({
-        barLink: Object(_babel_runtime_corejs2_helpers_esm_objectSpread__WEBPACK_IMPORTED_MODULE_0__["default"])({}, this.state.barLink, val)
+        barLink: Object(_babel_runtime_corejs2_helpers_esm_objectSpread__WEBPACK_IMPORTED_MODULE_1__["default"])({}, this.state.barLink, val)
       })
-    }), __jsx(_components_styleConfig__WEBPACK_IMPORTED_MODULE_9__["default"], {
+    }), __jsx(_components_styleConfig__WEBPACK_IMPORTED_MODULE_10__["default"], Object(_babel_runtime_corejs2_helpers_esm_extends__WEBPACK_IMPORTED_MODULE_0__["default"])({
       handleStyleConfig: (colorCf, fontCf) => {
         this.setState({
           styleConfig: {
@@ -1362,7 +1480,7 @@ class Index extends react__WEBPACK_IMPORTED_MODULE_1___default.a.Component {
       uploadBgImg: bgFile => this.setState({
         bgImg: bgFile
       })
-    }), __jsx(_components_targetConfig__WEBPACK_IMPORTED_MODULE_10__["default"], null), __jsx(_components_customCode__WEBPACK_IMPORTED_MODULE_11__["default"], null), __jsx(SaveUserPreference, {
+    }, this.state)), __jsx(_components_targetConfig__WEBPACK_IMPORTED_MODULE_11__["default"], null), __jsx(_components_customCode__WEBPACK_IMPORTED_MODULE_12__["default"], null), __jsx(SaveUserPreference, {
       handleEdit: () => {
         this.setState(this.baseState);
       }
@@ -1616,7 +1734,7 @@ class PreviewBar extends react__WEBPACK_IMPORTED_MODULE_0___default.a.Component 
         imgUrl;
     let padding = paddingUpDown ? `${paddingUpDown}px 5px` : '8px 5px';
 
-    if (opacity !== 100) {
+    if (opacity.toString() !== '100') {
       bgColor = this._hexToRgba(bgColor, opacity);
     }
 
@@ -1711,6 +1829,17 @@ module.exports = require("@shopify/polaris");
 
 /***/ }),
 
+/***/ "core-js/library/fn/object/assign":
+/*!***************************************************!*\
+  !*** external "core-js/library/fn/object/assign" ***!
+  \***************************************************/
+/*! no static exports found */
+/***/ (function(module, exports) {
+
+module.exports = require("core-js/library/fn/object/assign");
+
+/***/ }),
+
 /***/ "core-js/library/fn/object/define-property":
 /*!************************************************************!*\
   !*** external "core-js/library/fn/object/define-property" ***!
@@ -1763,6 +1892,17 @@ module.exports = require("core-js/library/fn/object/keys");
 /***/ (function(module, exports) {
 
 module.exports = require("core-js/library/fn/parse-float");
+
+/***/ }),
+
+/***/ "core-js/library/fn/parse-int":
+/*!***********************************************!*\
+  !*** external "core-js/library/fn/parse-int" ***!
+  \***********************************************/
+/*! no static exports found */
+/***/ (function(module, exports) {
+
+module.exports = require("core-js/library/fn/parse-int");
 
 /***/ }),
 

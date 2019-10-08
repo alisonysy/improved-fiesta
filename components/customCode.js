@@ -11,7 +11,7 @@ class CustomCodePage extends React.Component{
   }
 
   handleCustomCode(val){
-    console.log(val);
+    console.log(val);// should have <script> or <style> tag,append the tags to the document body
     this.setState(()=>{
       return {customCode:val}
     })
@@ -23,7 +23,7 @@ class CustomCodePage extends React.Component{
         <Form onSubmit={v => console.log(v)}>
           <FormLayout>
             <DisplayText size="small">Custom code</DisplayText>
-            <textarea rows="10" cols="80" placeholder="The code here can only modify the bar style" style={{marginLeft:'10px'}}></textarea>
+            <textarea rows="10" cols="80" placeholder="Please put your custom codes here..." style={{marginLeft:'10px'}}></textarea>
           </FormLayout>
         </Form>
       </Card>

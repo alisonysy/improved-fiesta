@@ -106,7 +106,7 @@ class PreviewBar extends React.Component{
     let {bgColor} = barConfig,imgSize=bgImg.size,imgUrl;
     let padding = paddingUpDown? `${paddingUpDown}px 5px` : '8px 5px';
 
-    if(opacity !== 100){
+    if(opacity.toString() !== '100'){
       bgColor = this._hexToRgba(bgColor,opacity);
     }
     

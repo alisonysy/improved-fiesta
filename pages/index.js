@@ -68,7 +68,7 @@ function SaveUserPreference(props){
               variables:{
                 input:{
                   displayScope:'ONLINE_STORE',
-                  src:'https://5be47b78.ngrok.io/_next/static/chunks/topBarInjection.js'
+                  src:'https://8a9648bd.ngrok.io/_next/static/chunks/topBarInjection.js'
                 }
               }
             })
@@ -117,7 +117,7 @@ class Index extends React.Component {
           {
             this.state.onEdit?
             <div style={{marginTop:'3em'}}>
-              <TemplateStyle />
+              <TemplateStyle handleClickedLi={(bg,ftColor) => this.setState({styleConfig:{...this.state.styleConfig,colorConfig:{...this.state.styleConfig.colorConfig,bgColor:bg,txtColor:ftColor}}})}/>
               <PreviewPage 
                 contentConfig={{barTxtConfig,barFrShGl,barLink}} 
                 styleConfig = {{...styleConfig}}
@@ -133,6 +133,7 @@ class Index extends React.Component {
                   this.setState({styleConfig:{colorConfig:colorCf,fontConfig:fontCf}})
                 }}
                 uploadBgImg={(bgFile) => this.setState({bgImg:bgFile})}
+                {...this.state}
               />
               <TargetConfigPage />
               <CustomCodePage />
