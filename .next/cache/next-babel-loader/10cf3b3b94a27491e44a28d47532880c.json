@@ -1,1 +1,0 @@
-{"ast":null,"code":"console.log('script injection succeeded');","map":{"version":3,"sources":["C:\\Users\\Administrator.SC-201903211547\\projects\\0919\\sample-embedded-app\\scripts\\topBarInjection.js"],"names":["console","log"],"mappings":"AAAAA,OAAO,CAACC,GAAR,CAAY,4BAAZ","sourcesContent":["console.log('script injection succeeded')"]},"metadata":{},"sourceType":"script"}

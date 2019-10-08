@@ -1,10 +1,9 @@
-import { Layout, Page, ButtonGroup, Button } from '@shopify/polaris';
-import { ResourcePicker, TitleBar } from '@shopify/app-bridge-react';
+import { Layout, Page, ButtonGroup, Button, Toast, Frame } from '@shopify/polaris';
+import { useState, useCallback } from 'react';
 import gql from 'graphql-tag';
-import { useMutation } from 'react-apollo';
+import { useMutation, useSubscription } from 'react-apollo';
 import store from 'store-js';
 
-import ResourceListWithProducts from '../components/ResourceList';
 import BarList from '../components/barList';
 import TemplateStyle from '../components/templateStyle';
 import ContentConfigPage from '../components/contentConfig';
@@ -28,34 +27,61 @@ const INJECT_SCRIPT = gql`
   }
 `;
 
-function SaveUserPreference(){
+function SaveUserPreference(props){
   const [injectScriptTag, {data,error}] = useMutation(INJECT_SCRIPT);
+
+  const handleInjectionSuccess = (data,b) =>{
+    console.log(data);
+    setTimeout((b) => {
+      b='dismiss'
+    }, 2500);
+    return (
+      b === 'success'? 
+      <Toast
+        content="Saved successfully."
+        onDismiss={() => {}}
+      />
+      :
+      b === 'error' ?
+      <Toast
+        content="Something went wrong."
+        onDismiss={ () => {}}
+      />
+      :
+      null
+    )
+  };
+  
   return (
-    <ButtonGroup>
-      <Button>Cancel</Button>
-      <Button primary 
-        onClick={(e)=>{
-          e.preventDefault();
-          console.log('calling useMutation hooks');
-          injectScriptTag({
-            variables:{
-              input:{
-                displayScope:'ONLINE_STORE',
-                src:'https://5be47b78.ngrok.io/_next/static/chunks/topBarInjection.js'
+    <div style={{marginTop:'50px',height:'100px'}}>
+      <ButtonGroup>
+        <Button
+          onClick = {()=>{
+            props.handleEdit();
+          }}
+        >Cancel</Button>
+        <Button primary 
+          onClick={(e)=>{
+            e.preventDefault();
+            console.log('calling useMutation hooks');
+            injectScriptTag({
+              variables:{
+                input:{
+                  displayScope:'ONLINE_STORE',
+                  src:'https://5be47b78.ngrok.io/_next/static/chunks/topBarInjection.js'
+                }
               }
-            },
-            onCompleted(){
-              console.log(data)
-            },
-            onError(){
-              console.log(error);
-            }
-          })
-        }}
-      >
-        Save
-      </Button>
-    </ButtonGroup>
+            })
+          }}
+        >
+          Save
+        </Button>
+      </ButtonGroup>
+      <Frame>
+        { data && handleInjectionSuccess(data,'success')}
+        { error &&  handleInjectionSuccess(error,'error') }
+      </Frame>
+    </div>
   )
 }
 
@@ -72,6 +98,7 @@ class Index extends React.Component {
       bgImg:{},
       styleConfig:{colorConfig:{bgColor:'#000',txtColor:'#b31219',bgOpacity:100,specialColor:'#fff'},fontConfig:{fontFamily:'sans-serif'}}
     };
+    this.baseState = this.state;
     this.handleEditId = this.handleEditId.bind(this);
   }
 
@@ -85,19 +112,6 @@ class Index extends React.Component {
     const {barTxtConfig,barFrShGl,barLink,styleConfig,bgImg} = this.state;
     return (
       <Page>
-        {/* <TitleBar 
-          primaryAction={{
-            content:'Select prod',
-            onAction: () => this.setState({ open: true }),
-          }}
-        /> */}
-        {/* <ResourcePicker 
-          resourceType="Product"
-          showVariants={true}
-          open={this.state.open}
-          onSelection={(src)=> this.handleSelection(src)}
-          onCancel={ () => this.setState({ open: false })}
-        /> */}
         <Layout.Section>
           <BarList handleEditId={(id) => this.handleEditId(id)}/>
           {
@@ -122,7 +136,10 @@ class Index extends React.Component {
               />
               <TargetConfigPage />
               <CustomCodePage />
-              <SaveUserPreference />
+              <SaveUserPreference handleEdit={()=> {
+                  this.setState(this.baseState);
+                }}
+              />
             </div>
             :
             null
@@ -132,12 +149,6 @@ class Index extends React.Component {
     )
   };
 
-  // handleSelection = (src) => {
-  //   const idsFromSrc = src.selection.map((prod)=> prod.id);
-  //   this.setState({ open: false })
-  //   console.log(src);
-  //   store.set('ids',idsFromSrc)
-  // }
 };
 
 export default Index;

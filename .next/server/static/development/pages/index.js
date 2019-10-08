@@ -93,134 +93,6 @@ module.exports =
 /************************************************************************/
 /******/ ({
 
-/***/ "./components/ResourceList.js":
-/*!************************************!*\
-  !*** ./components/ResourceList.js ***!
-  \************************************/
-/*! exports provided: default */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony import */ var _babel_runtime_corejs2_core_js_date_now__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @babel/runtime-corejs2/core-js/date/now */ "./node_modules/@babel/runtime-corejs2/core-js/date/now.js");
-/* harmony import */ var _babel_runtime_corejs2_core_js_date_now__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_babel_runtime_corejs2_core_js_date_now__WEBPACK_IMPORTED_MODULE_0__);
-/* harmony import */ var _babel_runtime_corejs2_helpers_esm_defineProperty__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @babel/runtime-corejs2/helpers/esm/defineProperty */ "./node_modules/@babel/runtime-corejs2/helpers/esm/defineProperty.js");
-/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! react */ "react");
-/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_2__);
-/* harmony import */ var graphql_tag__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! graphql-tag */ "graphql-tag");
-/* harmony import */ var graphql_tag__WEBPACK_IMPORTED_MODULE_3___default = /*#__PURE__*/__webpack_require__.n(graphql_tag__WEBPACK_IMPORTED_MODULE_3__);
-/* harmony import */ var react_apollo__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! react-apollo */ "react-apollo");
-/* harmony import */ var react_apollo__WEBPACK_IMPORTED_MODULE_4___default = /*#__PURE__*/__webpack_require__.n(react_apollo__WEBPACK_IMPORTED_MODULE_4__);
-/* harmony import */ var _shopify_polaris__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! @shopify/polaris */ "@shopify/polaris");
-/* harmony import */ var _shopify_polaris__WEBPACK_IMPORTED_MODULE_5___default = /*#__PURE__*/__webpack_require__.n(_shopify_polaris__WEBPACK_IMPORTED_MODULE_5__);
-/* harmony import */ var store_js__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! store-js */ "store-js");
-/* harmony import */ var store_js__WEBPACK_IMPORTED_MODULE_6___default = /*#__PURE__*/__webpack_require__.n(store_js__WEBPACK_IMPORTED_MODULE_6__);
-/* harmony import */ var _shopify_app_bridge_actions__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! @shopify/app-bridge/actions */ "@shopify/app-bridge/actions");
-/* harmony import */ var _shopify_app_bridge_actions__WEBPACK_IMPORTED_MODULE_7___default = /*#__PURE__*/__webpack_require__.n(_shopify_app_bridge_actions__WEBPACK_IMPORTED_MODULE_7__);
-/* harmony import */ var _shopify_app_bridge_react__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! @shopify/app-bridge-react */ "@shopify/app-bridge-react");
-/* harmony import */ var _shopify_app_bridge_react__WEBPACK_IMPORTED_MODULE_8___default = /*#__PURE__*/__webpack_require__.n(_shopify_app_bridge_react__WEBPACK_IMPORTED_MODULE_8__);
-
-
-
-var __jsx = react__WEBPACK_IMPORTED_MODULE_2___default.a.createElement;
-
-
-
-
-
-
-const GET_PRODUCTS_BY_ID = graphql_tag__WEBPACK_IMPORTED_MODULE_3___default.a`
-  query getProducts($ids: [ID!]!) {
-    nodes(ids: $ids) {
-      ... on Product {
-        title
-        handle
-        descriptionHtml
-        id
-        images(first: 1) {
-          edges {
-            node {
-              originalSrc
-              altText
-            }
-          }
-        }
-        variants(first: 1) {
-          edges {
-            node {
-              price
-              id
-            }
-          }
-        }
-      }
-    }
-  }
-`;
-
-class ResourceListWithProducts extends react__WEBPACK_IMPORTED_MODULE_2___default.a.Component {
-  render() {
-    const app = this.context;
-
-    const redirectToProduct = () => {
-      const redirect = _shopify_app_bridge_actions__WEBPACK_IMPORTED_MODULE_7__["Redirect"].create(app);
-      redirect.dispatch(_shopify_app_bridge_actions__WEBPACK_IMPORTED_MODULE_7__["Redirect"].Action.APP, '/edit-products');
-    };
-
-    const twoWeeksFromNow = new Date(_babel_runtime_corejs2_core_js_date_now__WEBPACK_IMPORTED_MODULE_0___default()() + 12096e5).toDateString();
-    return __jsx(react_apollo__WEBPACK_IMPORTED_MODULE_4__["Query"], {
-      query: GET_PRODUCTS_BY_ID,
-      variables: {
-        ids: store_js__WEBPACK_IMPORTED_MODULE_6___default.a.get('ids')
-      }
-    }, ({
-      data,
-      loading,
-      error
-    }) => {
-      if (loading) return __jsx("div", null, "Loading\u2026");
-      if (error) return __jsx("div", null, error.message);
-      console.log(data);
-      return __jsx(_shopify_polaris__WEBPACK_IMPORTED_MODULE_5__["Card"], null, __jsx(_shopify_polaris__WEBPACK_IMPORTED_MODULE_5__["ResourceList"], {
-        showHeader: true,
-        resourceName: {
-          singular: 'Product',
-          plural: 'Products'
-        },
-        items: data.nodes,
-        renderItem: item => {
-          const media = __jsx(_shopify_polaris__WEBPACK_IMPORTED_MODULE_5__["Thumbnail"], {
-            source: item.images.edges[0] ? item.images.edges[0].node.originalSrc : '',
-            alt: item.images.edges[0] ? item.images.edges[0].node.altText : ''
-          });
-
-          const price = item.variants.edges[0].node.price;
-          return __jsx(_shopify_polaris__WEBPACK_IMPORTED_MODULE_5__["ResourceList"].Item, {
-            id: item.id,
-            media: media,
-            accessibilityLabel: `View details for ${item.title}`,
-            onClick: () => {
-              store_js__WEBPACK_IMPORTED_MODULE_6___default.a.set('item', item);
-              redirectToProduct();
-            }
-          }, __jsx(_shopify_polaris__WEBPACK_IMPORTED_MODULE_5__["Stack"], null, __jsx(_shopify_polaris__WEBPACK_IMPORTED_MODULE_5__["Stack"].Item, {
-            fill: true
-          }, __jsx("h3", null, __jsx(_shopify_polaris__WEBPACK_IMPORTED_MODULE_5__["TextStyle"], {
-            variation: "strong"
-          }, item.title))), __jsx(_shopify_polaris__WEBPACK_IMPORTED_MODULE_5__["Stack"].Item, null, __jsx("p", null, "$", price)), __jsx(_shopify_polaris__WEBPACK_IMPORTED_MODULE_5__["Stack"].Item, null, __jsx("p", null, "Expires on ", twoWeeksFromNow, " "))));
-        }
-      }));
-    });
-  }
-
-}
-
-Object(_babel_runtime_corejs2_helpers_esm_defineProperty__WEBPACK_IMPORTED_MODULE_1__["default"])(ResourceListWithProducts, "contextType", _shopify_app_bridge_react__WEBPACK_IMPORTED_MODULE_8__["Context"]);
-
-/* harmony default export */ __webpack_exports__["default"] = (ResourceListWithProducts);
-
-/***/ }),
-
 /***/ "./components/barList.js":
 /*!*******************************!*\
   !*** ./components/barList.js ***!
@@ -1174,17 +1046,6 @@ class TemplateStyle extends react__WEBPACK_IMPORTED_MODULE_0___default.a.Compone
 
 /***/ }),
 
-/***/ "./node_modules/@babel/runtime-corejs2/core-js/date/now.js":
-/*!*****************************************************************!*\
-  !*** ./node_modules/@babel/runtime-corejs2/core-js/date/now.js ***!
-  \*****************************************************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
-
-module.exports = __webpack_require__(/*! core-js/library/fn/date/now */ "core-js/library/fn/date/now");
-
-/***/ }),
-
 /***/ "./node_modules/@babel/runtime-corejs2/core-js/object/define-property.js":
 /*!*******************************************************************************!*\
   !*** ./node_modules/@babel/runtime-corejs2/core-js/object/define-property.js ***!
@@ -1327,22 +1188,19 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var react__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_1__);
 /* harmony import */ var _shopify_polaris__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! @shopify/polaris */ "@shopify/polaris");
 /* harmony import */ var _shopify_polaris__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(_shopify_polaris__WEBPACK_IMPORTED_MODULE_2__);
-/* harmony import */ var _shopify_app_bridge_react__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! @shopify/app-bridge-react */ "@shopify/app-bridge-react");
-/* harmony import */ var _shopify_app_bridge_react__WEBPACK_IMPORTED_MODULE_3___default = /*#__PURE__*/__webpack_require__.n(_shopify_app_bridge_react__WEBPACK_IMPORTED_MODULE_3__);
-/* harmony import */ var graphql_tag__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! graphql-tag */ "graphql-tag");
-/* harmony import */ var graphql_tag__WEBPACK_IMPORTED_MODULE_4___default = /*#__PURE__*/__webpack_require__.n(graphql_tag__WEBPACK_IMPORTED_MODULE_4__);
-/* harmony import */ var react_apollo__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! react-apollo */ "react-apollo");
-/* harmony import */ var react_apollo__WEBPACK_IMPORTED_MODULE_5___default = /*#__PURE__*/__webpack_require__.n(react_apollo__WEBPACK_IMPORTED_MODULE_5__);
-/* harmony import */ var store_js__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! store-js */ "store-js");
-/* harmony import */ var store_js__WEBPACK_IMPORTED_MODULE_6___default = /*#__PURE__*/__webpack_require__.n(store_js__WEBPACK_IMPORTED_MODULE_6__);
-/* harmony import */ var _components_ResourceList__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ../components/ResourceList */ "./components/ResourceList.js");
-/* harmony import */ var _components_barList__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ../components/barList */ "./components/barList.js");
-/* harmony import */ var _components_templateStyle__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ../components/templateStyle */ "./components/templateStyle.js");
-/* harmony import */ var _components_contentConfig__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! ../components/contentConfig */ "./components/contentConfig.js");
-/* harmony import */ var _components_styleConfig__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(/*! ../components/styleConfig */ "./components/styleConfig.js");
-/* harmony import */ var _components_targetConfig__WEBPACK_IMPORTED_MODULE_12__ = __webpack_require__(/*! ../components/targetConfig */ "./components/targetConfig.js");
-/* harmony import */ var _components_customCode__WEBPACK_IMPORTED_MODULE_13__ = __webpack_require__(/*! ../components/customCode */ "./components/customCode.js");
-/* harmony import */ var _components_preview__WEBPACK_IMPORTED_MODULE_14__ = __webpack_require__(/*! ../components/preview */ "./components/preview.js");
+/* harmony import */ var graphql_tag__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! graphql-tag */ "graphql-tag");
+/* harmony import */ var graphql_tag__WEBPACK_IMPORTED_MODULE_3___default = /*#__PURE__*/__webpack_require__.n(graphql_tag__WEBPACK_IMPORTED_MODULE_3__);
+/* harmony import */ var react_apollo__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! react-apollo */ "react-apollo");
+/* harmony import */ var react_apollo__WEBPACK_IMPORTED_MODULE_4___default = /*#__PURE__*/__webpack_require__.n(react_apollo__WEBPACK_IMPORTED_MODULE_4__);
+/* harmony import */ var store_js__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! store-js */ "store-js");
+/* harmony import */ var store_js__WEBPACK_IMPORTED_MODULE_5___default = /*#__PURE__*/__webpack_require__.n(store_js__WEBPACK_IMPORTED_MODULE_5__);
+/* harmony import */ var _components_barList__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ../components/barList */ "./components/barList.js");
+/* harmony import */ var _components_templateStyle__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ../components/templateStyle */ "./components/templateStyle.js");
+/* harmony import */ var _components_contentConfig__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ../components/contentConfig */ "./components/contentConfig.js");
+/* harmony import */ var _components_styleConfig__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ../components/styleConfig */ "./components/styleConfig.js");
+/* harmony import */ var _components_targetConfig__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! ../components/targetConfig */ "./components/targetConfig.js");
+/* harmony import */ var _components_customCode__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(/*! ../components/customCode */ "./components/customCode.js");
+/* harmony import */ var _components_preview__WEBPACK_IMPORTED_MODULE_12__ = __webpack_require__(/*! ../components/preview */ "./components/preview.js");
 
 
 var __jsx = react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement;
@@ -1358,8 +1216,7 @@ var __jsx = react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement;
 
 
 
-
-const INJECT_SCRIPT = graphql_tag__WEBPACK_IMPORTED_MODULE_4___default.a`
+const INJECT_SCRIPT = graphql_tag__WEBPACK_IMPORTED_MODULE_3___default.a`
   mutation scriptTagCreate($input: ScriptTagInput!) {
     scriptTagCreate(input: $input) {
       scriptTag {
@@ -1373,12 +1230,36 @@ const INJECT_SCRIPT = graphql_tag__WEBPACK_IMPORTED_MODULE_4___default.a`
   }
 `;
 
-function SaveUserPreference() {
+function SaveUserPreference(props) {
   const [injectScriptTag, {
     data,
     error
-  }] = Object(react_apollo__WEBPACK_IMPORTED_MODULE_5__["useMutation"])(INJECT_SCRIPT);
-  return __jsx(_shopify_polaris__WEBPACK_IMPORTED_MODULE_2__["ButtonGroup"], null, __jsx(_shopify_polaris__WEBPACK_IMPORTED_MODULE_2__["Button"], null, "Cancel"), __jsx(_shopify_polaris__WEBPACK_IMPORTED_MODULE_2__["Button"], {
+  }] = Object(react_apollo__WEBPACK_IMPORTED_MODULE_4__["useMutation"])(INJECT_SCRIPT);
+
+  const handleInjectionSuccess = (data, b) => {
+    console.log(data);
+    setTimeout(b => {
+      b = 'dismiss';
+    }, 2500);
+    return b === 'success' ? __jsx(_shopify_polaris__WEBPACK_IMPORTED_MODULE_2__["Toast"], {
+      content: "Saved successfully.",
+      onDismiss: () => {}
+    }) : b === 'error' ? __jsx(_shopify_polaris__WEBPACK_IMPORTED_MODULE_2__["Toast"], {
+      content: "Something went wrong.",
+      onDismiss: () => {}
+    }) : null;
+  };
+
+  return __jsx("div", {
+    style: {
+      marginTop: '50px',
+      height: '100px'
+    }
+  }, __jsx(_shopify_polaris__WEBPACK_IMPORTED_MODULE_2__["ButtonGroup"], null, __jsx(_shopify_polaris__WEBPACK_IMPORTED_MODULE_2__["Button"], {
+    onClick: () => {
+      props.handleEdit();
+    }
+  }, "Cancel"), __jsx(_shopify_polaris__WEBPACK_IMPORTED_MODULE_2__["Button"], {
     primary: true,
     onClick: e => {
       e.preventDefault();
@@ -1389,19 +1270,10 @@ function SaveUserPreference() {
             displayScope: 'ONLINE_STORE',
             src: 'https://5be47b78.ngrok.io/_next/static/chunks/topBarInjection.js'
           }
-        },
-
-        onCompleted() {
-          console.log(data);
-        },
-
-        onError() {
-          console.log(error);
         }
-
       });
     }
-  }, "Save"));
+  }, "Save")), __jsx(_shopify_polaris__WEBPACK_IMPORTED_MODULE_2__["Frame"], null, data && handleInjectionSuccess(data, 'success'), error && handleInjectionSuccess(error, 'error')));
 }
 
 class Index extends react__WEBPACK_IMPORTED_MODULE_1___default.a.Component {
@@ -1434,6 +1306,7 @@ class Index extends react__WEBPACK_IMPORTED_MODULE_1___default.a.Component {
         }
       }
     };
+    this.baseState = this.state;
     this.handleEditId = this.handleEditId.bind(this);
   }
 
@@ -1445,7 +1318,7 @@ class Index extends react__WEBPACK_IMPORTED_MODULE_1___default.a.Component {
   }
 
   render() {
-    const emptyState = !store_js__WEBPACK_IMPORTED_MODULE_6___default.a.get('ids');
+    const emptyState = !store_js__WEBPACK_IMPORTED_MODULE_5___default.a.get('ids');
     const {
       barTxtConfig,
       barFrShGl,
@@ -1453,13 +1326,13 @@ class Index extends react__WEBPACK_IMPORTED_MODULE_1___default.a.Component {
       styleConfig,
       bgImg
     } = this.state;
-    return __jsx(_shopify_polaris__WEBPACK_IMPORTED_MODULE_2__["Page"], null, __jsx(_shopify_polaris__WEBPACK_IMPORTED_MODULE_2__["Layout"].Section, null, __jsx(_components_barList__WEBPACK_IMPORTED_MODULE_8__["default"], {
+    return __jsx(_shopify_polaris__WEBPACK_IMPORTED_MODULE_2__["Page"], null, __jsx(_shopify_polaris__WEBPACK_IMPORTED_MODULE_2__["Layout"].Section, null, __jsx(_components_barList__WEBPACK_IMPORTED_MODULE_6__["default"], {
       handleEditId: id => this.handleEditId(id)
     }), this.state.onEdit ? __jsx("div", {
       style: {
         marginTop: '3em'
       }
-    }, __jsx(_components_templateStyle__WEBPACK_IMPORTED_MODULE_9__["default"], null), __jsx(_components_preview__WEBPACK_IMPORTED_MODULE_14__["default"], {
+    }, __jsx(_components_templateStyle__WEBPACK_IMPORTED_MODULE_7__["default"], null), __jsx(_components_preview__WEBPACK_IMPORTED_MODULE_12__["default"], {
       contentConfig: {
         barTxtConfig,
         barFrShGl,
@@ -1467,7 +1340,7 @@ class Index extends react__WEBPACK_IMPORTED_MODULE_1___default.a.Component {
       },
       styleConfig: Object(_babel_runtime_corejs2_helpers_esm_objectSpread__WEBPACK_IMPORTED_MODULE_0__["default"])({}, styleConfig),
       bgImg: bgImg
-    }), __jsx(_components_contentConfig__WEBPACK_IMPORTED_MODULE_10__["default"], {
+    }), __jsx(_components_contentConfig__WEBPACK_IMPORTED_MODULE_8__["default"], {
       handleContentConfig_msg: msg => this.setState({
         barTxtConfig: Object(_babel_runtime_corejs2_helpers_esm_objectSpread__WEBPACK_IMPORTED_MODULE_0__["default"])({}, this.barTxtConfig, msg)
       }),
@@ -1477,7 +1350,7 @@ class Index extends react__WEBPACK_IMPORTED_MODULE_1___default.a.Component {
       handleContentConfig_link: val => this.setState({
         barLink: Object(_babel_runtime_corejs2_helpers_esm_objectSpread__WEBPACK_IMPORTED_MODULE_0__["default"])({}, this.state.barLink, val)
       })
-    }), __jsx(_components_styleConfig__WEBPACK_IMPORTED_MODULE_11__["default"], {
+    }), __jsx(_components_styleConfig__WEBPACK_IMPORTED_MODULE_9__["default"], {
       handleStyleConfig: (colorCf, fontCf) => {
         this.setState({
           styleConfig: {
@@ -1489,7 +1362,11 @@ class Index extends react__WEBPACK_IMPORTED_MODULE_1___default.a.Component {
       uploadBgImg: bgFile => this.setState({
         bgImg: bgFile
       })
-    }), __jsx(_components_targetConfig__WEBPACK_IMPORTED_MODULE_12__["default"], null), __jsx(_components_customCode__WEBPACK_IMPORTED_MODULE_13__["default"], null), __jsx(SaveUserPreference, null)) : null));
+    }), __jsx(_components_targetConfig__WEBPACK_IMPORTED_MODULE_10__["default"], null), __jsx(_components_customCode__WEBPACK_IMPORTED_MODULE_11__["default"], null), __jsx(SaveUserPreference, {
+      handleEdit: () => {
+        this.setState(this.baseState);
+      }
+    })) : null));
   }
 
 }
@@ -1823,28 +1700,6 @@ module.exports = __webpack_require__(/*! C:\Users\Administrator.SC-201903211547\
 
 /***/ }),
 
-/***/ "@shopify/app-bridge-react":
-/*!********************************************!*\
-  !*** external "@shopify/app-bridge-react" ***!
-  \********************************************/
-/*! no static exports found */
-/***/ (function(module, exports) {
-
-module.exports = require("@shopify/app-bridge-react");
-
-/***/ }),
-
-/***/ "@shopify/app-bridge/actions":
-/*!**********************************************!*\
-  !*** external "@shopify/app-bridge/actions" ***!
-  \**********************************************/
-/*! no static exports found */
-/***/ (function(module, exports) {
-
-module.exports = require("@shopify/app-bridge/actions");
-
-/***/ }),
-
 /***/ "@shopify/polaris":
 /*!***********************************!*\
   !*** external "@shopify/polaris" ***!
@@ -1853,17 +1708,6 @@ module.exports = require("@shopify/app-bridge/actions");
 /***/ (function(module, exports) {
 
 module.exports = require("@shopify/polaris");
-
-/***/ }),
-
-/***/ "core-js/library/fn/date/now":
-/*!**********************************************!*\
-  !*** external "core-js/library/fn/date/now" ***!
-  \**********************************************/
-/*! no static exports found */
-/***/ (function(module, exports) {
-
-module.exports = require("core-js/library/fn/date/now");
 
 /***/ }),
 
