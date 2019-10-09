@@ -1,28 +1,21 @@
 import { Card, DisplayText, ChoiceList, TextField,Form, FormLayout } from '@shopify/polaris';
-import { useCallback, useState } from 'react';
+import { useCallback, useState, useEffect } from 'react';
 
-function IncludePage() {
+function IncludePage(props) {
   const [selected, setSelected] = useState(['all']);
   const [urlInp, setUrlInp] = useState('');
   const [urlExc, setUrlExc] = useState('');
 
-  const handleChange = useCallback(
-    (value) => {
-      console.log('choose display on which page',value)
-      setSelected(value)
-    }, 
-    []
-  );
-
   const handleUrlInp = useCallback(
     (value) => {
-      console.log('url provided',value)
-      setUrlInp(value)
+      setUrlInp(value);
     },
     [],
   );
   const handleUrlExc = useCallback(
-    (val) => console.log(val),
+    (val) => {
+      setUrlExc(val);
+    },
     []
   );
 
@@ -51,6 +44,24 @@ function IncludePage() {
     [handleUrlExc, urlExc]
   )
 
+  useEffect(()=>{
+    let sl = selected[0];
+    switch(sl){
+      case 'all':
+        props.handleDisplayOnPage('all',undefined);
+        break;
+      case 'homepage':
+        props.handleDisplayOnPage('home',undefined);
+        break;
+      case 'url':
+        props.handleDisplayOnPage('url',urlInp);
+        break;
+      case 'exclude':
+        props.handleDisplayOnPage('exclude',urlExc);
+        break;
+    }
+  },[urlInp,urlExc,selected])
+
   return (
     <FormLayout.Group>
       <ChoiceList
@@ -62,7 +73,7 @@ function IncludePage() {
           {label:'Pages to exclude',value:'exclude',renderChildren:renderPageToExc}
         ]}
         selected={selected}
-        onChange={handleChange}
+        onChange={(nw) => setSelected(nw)}
       />
     </FormLayout.Group>
   );
@@ -71,7 +82,7 @@ function IncludePage() {
 class TargetConfigPage extends React.Component{
   constructor(props){
     super(props)
-    this.state = {}
+    this.state = {};
   }
 
   render(){
@@ -79,8 +90,8 @@ class TargetConfigPage extends React.Component{
       <Card>
         <Form>
           <FormLayout>
-            <DisplayText size="small">Target Configuration</DisplayText>
-            <IncludePage />
+            <div style={{fontSize:'18px',padding:'1.5em 0 0 1em'}}>Target Configuration</div>
+            <IncludePage handleDisplayOnPage={(sec,url)=> this.props.handleDisplayOnPage(sec,url)}/>
           </FormLayout>
         </Form>
       </Card>

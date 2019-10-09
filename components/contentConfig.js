@@ -1,8 +1,13 @@
 import { Card, TextField, DisplayText, Stack, Form, FormLayout, Button, Select, Checkbox, ChoiceList } from '@shopify/polaris';
 import { useState, useCallback, useEffect } from 'react';
 
-function NameField(){
+function NameField(props){
   const [name,setName] = useState('');
+
+  useEffect(()=>{
+    props.handleName(name);
+  },[name]);
+
   return ( 
     <FormLayout.Group>
       <TextField label="Name: " value={name} onChange={ (nw) => setName(nw)} />
@@ -179,15 +184,21 @@ function SetPosition(props){
       renderChildren:(isSelected)=>{
         return (
           isSelected && (
-            <DisplayText size="small">Place the code</DisplayText>
+            <div>Place the code</div>
           )
         )
       }}
   ];
 
-  const handleSelected = (val) => {
-    setSelected(val);
-  }
+  // const handleSelected = (val) => {
+  //   setSelected(val);
+  //   props.handleBarPosition(val);
+  // }
+
+  useEffect(()=>{
+    console.log(isSelected)
+    props.handleBarPosition(isSelected);
+  },[isSelected])
 
   return (
     <FormLayout.Group>
@@ -195,7 +206,7 @@ function SetPosition(props){
         title={'Select a Display Position: '}
         choices={choices}
         selected={isSelected}
-        onChange={handleSelected}
+        onChange={(nw) => setSelected(nw)}
       />
     </FormLayout.Group>
   )
@@ -254,7 +265,7 @@ class ContentConfigPage extends React.Component{
         <Form onSubmit={this.handleSave}>
           <FormLayout>
 
-            <NameField />
+            <NameField handleName={(name)=> this.props.handleName(name)}/>
 
             <FreeShippingGoal handleGoalChange={this.handleGoalChange}/>
 
@@ -271,9 +282,8 @@ class ContentConfigPage extends React.Component{
 
             <AddLinkToBar handleBarLinkChange={this.handleBarLinkChange} />
 
-            <SetPosition />
+            <SetPosition handleBarPosition={(val)=>this.props.handleBarPosition(val)}/>
 
-            {/* <Button submit>Save</Button> */}
           </FormLayout>
         </Form>
       </Card>

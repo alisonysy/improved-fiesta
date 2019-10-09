@@ -64,14 +64,15 @@ function SaveUserPreference(props){
           onClick={(e)=>{
             e.preventDefault();
             console.log('calling useMutation hooks');
-            injectScriptTag({
-              variables:{
-                input:{
-                  displayScope:'ONLINE_STORE',
-                  src:'https://8a9648bd.ngrok.io/_next/static/chunks/topBarInjection.js'
-                }
-              }
-            })
+            // injectScriptTag({
+            //   variables:{
+            //     input:{
+            //       displayScope:'ONLINE_STORE',
+            //       src:'https://693bb961.ngrok.io/_next/static/chunks/topBarInjection.js'
+            //     }
+            //   }
+            // })
+            props.handleSaving();
           }}
         >
           Save
@@ -91,14 +92,18 @@ class Index extends React.Component {
     this.state = {
       open: false,
       onEdit:false,
+      savedName:'',
       barTxtConfig:{initialMsg1:'',prgMsg1:'',achievedMsg:''},
       barFrShGl:30,
       barLink:{url:'',openNew:false},
       barPosition:'',
       bgImg:{},
-      styleConfig:{colorConfig:{bgColor:'#000',txtColor:'#b31219',bgOpacity:100,specialColor:'#fff'},fontConfig:{fontFamily:'sans-serif'}}
+      styleConfig:{colorConfig:{bgColor:'#000',txtColor:'#b31219',bgOpacity:100,specialColor:'#fff'},fontConfig:{fontFamily:'sans-serif'}},
+      customCode:{script:'',style:''},
+      dspOnPage:{selected:'',url:''}
     };
     this.baseState = this.state;
+    this.finalBars = React.createRef();
     this.handleEditId = this.handleEditId.bind(this);
   }
 
@@ -109,7 +114,7 @@ class Index extends React.Component {
 
   render(){
     const emptyState = !store.get('ids');
-    const {barTxtConfig,barFrShGl,barLink,styleConfig,bgImg} = this.state;
+    const {barTxtConfig,barFrShGl,barLink,styleConfig,bgImg,savedName,barPosition,dspOnPage} = this.state;
     return (
       <Page>
         <Layout.Section>
@@ -119,14 +124,18 @@ class Index extends React.Component {
             <div style={{marginTop:'3em'}}>
               <TemplateStyle handleClickedLi={(bg,ftColor) => this.setState({styleConfig:{...this.state.styleConfig,colorConfig:{...this.state.styleConfig.colorConfig,bgColor:bg,txtColor:ftColor}}})}/>
               <PreviewPage 
+                others={{savedName,barPosition,dspOnPage}}
                 contentConfig={{barTxtConfig,barFrShGl,barLink}} 
                 styleConfig = {{...styleConfig}}
                 bgImg = {bgImg}
+                ref={this.finalBars}
               />
               <ContentConfigPage 
                 handleContentConfig_msg={(msg)=> this.setState({barTxtConfig:{...this.barTxtConfig,...msg}})} 
                 handleContentConfig_goal={(gl) => this.setState({barFrShGl:gl})}
                 handleContentConfig_link={(val)=> this.setState({barLink:{...this.state.barLink,...val}})}
+                handleName={(name)=> this.setState({savedName:name})}
+                handleBarPosition={(p)=> this.setState({barPosition:p})}
               />
               <StyleConfigPage 
                 handleStyleConfig={(colorCf,fontCf) => {
@@ -135,10 +144,14 @@ class Index extends React.Component {
                 uploadBgImg={(bgFile) => this.setState({bgImg:bgFile})}
                 {...this.state}
               />
-              <TargetConfigPage />
-              <CustomCodePage />
-              <SaveUserPreference handleEdit={()=> {
+              <TargetConfigPage handleDisplayOnPage={(sec,url)=>this.setState({dspOnPage:{selected:sec,url:url}})}/>
+              <CustomCodePage handleCustomCode={(script,style) => {this.setState({customCode:{script:script,style:style}})}}/>
+              <SaveUserPreference 
+                handleEdit={()=> {
                   this.setState(this.baseState);
+                }}
+                handleSaving={()=>{
+                  console.log(this.finalBars.current);
                 }}
               />
             </div>

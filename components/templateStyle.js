@@ -6,7 +6,7 @@ function TemplateStyleItem(props){
   const marginRt = props.mgRt? '1em' : '0';
   const wid = props.mgRt? '48%' : '50%';
   return (
-    <li style={{listStyleType:'none',width:wid,textAlign:'center',padding:'8px 0',marginTop:'5px',marginRight:marginRt,backgroundColor:bgColor,color:ftColor}}>{props.styleT}</li>
+    <li style={{listStyleType:'none',width:wid,textAlign:'center',padding:'8px 0',marginTop:'5px',marginRight:marginRt,backgroundColor:bgColor,color:ftColor,cursor:'pointer'}}>{props.styleT}</li>
   )
 }
 

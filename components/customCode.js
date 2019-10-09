@@ -11,10 +11,15 @@ class CustomCodePage extends React.Component{
   }
 
   handleCustomCode(val){
-    console.log(val);// should have <script> or <style> tag,append the tags to the document body
-    this.setState(()=>{
-      return {customCode:val}
-    })
+    let scriptStart = val.indexOf('<script>'), scriptEnd = val.indexOf('</script>'), styleStart = val.indexOf('<style>'), styleEnd = val.indexOf('</style>');
+    let scriptTxt, styleTxt;
+    if(scriptStart !== -1 && scriptEnd !== -1){
+      scriptTxt = val.slice(scriptStart+8,scriptEnd).trim();
+    }
+    if(styleStart !== -1 && styleEnd !== -1){
+      styleTxt = val.slice(styleStart+7,styleEnd).trim();
+    } 
+    this.props.handleCustomCode(scriptTxt,styleTxt);
   }
 
   render(){
@@ -22,8 +27,8 @@ class CustomCodePage extends React.Component{
       <Card>
         <Form onSubmit={v => console.log(v)}>
           <FormLayout>
-            <DisplayText size="small">Custom code</DisplayText>
-            <textarea rows="10" cols="80" placeholder="Please put your custom codes here..." style={{marginLeft:'10px'}}></textarea>
+            <div style={{fontSize:'18px',padding:'1.5em 0 0 1em'}}>Custom Codes</div>
+            <textarea rows="10" cols="80" placeholder="Please put your custom codes here..." style={{marginLeft:'1em'}} onChange={(evt) => {evt.persist();this.handleCustomCode(evt.nativeEvent.target.value)}}></textarea>
           </FormLayout>
         </Form>
       </Card>

@@ -164,11 +164,14 @@ var __jsx = react__WEBPACK_IMPORTED_MODULE_8___default.a.createElement;
 
 
 
-function NameField() {
+function NameField(props) {
   var _useState = Object(react__WEBPACK_IMPORTED_MODULE_8__["useState"])(''),
       name = _useState[0],
       setName = _useState[1];
 
+  Object(react__WEBPACK_IMPORTED_MODULE_8__["useEffect"])(function () {
+    props.handleName(name);
+  }, [name]);
   return __jsx(_shopify_polaris__WEBPACK_IMPORTED_MODULE_9__["FormLayout"].Group, null, __jsx(_shopify_polaris__WEBPACK_IMPORTED_MODULE_9__["TextField"], {
     label: "Name: ",
     value: name,
@@ -375,21 +378,24 @@ function SetPosition(props) {
     label: 'Manual placement',
     value: 'manual',
     renderChildren: function renderChildren(isSelected) {
-      return isSelected && __jsx(_shopify_polaris__WEBPACK_IMPORTED_MODULE_9__["DisplayText"], {
-        size: "small"
-      }, "Place the code");
+      return isSelected && __jsx("div", null, "Place the code");
     }
-  }];
+  }]; // const handleSelected = (val) => {
+  //   setSelected(val);
+  //   props.handleBarPosition(val);
+  // }
 
-  var handleSelected = function handleSelected(val) {
-    setSelected(val);
-  };
-
+  Object(react__WEBPACK_IMPORTED_MODULE_8__["useEffect"])(function () {
+    console.log(isSelected);
+    props.handleBarPosition(isSelected);
+  }, [isSelected]);
   return __jsx(_shopify_polaris__WEBPACK_IMPORTED_MODULE_9__["FormLayout"].Group, null, __jsx(_shopify_polaris__WEBPACK_IMPORTED_MODULE_9__["ChoiceList"], {
     title: 'Select a Display Position: ',
     choices: choices,
     selected: isSelected,
-    onChange: handleSelected
+    onChange: function onChange(nw) {
+      return setSelected(nw);
+    }
   }));
 }
 
@@ -470,10 +476,16 @@ function (_React$Component) {
   }, {
     key: "render",
     value: function render() {
+      var _this2 = this;
+
       var frShGl = this.state.frShGl;
       return __jsx(_shopify_polaris__WEBPACK_IMPORTED_MODULE_9__["Card"], null, __jsx(_shopify_polaris__WEBPACK_IMPORTED_MODULE_9__["Form"], {
         onSubmit: this.handleSave
-      }, __jsx(_shopify_polaris__WEBPACK_IMPORTED_MODULE_9__["FormLayout"], null, __jsx(NameField, null), __jsx(FreeShippingGoal, {
+      }, __jsx(_shopify_polaris__WEBPACK_IMPORTED_MODULE_9__["FormLayout"], null, __jsx(NameField, {
+        handleName: function handleName(name) {
+          return _this2.props.handleName(name);
+        }
+      }), __jsx(FreeShippingGoal, {
         handleGoalChange: this.handleGoalChange
       }), frShGl ? __jsx(_shopify_polaris__WEBPACK_IMPORTED_MODULE_9__["FormLayout"], null, __jsx(InitialMsg, {
         goal: frShGl,
@@ -487,7 +499,11 @@ function (_React$Component) {
         handleMsgChange: this.handleMsgChange
       }), __jsx(AddLinkToBar, {
         handleBarLinkChange: this.handleBarLinkChange
-      }), __jsx(SetPosition, null))));
+      }), __jsx(SetPosition, {
+        handleBarPosition: function handleBarPosition(val) {
+          return _this2.props.handleBarPosition(val);
+        }
+      }))));
     }
   }]);
 
@@ -548,29 +564,47 @@ function (_React$Component) {
   Object(_babel_runtime_corejs2_helpers_esm_createClass__WEBPACK_IMPORTED_MODULE_1__["default"])(CustomCodePage, [{
     key: "handleCustomCode",
     value: function handleCustomCode(val) {
-      console.log(val); // should have <script> or <style> tag,append the tags to the document body
+      var scriptStart = val.indexOf('<script>'),
+          scriptEnd = val.indexOf('</script>'),
+          styleStart = val.indexOf('<style>'),
+          styleEnd = val.indexOf('</style>');
+      var scriptTxt, styleTxt;
 
-      this.setState(function () {
-        return {
-          customCode: val
-        };
-      });
+      if (scriptStart !== -1 && scriptEnd !== -1) {
+        scriptTxt = val.slice(scriptStart + 8, scriptEnd).trim();
+      }
+
+      if (styleStart !== -1 && styleEnd !== -1) {
+        styleTxt = val.slice(styleStart + 7, styleEnd).trim();
+      }
+
+      this.props.handleCustomCode(scriptTxt, styleTxt);
     }
   }, {
     key: "render",
     value: function render() {
+      var _this2 = this;
+
       return __jsx(_shopify_polaris__WEBPACK_IMPORTED_MODULE_7__["Card"], null, __jsx(_shopify_polaris__WEBPACK_IMPORTED_MODULE_7__["Form"], {
         onSubmit: function onSubmit(v) {
           return console.log(v);
         }
-      }, __jsx(_shopify_polaris__WEBPACK_IMPORTED_MODULE_7__["FormLayout"], null, __jsx(_shopify_polaris__WEBPACK_IMPORTED_MODULE_7__["DisplayText"], {
-        size: "small"
-      }, "Custom code"), __jsx("textarea", {
+      }, __jsx(_shopify_polaris__WEBPACK_IMPORTED_MODULE_7__["FormLayout"], null, __jsx("div", {
+        style: {
+          fontSize: '18px',
+          padding: '1.5em 0 0 1em'
+        }
+      }, "Custom Codes"), __jsx("textarea", {
         rows: "10",
         cols: "80",
         placeholder: "Please put your custom codes here...",
         style: {
-          marginLeft: '10px'
+          marginLeft: '1em'
+        },
+        onChange: function onChange(evt) {
+          evt.persist();
+
+          _this2.handleCustomCode(evt.nativeEvent.target.value);
         }
       }))));
     }
@@ -731,37 +765,119 @@ var __jsx = react__WEBPACK_IMPORTED_MODULE_9___default.a.createElement;
 
 
 
+function ColorPickers(props) {
+  var _useState = Object(react__WEBPACK_IMPORTED_MODULE_9__["useState"])({
+    hue: 0,
+    brightness: 0,
+    saturation: 0
+  }),
+      color = _useState[0],
+      setColor = _useState[1];
+
+  Object(react__WEBPACK_IMPORTED_MODULE_9__["useEffect"])(function () {
+    props.handleColorChange(color);
+  }, [color]);
+  return __jsx("div", {
+    style: {
+      height: '100px',
+      width: 'auto',
+      position: 'absolute',
+      top: '25px',
+      left: '0',
+      zIndex: '99'
+    }
+  }, __jsx(_shopify_polaris__WEBPACK_IMPORTED_MODULE_10__["ColorPicker"], {
+    onChange: setColor,
+    color: color
+  }));
+}
+
 function BackgroundSetting(props) {
   var rgbToHex = function rgbToHex(rgb) {
     if (rgb.includes('#')) return rgb;
     var regExp = /\(\s*(\d+),\s*(\d+),\s*(\d+)\)/;
     var re = rgb.match(regExp);
 
-    var r = _babel_runtime_corejs2_core_js_parse_int__WEBPACK_IMPORTED_MODULE_8___default()(re[1]).toString(16),
-        g = _babel_runtime_corejs2_core_js_parse_int__WEBPACK_IMPORTED_MODULE_8___default()(re[2]).toString(16),
-        b = _babel_runtime_corejs2_core_js_parse_int__WEBPACK_IMPORTED_MODULE_8___default()(re[3]).toString(16);
+    if (re) {
+      var r = _babel_runtime_corejs2_core_js_parse_int__WEBPACK_IMPORTED_MODULE_8___default()(re[1]).toString(16),
+          g = _babel_runtime_corejs2_core_js_parse_int__WEBPACK_IMPORTED_MODULE_8___default()(re[2]).toString(16),
+          b = _babel_runtime_corejs2_core_js_parse_int__WEBPACK_IMPORTED_MODULE_8___default()(re[3]).toString(16);
 
-    if (r.length == 1) r = "0" + r;
-    if (g.length == 1) g = "0" + g;
-    if (b.length == 1) b = "0" + b;
-    return "#" + r + g + b;
+      if (r.length == 1) r = "0" + r;
+      if (g.length == 1) g = "0" + g;
+      if (b.length == 1) b = "0" + b;
+      return "#" + r + g + b;
+    }
   };
 
-  var _useState = Object(react__WEBPACK_IMPORTED_MODULE_9__["useState"])('#000'),
-      bgColor = _useState[0],
-      setBgColor = _useState[1];
+  var hslToRgb = function hslToRgb(h, s, l) {
+    // s, l must be fractions of 100;
+    var c = (1 - Math.abs(2 * l - 1)) * s,
+        x = c * (1 - Math.abs(h / 60 % 2 - 1)),
+        m = l - c / 2,
+        r = 0,
+        g = 0,
+        b = 0;
 
-  var _useState2 = Object(react__WEBPACK_IMPORTED_MODULE_9__["useState"])('100'),
-      bgOpacity = _useState2[0],
-      setBgOpacity = _useState2[1];
+    if (0 <= h && h < 60) {
+      r = c;
+      g = x;
+      b = 0;
+    } else if (60 <= h && h < 120) {
+      r = x;
+      g = c;
+      b = 0;
+    } else if (120 <= h && h < 180) {
+      r = 0;
+      g = c;
+      b = x;
+    } else if (180 <= h && h < 240) {
+      r = 0;
+      g = x;
+      b = c;
+    } else if (240 <= h && h < 300) {
+      r = x;
+      g = 0;
+      b = c;
+    } else if (300 <= h && h < 360) {
+      r = c;
+      g = 0;
+      b = x;
+    }
 
-  var _useState3 = Object(react__WEBPACK_IMPORTED_MODULE_9__["useState"])('#b31219'),
-      txtColor = _useState3[0],
-      setTxtColor = _useState3[1];
+    r = Math.round((r + m) * 255);
+    g = Math.round((g + m) * 255);
+    b = Math.round((b + m) * 255);
+    return "rgb(" + r + "," + g + "," + b + ")";
+  };
 
-  var _useState4 = Object(react__WEBPACK_IMPORTED_MODULE_9__["useState"])('#fff'),
-      specialColor = _useState4[0],
-      setSpecialColor = _useState4[1];
+  var _useState2 = Object(react__WEBPACK_IMPORTED_MODULE_9__["useState"])(false),
+      showBgPicker = _useState2[0],
+      setBgPicker = _useState2[1];
+
+  var _useState3 = Object(react__WEBPACK_IMPORTED_MODULE_9__["useState"])(false),
+      showTxtPicker = _useState3[0],
+      setTxtPicker = _useState3[1];
+
+  var _useState4 = Object(react__WEBPACK_IMPORTED_MODULE_9__["useState"])(false),
+      showSpTxtPicker = _useState4[0],
+      setSpTxtPicker = _useState4[1];
+
+  var _useState5 = Object(react__WEBPACK_IMPORTED_MODULE_9__["useState"])('#000'),
+      bgColor = _useState5[0],
+      setBgColor = _useState5[1];
+
+  var _useState6 = Object(react__WEBPACK_IMPORTED_MODULE_9__["useState"])('100'),
+      bgOpacity = _useState6[0],
+      setBgOpacity = _useState6[1];
+
+  var _useState7 = Object(react__WEBPACK_IMPORTED_MODULE_9__["useState"])('#b31219'),
+      txtColor = _useState7[0],
+      setTxtColor = _useState7[1];
+
+  var _useState8 = Object(react__WEBPACK_IMPORTED_MODULE_9__["useState"])('#fff'),
+      specialColor = _useState8[0],
+      setSpecialColor = _useState8[1];
 
   var bgColorFrmProps = props.colorConfig.bgColor,
       txtColorFrmProps = props.colorConfig.txtColor;
@@ -779,7 +895,11 @@ function BackgroundSetting(props) {
   Object(react__WEBPACK_IMPORTED_MODULE_9__["useEffect"])(function () {
     setTxtColor(rgbToHex(txtColorFrmProps));
   }, [txtColorFrmProps]);
-  return __jsx(_shopify_polaris__WEBPACK_IMPORTED_MODULE_10__["Card"].Section, null, __jsx(_shopify_polaris__WEBPACK_IMPORTED_MODULE_10__["Stack"], null, __jsx("div", null, __jsx("h3", null, "Background color:", bgColor), __jsx("div", {
+  return __jsx(_shopify_polaris__WEBPACK_IMPORTED_MODULE_10__["Card"].Section, null, __jsx(_shopify_polaris__WEBPACK_IMPORTED_MODULE_10__["Stack"], null, __jsx("div", null, __jsx("h3", null, "Background color:"), __jsx("div", {
+    style: {
+      position: 'relative'
+    }
+  }, __jsx("div", {
     style: {
       height: '25px',
       width: '25px',
@@ -787,9 +907,18 @@ function BackgroundSetting(props) {
       borderStyle: 'solid',
       borderColor: '#ddd',
       display: 'inline-block',
-      backgroundColor: bgColor
+      backgroundColor: bgColor,
+      cursor: 'pointer'
+    },
+    onClick: function onClick() {
+      return setBgPicker(!showBgPicker);
     }
-  }), __jsx(_shopify_polaris__WEBPACK_IMPORTED_MODULE_10__["TextField"], {
+  }), showBgPicker ? __jsx(ColorPickers, {
+    handleColorChange: function handleColorChange(hslCl) {
+      var cRgb = hslToRgb(hslCl.hue, hslCl.saturation, hslCl.brightness);
+      setBgColor(cRgb);
+    }
+  }) : null), __jsx(_shopify_polaris__WEBPACK_IMPORTED_MODULE_10__["TextField"], {
     value: bgColor,
     onChange: function onChange(nw) {
       return setBgColor(nw);
@@ -805,7 +934,11 @@ function BackgroundSetting(props) {
     },
     type: "number",
     helpText: "0 is transparent, 100 is opaque."
-  }))), __jsx(_shopify_polaris__WEBPACK_IMPORTED_MODULE_10__["Stack"], null, __jsx("div", null, __jsx("h3", null, "Text color:", txtColor), __jsx("div", {
+  }))), __jsx(_shopify_polaris__WEBPACK_IMPORTED_MODULE_10__["Stack"], null, __jsx("div", null, __jsx("h3", null, "Text color:"), __jsx("div", {
+    style: {
+      position: 'relative'
+    }
+  }, __jsx("div", {
     style: {
       height: '25px',
       width: '25px',
@@ -813,25 +946,47 @@ function BackgroundSetting(props) {
       borderStyle: 'solid',
       borderColor: '#ddd',
       display: 'inline-block',
-      backgroundColor: txtColor
+      backgroundColor: txtColor,
+      cursor: 'pointer'
+    },
+    onClick: function onClick() {
+      return setTxtPicker(!showTxtPicker);
     }
-  }), __jsx(_shopify_polaris__WEBPACK_IMPORTED_MODULE_10__["TextField"], {
+  }), showTxtPicker ? __jsx(ColorPickers, {
+    handleColorChange: function handleColorChange(hslCl) {
+      var cRgb = hslToRgb(hslCl.hue, hslCl.saturation, hslCl.brightness);
+      setTxtColor(cRgb);
+    }
+  }) : null), __jsx(_shopify_polaris__WEBPACK_IMPORTED_MODULE_10__["TextField"], {
     value: txtColor,
     onChange: function onChange(nw) {
       return setTxtColor(nw);
     }
   })), __jsx("div", null, __jsx("h3", null, "Special text color:"), __jsx("div", {
     style: {
+      position: 'relative'
+    }
+  }, __jsx("div", {
+    style: {
       height: '25px',
       width: '25px',
       borderWidth: '1px',
       borderStyle: 'solid',
       borderColor: '#ddd',
       display: 'inline-block',
-      backgroundColor: specialColor
+      backgroundColor: specialColor,
+      cursor: 'pointer'
+    },
+    onClick: function onClick() {
+      return setSpTxtPicker(!showSpTxtPicker);
     }
-  }), __jsx(_shopify_polaris__WEBPACK_IMPORTED_MODULE_10__["TextField"], {
-    value: specialColor,
+  }), showSpTxtPicker ? __jsx(ColorPickers, {
+    handleColorChange: function handleColorChange(hslCl) {
+      var cRgb = hslToRgb(hslCl.hue, hslCl.saturation, hslCl.brightness);
+      setSpecialColor(cRgb);
+    }
+  }) : null), __jsx(_shopify_polaris__WEBPACK_IMPORTED_MODULE_10__["TextField"], {
+    value: rgbToHex(specialColor),
     onChange: function onChange(nw) {
       return setSpecialColor(nw);
     }
@@ -839,36 +994,34 @@ function BackgroundSetting(props) {
 }
 
 function Fonts(props) {
-  var _useState5 = Object(react__WEBPACK_IMPORTED_MODULE_9__["useState"])(18),
-      fontSize = _useState5[0],
-      setFontSize = _useState5[1];
+  var _useState9 = Object(react__WEBPACK_IMPORTED_MODULE_9__["useState"])(18),
+      fontSize = _useState9[0],
+      setFontSize = _useState9[1];
 
-  var _useState6 = Object(react__WEBPACK_IMPORTED_MODULE_9__["useState"])(10),
-      padding = _useState6[0],
-      setPadding = _useState6[1];
+  var _useState10 = Object(react__WEBPACK_IMPORTED_MODULE_9__["useState"])(10),
+      padding = _useState10[0],
+      setPadding = _useState10[1];
 
-  var _useState7 = Object(react__WEBPACK_IMPORTED_MODULE_9__["useState"])('sans-serif'),
-      fontFam = _useState7[0],
-      setFontFam = _useState7[1];
+  var _useState11 = Object(react__WEBPACK_IMPORTED_MODULE_9__["useState"])('sans-serif'),
+      fontFam = _useState11[0],
+      setFontFam = _useState11[1];
 
   var handleFontFam = Object(react__WEBPACK_IMPORTED_MODULE_9__["useCallback"])(function (val) {
     setFontFam(val);
-    props.handleStyleConfig(undefined, {
-      fontFamily: val
-    });
   }, [fontFam]);
   var handleFontSize = Object(react__WEBPACK_IMPORTED_MODULE_9__["useCallback"])(function (val) {
     setFontSize(val);
-    props.handleStyleConfig(undefined, {
-      fontSize: val
-    });
-  }, []);
+  }, [fontSize]);
   var handlePadding = Object(react__WEBPACK_IMPORTED_MODULE_9__["useCallback"])(function (val) {
     setPadding(val);
+  }, [padding]);
+  Object(react__WEBPACK_IMPORTED_MODULE_9__["useEffect"])(function () {
     props.handleStyleConfig(undefined, {
-      barPadding: val
+      fontFamily: fontFam,
+      fontSize: fontSize,
+      barPadding: padding
     });
-  }, []);
+  }, [fontFam, fontSize, padding]);
   return __jsx(_shopify_polaris__WEBPACK_IMPORTED_MODULE_10__["Card"].Section, null, __jsx("div", null, "Font family:"), __jsx(_shopify_polaris__WEBPACK_IMPORTED_MODULE_10__["Button"], {
     onClick: function onClick() {
       return handleFontFam('Montserrat');
@@ -946,8 +1099,12 @@ function (_React$Component) {
   }, {
     key: "render",
     value: function render() {
-      console.log('passed from index', this.props.styleConfig);
-      return __jsx(_shopify_polaris__WEBPACK_IMPORTED_MODULE_10__["Card"], null, __jsx(_shopify_polaris__WEBPACK_IMPORTED_MODULE_10__["Form"], null, __jsx(_shopify_polaris__WEBPACK_IMPORTED_MODULE_10__["FormLayout"], null, __jsx(_shopify_polaris__WEBPACK_IMPORTED_MODULE_10__["DisplayText"], null, "Style Configuration"), __jsx(BackgroundSetting, Object(_babel_runtime_corejs2_helpers_esm_extends__WEBPACK_IMPORTED_MODULE_0__["default"])({
+      return __jsx(_shopify_polaris__WEBPACK_IMPORTED_MODULE_10__["Card"], null, __jsx(_shopify_polaris__WEBPACK_IMPORTED_MODULE_10__["Form"], null, __jsx(_shopify_polaris__WEBPACK_IMPORTED_MODULE_10__["FormLayout"], null, __jsx("div", {
+        style: {
+          fontSize: '18px',
+          padding: '1.5em 0 0 1em'
+        }
+      }, "Style Configuration"), __jsx(BackgroundSetting, Object(_babel_runtime_corejs2_helpers_esm_extends__WEBPACK_IMPORTED_MODULE_0__["default"])({
         handleStyleConfig: this.handleStyleConfig
       }, this.props.styleConfig)), __jsx(_snippets_imageDropZone__WEBPACK_IMPORTED_MODULE_11__["default"], {
         uploadBgImg: this.uploadBgImg
@@ -991,7 +1148,7 @@ var __jsx = react__WEBPACK_IMPORTED_MODULE_5___default.a.createElement;
 
 
 
-function IncludePage() {
+function IncludePage(props) {
   var _useState = Object(react__WEBPACK_IMPORTED_MODULE_5__["useState"])(['all']),
       selected = _useState[0],
       setSelected = _useState[1];
@@ -1004,16 +1161,11 @@ function IncludePage() {
       urlExc = _useState3[0],
       setUrlExc = _useState3[1];
 
-  var handleChange = Object(react__WEBPACK_IMPORTED_MODULE_5__["useCallback"])(function (value) {
-    console.log('choose display on which page', value);
-    setSelected(value);
-  }, []);
   var handleUrlInp = Object(react__WEBPACK_IMPORTED_MODULE_5__["useCallback"])(function (value) {
-    console.log('url provided', value);
     setUrlInp(value);
   }, []);
   var handleUrlExc = Object(react__WEBPACK_IMPORTED_MODULE_5__["useCallback"])(function (val) {
-    return console.log(val);
+    setUrlExc(val);
   }, []);
   var renderUrlInp = Object(react__WEBPACK_IMPORTED_MODULE_5__["useCallback"])(function (isSelected) {
     return isSelected && __jsx(_shopify_polaris__WEBPACK_IMPORTED_MODULE_6__["TextField"], {
@@ -1030,6 +1182,27 @@ function IncludePage() {
       value: urlExc
     });
   }, [handleUrlExc, urlExc]);
+  Object(react__WEBPACK_IMPORTED_MODULE_5__["useEffect"])(function () {
+    var sl = selected[0];
+
+    switch (sl) {
+      case 'all':
+        props.handleDisplayOnPage('all', undefined);
+        break;
+
+      case 'homepage':
+        props.handleDisplayOnPage('home', undefined);
+        break;
+
+      case 'url':
+        props.handleDisplayOnPage('url', urlInp);
+        break;
+
+      case 'exclude':
+        props.handleDisplayOnPage('exclude', urlExc);
+        break;
+    }
+  }, [urlInp, urlExc, selected]);
   return __jsx(_shopify_polaris__WEBPACK_IMPORTED_MODULE_6__["FormLayout"].Group, null, __jsx(_shopify_polaris__WEBPACK_IMPORTED_MODULE_6__["ChoiceList"], {
     title: "Display on page:",
     choices: [{
@@ -1048,7 +1221,9 @@ function IncludePage() {
       renderChildren: renderPageToExc
     }],
     selected: selected,
-    onChange: handleChange
+    onChange: function onChange(nw) {
+      return setSelected(nw);
+    }
   }));
 }
 
@@ -1070,9 +1245,18 @@ function (_React$Component) {
   Object(_babel_runtime_corejs2_helpers_esm_createClass__WEBPACK_IMPORTED_MODULE_1__["default"])(TargetConfigPage, [{
     key: "render",
     value: function render() {
-      return __jsx(_shopify_polaris__WEBPACK_IMPORTED_MODULE_6__["Card"], null, __jsx(_shopify_polaris__WEBPACK_IMPORTED_MODULE_6__["Form"], null, __jsx(_shopify_polaris__WEBPACK_IMPORTED_MODULE_6__["FormLayout"], null, __jsx(_shopify_polaris__WEBPACK_IMPORTED_MODULE_6__["DisplayText"], {
-        size: "small"
-      }, "Target Configuration"), __jsx(IncludePage, null))));
+      var _this2 = this;
+
+      return __jsx(_shopify_polaris__WEBPACK_IMPORTED_MODULE_6__["Card"], null, __jsx(_shopify_polaris__WEBPACK_IMPORTED_MODULE_6__["Form"], null, __jsx(_shopify_polaris__WEBPACK_IMPORTED_MODULE_6__["FormLayout"], null, __jsx("div", {
+        style: {
+          fontSize: '18px',
+          padding: '1.5em 0 0 1em'
+        }
+      }, "Target Configuration"), __jsx(IncludePage, {
+        handleDisplayOnPage: function handleDisplayOnPage(sec, url) {
+          return _this2.props.handleDisplayOnPage(sec, url);
+        }
+      }))));
     }
   }]);
 
@@ -1125,7 +1309,8 @@ function TemplateStyleItem(props) {
       marginTop: '5px',
       marginRight: marginRt,
       backgroundColor: bgColor,
-      color: ftColor
+      color: ftColor,
+      cursor: 'pointer'
     }
   }, props.styleT);
 }
@@ -61016,15 +61201,16 @@ function SaveUserPreference(props) {
     primary: true,
     onClick: function onClick(e) {
       e.preventDefault();
-      console.log('calling useMutation hooks');
-      injectScriptTag({
-        variables: {
-          input: {
-            displayScope: 'ONLINE_STORE',
-            src: 'https://8a9648bd.ngrok.io/_next/static/chunks/topBarInjection.js'
-          }
-        }
-      });
+      console.log('calling useMutation hooks'); // injectScriptTag({
+      //   variables:{
+      //     input:{
+      //       displayScope:'ONLINE_STORE',
+      //       src:'https://693bb961.ngrok.io/_next/static/chunks/topBarInjection.js'
+      //     }
+      //   }
+      // })
+
+      props.handleSaving();
     }
   }, "Save")), __jsx(_shopify_polaris__WEBPACK_IMPORTED_MODULE_11__["Frame"], null, data && handleInjectionSuccess(data, 'success'), error && handleInjectionSuccess(error, 'error')));
 }
@@ -61043,6 +61229,7 @@ function (_React$Component) {
     _this.state = {
       open: false,
       onEdit: false,
+      savedName: '',
       barTxtConfig: {
         initialMsg1: '',
         prgMsg1: '',
@@ -61065,9 +61252,18 @@ function (_React$Component) {
         fontConfig: {
           fontFamily: 'sans-serif'
         }
+      },
+      customCode: {
+        script: '',
+        style: ''
+      },
+      dspOnPage: {
+        selected: '',
+        url: ''
       }
     };
     _this.baseState = _this.state;
+    _this.finalBars = react__WEBPACK_IMPORTED_MODULE_10___default.a.createRef();
     _this.handleEditId = _this.handleEditId.bind(Object(_babel_runtime_corejs2_helpers_esm_assertThisInitialized__WEBPACK_IMPORTED_MODULE_6__["default"])(_this));
     return _this;
   }
@@ -61091,7 +61287,10 @@ function (_React$Component) {
           barFrShGl = _this$state.barFrShGl,
           barLink = _this$state.barLink,
           styleConfig = _this$state.styleConfig,
-          bgImg = _this$state.bgImg;
+          bgImg = _this$state.bgImg,
+          savedName = _this$state.savedName,
+          barPosition = _this$state.barPosition,
+          dspOnPage = _this$state.dspOnPage;
       return __jsx(_shopify_polaris__WEBPACK_IMPORTED_MODULE_11__["Page"], null, __jsx(_shopify_polaris__WEBPACK_IMPORTED_MODULE_11__["Layout"].Section, null, __jsx(_components_barList__WEBPACK_IMPORTED_MODULE_15__["default"], {
         handleEditId: function handleEditId(id) {
           return _this2.handleEditId(id);
@@ -61112,13 +61311,19 @@ function (_React$Component) {
           });
         }
       }), __jsx(_components_preview__WEBPACK_IMPORTED_MODULE_21__["default"], {
+        others: {
+          savedName: savedName,
+          barPosition: barPosition,
+          dspOnPage: dspOnPage
+        },
         contentConfig: {
           barTxtConfig: barTxtConfig,
           barFrShGl: barFrShGl,
           barLink: barLink
         },
         styleConfig: Object(_babel_runtime_corejs2_helpers_esm_objectSpread__WEBPACK_IMPORTED_MODULE_1__["default"])({}, styleConfig),
-        bgImg: bgImg
+        bgImg: bgImg,
+        ref: this.finalBars
       }), __jsx(_components_contentConfig__WEBPACK_IMPORTED_MODULE_17__["default"], {
         handleContentConfig_msg: function handleContentConfig_msg(msg) {
           return _this2.setState({
@@ -61133,6 +61338,16 @@ function (_React$Component) {
         handleContentConfig_link: function handleContentConfig_link(val) {
           return _this2.setState({
             barLink: Object(_babel_runtime_corejs2_helpers_esm_objectSpread__WEBPACK_IMPORTED_MODULE_1__["default"])({}, _this2.state.barLink, val)
+          });
+        },
+        handleName: function handleName(name) {
+          return _this2.setState({
+            savedName: name
+          });
+        },
+        handleBarPosition: function handleBarPosition(p) {
+          return _this2.setState({
+            barPosition: p
           });
         }
       }), __jsx(_components_styleConfig__WEBPACK_IMPORTED_MODULE_18__["default"], Object(_babel_runtime_corejs2_helpers_esm_extends__WEBPACK_IMPORTED_MODULE_0__["default"])({
@@ -61149,9 +61364,30 @@ function (_React$Component) {
             bgImg: bgFile
           });
         }
-      }, this.state)), __jsx(_components_targetConfig__WEBPACK_IMPORTED_MODULE_19__["default"], null), __jsx(_components_customCode__WEBPACK_IMPORTED_MODULE_20__["default"], null), __jsx(SaveUserPreference, {
+      }, this.state)), __jsx(_components_targetConfig__WEBPACK_IMPORTED_MODULE_19__["default"], {
+        handleDisplayOnPage: function handleDisplayOnPage(sec, url) {
+          return _this2.setState({
+            dspOnPage: {
+              selected: sec,
+              url: url
+            }
+          });
+        }
+      }), __jsx(_components_customCode__WEBPACK_IMPORTED_MODULE_20__["default"], {
+        handleCustomCode: function handleCustomCode(script, style) {
+          _this2.setState({
+            customCode: {
+              script: script,
+              style: style
+            }
+          });
+        }
+      }), __jsx(SaveUserPreference, {
         handleEdit: function handleEdit() {
           _this2.setState(_this2.baseState);
+        },
+        handleSaving: function handleSaving() {
+          console.log(_this2.finalBars.current);
         }
       })) : null));
     }
