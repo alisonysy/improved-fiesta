@@ -12,7 +12,6 @@ import TargetConfigPage from '../components/targetConfig';
 import CustomCodePage from '../components/customCode';
 import PreviewPage from '../components/preview';
 
-
 const INJECT_SCRIPT = gql`
   mutation scriptTagCreate($input: ScriptTagInput!) {
     scriptTagCreate(input: $input) {
@@ -68,7 +67,7 @@ function SaveUserPreference(props){
             //   variables:{
             //     input:{
             //       displayScope:'ONLINE_STORE',
-            //       src:'https://693bb961.ngrok.io/_next/static/chunks/topBarInjection.js'
+            //       src:'https://19f03c79.ngrok.io/_next/static/chunks/topBarInjection.js'
             //     }
             //   }
             // })
@@ -100,7 +99,9 @@ class Index extends React.Component {
       bgImg:{},
       styleConfig:{colorConfig:{bgColor:'#000',txtColor:'#b31219',bgOpacity:100,specialColor:'#fff'},fontConfig:{fontFamily:'sans-serif'}},
       customCode:{script:'',style:''},
-      dspOnPage:{selected:'',url:''}
+      dspOnPage:{selected:'',url:''},
+      shipsToCountries:[],
+      selectedTargets:[]
     };
     this.baseState = this.state;
     this.finalBars = React.createRef();
@@ -114,17 +115,20 @@ class Index extends React.Component {
 
   render(){
     const emptyState = !store.get('ids');
-    const {barTxtConfig,barFrShGl,barLink,styleConfig,bgImg,savedName,barPosition,dspOnPage} = this.state;
+    const {barTxtConfig,barFrShGl,barLink,styleConfig,bgImg,savedName,barPosition,dspOnPage,selectedTargets} = this.state;
     return (
       <Page>
         <Layout.Section>
-          <BarList handleEditId={(id) => this.handleEditId(id)}/>
+          <BarList 
+            handleEditId={(id) => this.handleEditId(id)}
+            handleTargetCountries={(arr)=> this.setState({shipsToCountries:arr},function(){console.log(this.state.shipsToCountries)})}
+          />
           {
             this.state.onEdit?
             <div style={{marginTop:'3em'}}>
               <TemplateStyle handleClickedLi={(bg,ftColor) => this.setState({styleConfig:{...this.state.styleConfig,colorConfig:{...this.state.styleConfig.colorConfig,bgColor:bg,txtColor:ftColor}}})}/>
               <PreviewPage 
-                others={{savedName,barPosition,dspOnPage}}
+                others={{savedName,barPosition,dspOnPage,selectedTargets}}
                 contentConfig={{barTxtConfig,barFrShGl,barLink}} 
                 styleConfig = {{...styleConfig}}
                 bgImg = {bgImg}
@@ -144,7 +148,11 @@ class Index extends React.Component {
                 uploadBgImg={(bgFile) => this.setState({bgImg:bgFile})}
                 {...this.state}
               />
-              <TargetConfigPage handleDisplayOnPage={(sec,url)=>this.setState({dspOnPage:{selected:sec,url:url}})}/>
+              <TargetConfigPage 
+                handleDisplayOnPage={(sec,url)=>this.setState({dspOnPage:{selected:sec,url:url}})}
+                shipsToCountries={this.state.shipsToCountries}
+                handleSelectedTargets={(val)=>this.setState({selectedTargets:val},function(){console.log('selected targets are',this.state.selectedTargets)})}
+              />
               <CustomCodePage handleCustomCode={(script,style) => {this.setState({customCode:{script:script,style:style}})}}/>
               <SaveUserPreference 
                 handleEdit={()=> {

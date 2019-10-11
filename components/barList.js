@@ -7,6 +7,7 @@ const GET_CLIENT_ID = gql`
     shop{
       id
       name
+      shipsToCountries
     }
   }
 `;
@@ -14,11 +15,21 @@ const GET_CLIENT_ID = gql`
 class BarList extends React.Component{
   constructor(props){
     super(props);
+    this.state={
+      shippingCountries:[]
+    };
     this.handleEdit = this.handleEdit.bind(this);
+    this.handleTargetCountries = this.handleTargetCountries.bind(this);
   }
 
   handleEdit(e,id){
     console.log(id)
+  }
+
+  handleTargetCountries(c){
+    this.setState({shippingCountries:c},function(){
+      this.props.handleTargetCountries(c);
+    })
   }
 
   render(){
@@ -28,6 +39,9 @@ class BarList extends React.Component{
           if(loading) return <div>Loading...</div>;
           if(error) return <Banner status="critical">{error.message}</Banner>
           console.log(data);
+          if(!this.state.shippingCountries[0]){
+            this.handleTargetCountries(data.shop.shipsToCountries);
+          }
           // #toUpdate: to fetch from database
           const arrs = [{'name':'ijji','geo':'china','achievements':253,'id':2},{'name':'fe','geo':'nz','achievements':76,'id':3}]
           

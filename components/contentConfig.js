@@ -43,7 +43,7 @@ function InitialMsg(props){
 
   return (
     <FormLayout.Group>
-      <Stack alignment="center">
+      <Stack alignment="center" distribution="fill">
         <TextField
           label="Initial message: "
           type="text"
@@ -51,8 +51,7 @@ function InitialMsg(props){
           onChange={(nw) => setMsg(nw)}
           helpText="Display when cart is empty"
         />
-        <DisplayText>{props.currency}</DisplayText>
-        <DisplayText>{props.goal}</DisplayText>
+        <div style={{fontSize:'18px'}}>{props.currency} {props.goal}</div>
         <TextField 
           label=" "
           type="text"
@@ -66,7 +65,7 @@ function InitialMsg(props){
 
 function ProgressMsg(props){
   const [msg,setMsg] = useState('Only ');
-  const [added,setAdded] = useState('');
+  const [added,setAdded] = useState(' away from free shipping');
   const gl = props.goal;
 
   useEffect(()=>{
@@ -75,7 +74,7 @@ function ProgressMsg(props){
 
   return (
     <FormLayout.Group condensed>
-      <Stack alignment="center">
+      <Stack alignment="center" distribution="fill">
         <TextField
           label="Progress message: "
           type="text"
@@ -83,8 +82,7 @@ function ProgressMsg(props){
           onChange={(nw) => setMsg(nw)}
           helpText="Displays when cart value is less than the goal"
         />
-        <DisplayText>{props.currency}</DisplayText>
-        <DisplayText>{gl-1}</DisplayText>
+        <div style={{fontSize:'18px'}}>{props.currency} {gl-1}</div>
         <TextField 
           label=" "
           type="text"
@@ -190,13 +188,7 @@ function SetPosition(props){
       }}
   ];
 
-  // const handleSelected = (val) => {
-  //   setSelected(val);
-  //   props.handleBarPosition(val);
-  // }
-
   useEffect(()=>{
-    console.log(isSelected)
     props.handleBarPosition(isSelected);
   },[isSelected])
 
@@ -215,9 +207,8 @@ function SetPosition(props){
 class ContentConfigPage extends React.Component{
   constructor(props){
     super(props);
-    this.state = {frShGl:30,msgText:{initialMsg1:'Free Shipping on All Orders Over ',initialMsg2:'',prgMsg1:'Only ',prgMsg2:'',achievedMsg:'Free Shipping Worldwide'}}
+    this.state = {frShGl:30,msgText:{initialMsg1:'Free Shipping on All Orders Over ',initialMsg2:'',prgMsg1:'Only ',prgMsg2:' away from free shipping',achievedMsg:'Free Shipping Worldwide'}}
     this.handleGoalChange = this.handleGoalChange.bind(this);
-    this.handleSave = this.handleSave.bind(this);
     this.handleMsgChange = this.handleMsgChange.bind(this);
     this.handleBarLinkChange = this.handleBarLinkChange.bind(this);
   }
@@ -232,12 +223,6 @@ class ContentConfigPage extends React.Component{
     }
   }
 
-  handleSave(evt){
-    evt.persist();
-    setTimeout(() => {
-      console.log(evt);
-    }, 0);
-  };
 
   handleMsgChange(msg){
     this.setState((state)=>{
@@ -262,7 +247,7 @@ class ContentConfigPage extends React.Component{
     const {frShGl} = this.state;
     return (
       <Card>
-        <Form onSubmit={this.handleSave}>
+        <Form onSubmit={() => {}}>
           <FormLayout>
 
             <NameField handleName={(name)=> this.props.handleName(name)}/>

@@ -120,6 +120,7 @@ const GET_CLIENT_ID = graphql_tag__WEBPACK_IMPORTED_MODULE_1___default.a`
     shop{
       id
       name
+      shipsToCountries
     }
   }
 `;
@@ -127,11 +128,23 @@ const GET_CLIENT_ID = graphql_tag__WEBPACK_IMPORTED_MODULE_1___default.a`
 class BarList extends react__WEBPACK_IMPORTED_MODULE_0___default.a.Component {
   constructor(props) {
     super(props);
+    this.state = {
+      shippingCountries: []
+    };
     this.handleEdit = this.handleEdit.bind(this);
+    this.handleTargetCountries = this.handleTargetCountries.bind(this);
   }
 
   handleEdit(e, id) {
     console.log(id);
+  }
+
+  handleTargetCountries(c) {
+    this.setState({
+      shippingCountries: c
+    }, function () {
+      this.props.handleTargetCountries(c);
+    });
   }
 
   render() {
@@ -146,7 +159,12 @@ class BarList extends react__WEBPACK_IMPORTED_MODULE_0___default.a.Component {
       if (error) return __jsx(_shopify_polaris__WEBPACK_IMPORTED_MODULE_3__["Banner"], {
         status: "critical"
       }, error.message);
-      console.log(data); // #toUpdate: to fetch from database
+      console.log(data);
+
+      if (!this.state.shippingCountries[0]) {
+        this.handleTargetCountries(data.shop.shipsToCountries);
+      } // #toUpdate: to fetch from database
+
 
       const arrs = [{
         'name': 'ijji',
@@ -263,14 +281,19 @@ function InitialMsg(props) {
     });
   }, [msg, added]);
   return __jsx(_shopify_polaris__WEBPACK_IMPORTED_MODULE_3__["FormLayout"].Group, null, __jsx(_shopify_polaris__WEBPACK_IMPORTED_MODULE_3__["Stack"], {
-    alignment: "center"
+    alignment: "center",
+    distribution: "fill"
   }, __jsx(_shopify_polaris__WEBPACK_IMPORTED_MODULE_3__["TextField"], {
     label: "Initial message: ",
     type: "text",
     value: msg,
     onChange: nw => setMsg(nw),
     helpText: "Display when cart is empty"
-  }), __jsx(_shopify_polaris__WEBPACK_IMPORTED_MODULE_3__["DisplayText"], null, props.currency), __jsx(_shopify_polaris__WEBPACK_IMPORTED_MODULE_3__["DisplayText"], null, props.goal), __jsx(_shopify_polaris__WEBPACK_IMPORTED_MODULE_3__["TextField"], {
+  }), __jsx("div", {
+    style: {
+      fontSize: '18px'
+    }
+  }, props.currency, " ", props.goal), __jsx(_shopify_polaris__WEBPACK_IMPORTED_MODULE_3__["TextField"], {
     label: " ",
     type: "text",
     value: added,
@@ -286,7 +309,7 @@ function ProgressMsg(props) {
   const {
     0: added,
     1: setAdded
-  } = Object(react__WEBPACK_IMPORTED_MODULE_2__["useState"])('');
+  } = Object(react__WEBPACK_IMPORTED_MODULE_2__["useState"])(' away from free shipping');
   const gl = props.goal;
   Object(react__WEBPACK_IMPORTED_MODULE_2__["useEffect"])(() => {
     props.handleMsgChange({
@@ -297,14 +320,19 @@ function ProgressMsg(props) {
   return __jsx(_shopify_polaris__WEBPACK_IMPORTED_MODULE_3__["FormLayout"].Group, {
     condensed: true
   }, __jsx(_shopify_polaris__WEBPACK_IMPORTED_MODULE_3__["Stack"], {
-    alignment: "center"
+    alignment: "center",
+    distribution: "fill"
   }, __jsx(_shopify_polaris__WEBPACK_IMPORTED_MODULE_3__["TextField"], {
     label: "Progress message: ",
     type: "text",
     value: msg,
     onChange: nw => setMsg(nw),
     helpText: "Displays when cart value is less than the goal"
-  }), __jsx(_shopify_polaris__WEBPACK_IMPORTED_MODULE_3__["DisplayText"], null, props.currency), __jsx(_shopify_polaris__WEBPACK_IMPORTED_MODULE_3__["DisplayText"], null, gl - 1), __jsx(_shopify_polaris__WEBPACK_IMPORTED_MODULE_3__["TextField"], {
+  }), __jsx("div", {
+    style: {
+      fontSize: '18px'
+    }
+  }, props.currency, " ", gl - 1), __jsx(_shopify_polaris__WEBPACK_IMPORTED_MODULE_3__["TextField"], {
     label: " ",
     type: "text",
     value: added,
@@ -414,13 +442,8 @@ function SetPosition(props) {
     renderChildren: isSelected => {
       return isSelected && __jsx("div", null, "Place the code");
     }
-  }]; // const handleSelected = (val) => {
-  //   setSelected(val);
-  //   props.handleBarPosition(val);
-  // }
-
+  }];
   Object(react__WEBPACK_IMPORTED_MODULE_2__["useEffect"])(() => {
-    console.log(isSelected);
     props.handleBarPosition(isSelected);
   }, [isSelected]);
   return __jsx(_shopify_polaris__WEBPACK_IMPORTED_MODULE_3__["FormLayout"].Group, null, __jsx(_shopify_polaris__WEBPACK_IMPORTED_MODULE_3__["ChoiceList"], {
@@ -440,12 +463,11 @@ class ContentConfigPage extends react__WEBPACK_IMPORTED_MODULE_2___default.a.Com
         initialMsg1: 'Free Shipping on All Orders Over ',
         initialMsg2: '',
         prgMsg1: 'Only ',
-        prgMsg2: '',
+        prgMsg2: ' away from free shipping',
         achievedMsg: 'Free Shipping Worldwide'
       }
     };
     this.handleGoalChange = this.handleGoalChange.bind(this);
-    this.handleSave = this.handleSave.bind(this);
     this.handleMsgChange = this.handleMsgChange.bind(this);
     this.handleBarLinkChange = this.handleBarLinkChange.bind(this);
   }
@@ -460,13 +482,6 @@ class ContentConfigPage extends react__WEBPACK_IMPORTED_MODULE_2___default.a.Com
         this.props.handleContentConfig_goal(this.state.frShGl);
       });
     }
-  }
-
-  handleSave(evt) {
-    evt.persist();
-    setTimeout(() => {
-      console.log(evt);
-    }, 0);
   }
 
   handleMsgChange(msg) {
@@ -497,7 +512,7 @@ class ContentConfigPage extends react__WEBPACK_IMPORTED_MODULE_2___default.a.Com
       frShGl
     } = this.state;
     return __jsx(_shopify_polaris__WEBPACK_IMPORTED_MODULE_3__["Card"], null, __jsx(_shopify_polaris__WEBPACK_IMPORTED_MODULE_3__["Form"], {
-      onSubmit: this.handleSave
+      onSubmit: () => {}
     }, __jsx(_shopify_polaris__WEBPACK_IMPORTED_MODULE_3__["FormLayout"], null, __jsx(NameField, {
       handleName: name => this.props.handleName(name)
     }), __jsx(FreeShippingGoal, {
@@ -540,7 +555,6 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _shopify_polaris__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(_shopify_polaris__WEBPACK_IMPORTED_MODULE_1__);
 
 var __jsx = react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement;
-
 
 
 class CustomCodePage extends react__WEBPACK_IMPORTED_MODULE_0___default.a.Component {
@@ -1050,8 +1064,12 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_0__);
 /* harmony import */ var _shopify_polaris__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @shopify/polaris */ "@shopify/polaris");
 /* harmony import */ var _shopify_polaris__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(_shopify_polaris__WEBPACK_IMPORTED_MODULE_1__);
+/* harmony import */ var _snippets_selectCountries__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../snippets/selectCountries */ "./snippets/selectCountries.js");
+/* harmony import */ var _snippets_displaySchedule__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../snippets/displaySchedule */ "./snippets/displaySchedule.js");
 
 var __jsx = react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement;
+
+
 
 
 
@@ -1142,7 +1160,10 @@ class TargetConfigPage extends react__WEBPACK_IMPORTED_MODULE_0___default.a.Comp
       }
     }, "Target Configuration"), __jsx(IncludePage, {
       handleDisplayOnPage: (sec, url) => this.props.handleDisplayOnPage(sec, url)
-    }))));
+    }), __jsx(_snippets_selectCountries__WEBPACK_IMPORTED_MODULE_2__["default"], {
+      shipsToCountries: this.props.shipsToCountries,
+      handleSelectedTargets: this.props.handleSelectedTargets
+    }), __jsx(_snippets_displaySchedule__WEBPACK_IMPORTED_MODULE_3__["default"], null))));
   }
 
 }
@@ -1540,7 +1561,7 @@ function SaveUserPreference(props) {
       //   variables:{
       //     input:{
       //       displayScope:'ONLINE_STORE',
-      //       src:'https://693bb961.ngrok.io/_next/static/chunks/topBarInjection.js'
+      //       src:'https://ec9baf76.ngrok.io/_next/static/chunks/topBarInjection.js'
       //     }
       //   }
       // })
@@ -1587,7 +1608,9 @@ class Index extends react__WEBPACK_IMPORTED_MODULE_2___default.a.Component {
       dspOnPage: {
         selected: '',
         url: ''
-      }
+      },
+      shipsToCountries: [],
+      selectedTargets: []
     };
     this.baseState = this.state;
     this.finalBars = react__WEBPACK_IMPORTED_MODULE_2___default.a.createRef();
@@ -1611,10 +1634,16 @@ class Index extends react__WEBPACK_IMPORTED_MODULE_2___default.a.Component {
       bgImg,
       savedName,
       barPosition,
-      dspOnPage
+      dspOnPage,
+      selectedTargets
     } = this.state;
     return __jsx(_shopify_polaris__WEBPACK_IMPORTED_MODULE_3__["Page"], null, __jsx(_shopify_polaris__WEBPACK_IMPORTED_MODULE_3__["Layout"].Section, null, __jsx(_components_barList__WEBPACK_IMPORTED_MODULE_7__["default"], {
-      handleEditId: id => this.handleEditId(id)
+      handleEditId: id => this.handleEditId(id),
+      handleTargetCountries: arr => this.setState({
+        shipsToCountries: arr
+      }, function () {
+        console.log(this.state.shipsToCountries);
+      })
     }), this.state.onEdit ? __jsx("div", {
       style: {
         marginTop: '3em'
@@ -1632,7 +1661,8 @@ class Index extends react__WEBPACK_IMPORTED_MODULE_2___default.a.Component {
       others: {
         savedName,
         barPosition,
-        dspOnPage
+        dspOnPage,
+        selectedTargets
       },
       contentConfig: {
         barTxtConfig,
@@ -1676,6 +1706,12 @@ class Index extends react__WEBPACK_IMPORTED_MODULE_2___default.a.Component {
           selected: sec,
           url: url
         }
+      }),
+      shipsToCountries: this.state.shipsToCountries,
+      handleSelectedTargets: val => this.setState({
+        selectedTargets: val
+      }, function () {
+        console.log('selected targets are', this.state.selectedTargets);
       })
     }), __jsx(_components_customCode__WEBPACK_IMPORTED_MODULE_12__["default"], {
       handleCustomCode: (script, style) => {
@@ -1700,6 +1736,281 @@ class Index extends react__WEBPACK_IMPORTED_MODULE_2___default.a.Component {
 
 ;
 /* harmony default export */ __webpack_exports__["default"] = (Index);
+
+/***/ }),
+
+/***/ "./snippets/displaySchedule.js":
+/*!*************************************!*\
+  !*** ./snippets/displaySchedule.js ***!
+  \*************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! react */ "react");
+/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var _shopify_polaris__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @shopify/polaris */ "@shopify/polaris");
+/* harmony import */ var _shopify_polaris__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(_shopify_polaris__WEBPACK_IMPORTED_MODULE_1__);
+
+var __jsx = react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement;
+
+
+
+function Choose(props) {
+  const {
+    0: selected,
+    1: setSelected
+  } = Object(react__WEBPACK_IMPORTED_MODULE_0__["useState"])(['always']);
+  const handleChange = Object(react__WEBPACK_IMPORTED_MODULE_0__["useCallback"])(value => setSelected(value), []);
+  const renderDatePicker = Object(react__WEBPACK_IMPORTED_MODULE_0__["useCallback"])(isSelected => isSelected && __jsx(Schedule, null));
+  return __jsx(_shopify_polaris__WEBPACK_IMPORTED_MODULE_1__["ChoiceList"], {
+    choices: [{
+      label: 'Always display',
+      value: 'always'
+    }, {
+      label: 'Only display within the giving period of time',
+      value: 'scheduled',
+      renderChildren: renderDatePicker
+    }],
+    selected: selected,
+    onChange: handleChange
+  });
+}
+
+;
+
+function SelectTime(props) {
+  return __jsx("div", {
+    style: {
+      margin: '1em 0'
+    }
+  }, __jsx("div", null, "Please enter the hour (from 0 to 23) and minute (from 0 to 59) that the display ", __jsx("strong", null, "starts"), ":"), __jsx("div", {
+    style: {
+      marginTop: '.5em'
+    }
+  }, __jsx("span", {
+    style: {
+      marginRight: '.3em'
+    }
+  }, "Hour:"), __jsx("input", {
+    id: "start_hour",
+    type: "number",
+    min: 0,
+    max: 23,
+    style: {
+      marginRight: '1em'
+    }
+  }), __jsx("span", {
+    style: {
+      marginRight: '.3em'
+    }
+  }, "Minute:"), __jsx("input", {
+    id: "start_min",
+    type: "number",
+    min: 0,
+    max: 59
+  })), __jsx("div", {
+    style: {
+      marginTop: '.5em'
+    }
+  }, "Please enter the hour (from 0 to 23) and minute (from 0 to 59) that the display ", __jsx("strong", null, "ends"), ":"), __jsx("div", {
+    style: {
+      marginTop: '.5em'
+    }
+  }, __jsx("span", {
+    style: {
+      marginRight: '.3em'
+    }
+  }, "Hour:"), __jsx("input", {
+    id: "end_hour",
+    type: "number",
+    min: 0,
+    max: 23,
+    style: {
+      marginRight: '1em'
+    }
+  }), __jsx("span", {
+    style: {
+      marginRight: '.3em'
+    }
+  }, "Minute:"), __jsx("input", {
+    id: "end_min",
+    type: "number",
+    min: 0,
+    max: 59
+  })));
+}
+
+function Schedule(props) {
+  const {
+    0: {
+      month,
+      year
+    },
+    1: setDate
+  } = Object(react__WEBPACK_IMPORTED_MODULE_0__["useState"])({
+    month: 9,
+    year: 2019
+  });
+  const {
+    0: selectedDates,
+    1: setSelectedDates
+  } = Object(react__WEBPACK_IMPORTED_MODULE_0__["useState"])({
+    start: new Date(),
+    end: new Date()
+  });
+  const {
+    0: {
+      leftMon,
+      rightMon
+    },
+    1: setMonth
+  } = Object(react__WEBPACK_IMPORTED_MODULE_0__["useState"])({
+    leftMon: month + 1,
+    rightMon: month + 2
+  });
+  const handleMonthChange = Object(react__WEBPACK_IMPORTED_MODULE_0__["useCallback"])((month, year) => {
+    setDate({
+      month,
+      year
+    });
+    setMonth({
+      leftMon: month + 1,
+      rightMon: month + 2
+    });
+  }, []);
+
+  const transpileMonth = month => {
+    month = '' + month;
+
+    switch (month) {
+      case '1':
+        return 'January';
+        break;
+
+      case '2':
+        return 'Feburary';
+        break;
+
+      case '3':
+        return 'March';
+        break;
+
+      case '4':
+        return 'April';
+
+      case '5':
+        return 'May';
+
+      case '6':
+        return 'June';
+
+      case '7':
+        return 'July';
+
+      case '8':
+        return 'August';
+
+      case '9':
+        return 'September';
+
+      case '10':
+        return 'October';
+
+      case '11':
+        return 'November';
+
+      case '12':
+        return 'December';
+
+      case '13':
+        return 'January';
+    }
+  };
+
+  const handleTimeSelection = () => {
+    const startH = document.getElementById('start_hour'),
+          startM = document.getElementById('start_min'),
+          endH = document.getElementById('end_hour'),
+          endM = document.getElementById('end_min');
+    let startT = {},
+        endT = {};
+    startH.addEventListener('input', function (e) {
+      let num = e.target.valueAsNumber;
+      num > 23 ? startT.hour = 23 : num < 0 ? startT.hour = 0 : startT.hour = num;
+    });
+    startM.addEventListener('input', function (e) {
+      let num = e.target.valueAsNumber;
+      num > 59 ? startT.min = 59 : num < 0 ? startT.min = 0 : startT.min = num;
+    });
+    endH.addEventListener('input', function (e) {
+      let num = e.target.valueAsNumber;
+      num > 23 ? endT.hour = 23 : num < 0 ? endT.hour = 0 : endT.hour = num;
+    });
+    endM.addEventListener('input', function (e) {
+      let num = e.target.valueAsNumber;
+      num > 59 ? endT.min = 59 : num < 0 ? endT.min = 0 : endT.min = num;
+    });
+    return {
+      startT,
+      endT
+    };
+  };
+
+  Object(react__WEBPACK_IMPORTED_MODULE_0__["useEffect"])(() => {
+    console.log('selected dates are', selectedDates);
+    let startD = new Date(selectedDates.start);
+    let endD = new Date(selectedDates.end);
+    let time = handleTimeSelection();
+    startD = startD.getFullYear() + '/';
+    console.log(time);
+  }, [selectedDates]);
+  return __jsx("div", null, __jsx("div", {
+    style: {
+      display: 'flex',
+      flexFlow: 'row nowrap',
+      justifyContent: 'stretch'
+    }
+  }, __jsx("div", {
+    style: {
+      width: '50%',
+      textAlign: 'center'
+    }
+  }, transpileMonth(leftMon)), __jsx("div", {
+    style: {
+      width: '50%',
+      textAlign: 'center'
+    }
+  }, transpileMonth(rightMon))), __jsx(_shopify_polaris__WEBPACK_IMPORTED_MODULE_1__["DatePicker"], {
+    month: month,
+    year: year,
+    onChange: setSelectedDates,
+    onMonthChange: handleMonthChange,
+    selected: selectedDates,
+    multiMonth: true,
+    allowRange: true
+  }), __jsx(SelectTime, null));
+}
+
+class DisplaySchedule extends react__WEBPACK_IMPORTED_MODULE_0___default.a.Component {
+  constructor(props) {
+    super(props);
+    this.state = {};
+  }
+
+  render() {
+    return __jsx(_shopify_polaris__WEBPACK_IMPORTED_MODULE_1__["Card"].Section, null, __jsx("div", {
+      style: {
+        marginBottom: '1em',
+        fontSize: '1.1em'
+      }
+    }, "Display schedule:"), __jsx(Choose, null), __jsx("div", null, "Define the Start Time and End Time of the display period. Must select at least two days."));
+  }
+
+}
+
+/* harmony default export */ __webpack_exports__["default"] = (DisplaySchedule);
 
 /***/ }),
 
@@ -2012,6 +2323,390 @@ class PreviewBar extends react__WEBPACK_IMPORTED_MODULE_0___default.a.Component 
 }
 
 /* harmony default export */ __webpack_exports__["default"] = (PreviewBar);
+
+/***/ }),
+
+/***/ "./snippets/selectCountries.js":
+/*!*************************************!*\
+  !*** ./snippets/selectCountries.js ***!
+  \*************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! react */ "react");
+/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var _shopify_polaris__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @shopify/polaris */ "@shopify/polaris");
+/* harmony import */ var _shopify_polaris__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(_shopify_polaris__WEBPACK_IMPORTED_MODULE_1__);
+
+var __jsx = react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement;
+
+const countryName = {
+  'AF': 'Afghanistan',
+  'AX': 'Aland Islands',
+  'AL': 'Albania',
+  'DZ': 'Algeria',
+  'AS': 'American Samoa',
+  'AD': 'Andorra',
+  'AO': 'Angola',
+  'AI': 'Anguilla',
+  'AQ': 'Antarctica',
+  'AG': 'Antigua And Barbuda',
+  'AR': 'Argentina',
+  'AM': 'Armenia',
+  'AW': 'Aruba',
+  'AU': 'Australia',
+  'AT': 'Austria',
+  'AZ': 'Azerbaijan',
+  'BS': 'Bahamas',
+  'BH': 'Bahrain',
+  'BD': 'Bangladesh',
+  'BB': 'Barbados',
+  'BY': 'Belarus',
+  'BE': 'Belgium',
+  'BZ': 'Belize',
+  'BJ': 'Benin',
+  'BM': 'Bermuda',
+  'BT': 'Bhutan',
+  'BO': 'Bolivia',
+  'BQ': 'Bonaire, Sint Eustatius and Saba',
+  'BA': 'Bosnia And Herzegovina',
+  'BW': 'Botswana',
+  'BV': 'Bouvet Island',
+  'BR': 'Brazil',
+  'IO': 'British Indian Ocean Territory',
+  'BN': 'Brunei Darussalam',
+  'BG': 'Bulgaria',
+  'BF': 'Burkina Faso',
+  'BI': 'Burundi',
+  'KH': 'Cambodia',
+  'CM': 'Cameroon',
+  'CA': 'Canada',
+  'CV': 'Cape Verde',
+  'CW': 'Curaçao',
+  'KY': 'Cayman Islands',
+  'CF': 'Central African Republic',
+  'TD': 'Chad',
+  'CL': 'Chile',
+  'CN': 'China',
+  'CX': 'Christmas Island',
+  'CC': 'Cocos (Keeling) Islands',
+  'CO': 'Colombia',
+  'KM': 'Comoros',
+  'CG': 'Congo',
+  'CD': 'Congo, Democratic Republic',
+  'CK': 'Cook Islands',
+  'CR': 'Costa Rica',
+  'CI': 'Cote D\'Ivoire',
+  'HR': 'Croatia',
+  'CU': 'Cuba',
+  'CY': 'Cyprus',
+  'CZ': 'Czech Republic',
+  'DK': 'Denmark',
+  'DJ': 'Djibouti',
+  'DM': 'Dominica',
+  'DO': 'Dominican Republic',
+  'EC': 'Ecuador',
+  'EG': 'Egypt',
+  'SV': 'El Salvador',
+  'GQ': 'Equatorial Guinea',
+  'ER': 'Eritrea',
+  'EE': 'Estonia',
+  'ET': 'Ethiopia',
+  'FK': 'Falkland Islands (Malvinas)',
+  'FO': 'Faroe Islands',
+  'FJ': 'Fiji',
+  'FI': 'Finland',
+  'FR': 'France',
+  'GF': 'French Guiana',
+  'PF': 'French Polynesia',
+  'TF': 'French Southern Territories',
+  'GA': 'Gabon',
+  'GM': 'Gambia',
+  'GE': 'Georgia',
+  'DE': 'Germany',
+  'GH': 'Ghana',
+  'GI': 'Gibraltar',
+  'GR': 'Greece',
+  'GL': 'Greenland',
+  'GD': 'Grenada',
+  'GP': 'Guadeloupe',
+  'GU': 'Guam',
+  'GT': 'Guatemala',
+  'GG': 'Guernsey',
+  'GN': 'Guinea',
+  'GW': 'Guinea-Bissau',
+  'GY': 'Guyana',
+  'HT': 'Haiti',
+  'HM': 'Heard Island & Mcdonald Islands',
+  'VA': 'Holy See (Vatican City State)',
+  'HN': 'Honduras',
+  'HK': 'Hong Kong (China)',
+  'HU': 'Hungary',
+  'IS': 'Iceland',
+  'IN': 'India',
+  'ID': 'Indonesia',
+  'IR': 'Iran, Islamic Republic Of',
+  'IQ': 'Iraq',
+  'IE': 'Ireland',
+  'IM': 'Isle Of Man',
+  'IL': 'Israel',
+  'IT': 'Italy',
+  'JM': 'Jamaica',
+  'JP': 'Japan',
+  'JE': 'Jersey',
+  'JO': 'Jordan',
+  'KZ': 'Kazakhstan',
+  'KE': 'Kenya',
+  'KI': 'Kiribati',
+  'KR': 'Korea',
+  'KP': 'Korea, Democratic People\'s Republic Of',
+  'KW': 'Kuwait',
+  'KG': 'Kyrgyzstan',
+  'LA': 'Lao People\'s Democratic Republic',
+  'LV': 'Latvia',
+  'LB': 'Lebanon',
+  'LS': 'Lesotho',
+  'LR': 'Liberia',
+  'LY': 'Libyan Arab Jamahiriya',
+  'LI': 'Liechtenstein',
+  'LT': 'Lithuania',
+  'LU': 'Luxembourg',
+  'MO': 'Macao (China)',
+  'MK': 'Macedonia',
+  'MG': 'Madagascar',
+  'MW': 'Malawi',
+  'MY': 'Malaysia',
+  'MV': 'Maldives',
+  'ML': 'Mali',
+  'MT': 'Malta',
+  'MH': 'Marshall Islands',
+  'MQ': 'Martinique',
+  'MR': 'Mauritania',
+  'MU': 'Mauritius',
+  'YT': 'Mayotte',
+  'MX': 'Mexico',
+  'FM': 'Micronesia, Federated States Of',
+  'MD': 'Moldova',
+  'MC': 'Monaco',
+  'MN': 'Mongolia',
+  'ME': 'Montenegro',
+  'MS': 'Montserrat',
+  'MA': 'Morocco',
+  'MZ': 'Mozambique',
+  'MM': 'Myanmar',
+  'NA': 'Namibia',
+  'NR': 'Nauru',
+  'NP': 'Nepal',
+  'NL': 'Netherlands',
+  'AN': 'Netherlands Antilles',
+  'NC': 'New Caledonia',
+  'NZ': 'New Zealand',
+  'NI': 'Nicaragua',
+  'NE': 'Niger',
+  'NG': 'Nigeria',
+  'NU': 'Niue',
+  'NF': 'Norfolk Island',
+  'MP': 'Northern Mariana Islands',
+  'NO': 'Norway',
+  'OM': 'Oman',
+  'PK': 'Pakistan',
+  'PW': 'Palau',
+  'PS': 'Palestinian Territory, Occupied',
+  'PA': 'Panama',
+  'PG': 'Papua New Guinea',
+  'PY': 'Paraguay',
+  'PE': 'Peru',
+  'PH': 'Philippines',
+  'PN': 'Pitcairn',
+  'PL': 'Poland',
+  'PT': 'Portugal',
+  'PR': 'Puerto Rico',
+  'QA': 'Qatar',
+  'RE': 'Reunion',
+  'RO': 'Romania',
+  'RU': 'Russian Federation',
+  'RW': 'Rwanda',
+  'BL': 'Saint Barthelemy',
+  'SH': 'Saint Helena',
+  'KN': 'Saint Kitts And Nevis',
+  'LC': 'Saint Lucia',
+  'MF': 'Saint Martin',
+  'PM': 'Saint Pierre And Miquelon',
+  'VC': 'Saint Vincent And Grenadines',
+  'WS': 'Samoa',
+  'SM': 'San Marino',
+  'ST': 'Sao Tome And Principe',
+  'SA': 'Saudi Arabia',
+  'SN': 'Senegal',
+  'RS': 'Serbia',
+  'SC': 'Seychelles',
+  'SL': 'Sierra Leone',
+  'SG': 'Singapore',
+  'SK': 'Slovakia',
+  'SI': 'Slovenia',
+  'SB': 'Solomon Islands',
+  'SO': 'Somalia',
+  'ZA': 'South Africa',
+  'GS': 'South Georgia And Sandwich Isl.',
+  'ES': 'Spain',
+  'LK': 'Sri Lanka',
+  'SD': 'Sudan',
+  'SS': 'South Sudan',
+  'SR': 'Suriname',
+  'SJ': 'Svalbard And Jan Mayen',
+  'SZ': 'Swaziland',
+  'SE': 'Sweden',
+  'SX': 'Sint Maarten',
+  'CH': 'Switzerland',
+  'SY': 'Syrian Arab Republic',
+  'TW': 'Taiwan (China)',
+  'TJ': 'Tajikistan',
+  'TZ': 'Tanzania',
+  'TH': 'Thailand',
+  'TL': 'Timor-Leste',
+  'TG': 'Togo',
+  'TK': 'Tokelau',
+  'TO': 'Tonga',
+  'TT': 'Trinidad And Tobago',
+  'TN': 'Tunisia',
+  'TR': 'Turkey',
+  'TM': 'Turkmenistan',
+  'TC': 'Turks And Caicos Islands',
+  'TV': 'Tuvalu',
+  'UG': 'Uganda',
+  'UA': 'Ukraine',
+  'AE': 'United Arab Emirates',
+  'GB': 'United Kingdom',
+  'US': 'United States',
+  'UM': 'United States Outlying Islands',
+  'UY': 'Uruguay',
+  'UZ': 'Uzbekistan',
+  'VU': 'Vanuatu',
+  'VE': 'Venezuela',
+  'VN': 'Viet Nam',
+  'VG': 'Virgin Islands, British',
+  'VI': 'Virgin Islands, U.S.',
+  'WF': 'Wallis And Futuna',
+  'EH': 'Western Sahara',
+  'XK': 'Kosovo',
+  'YE': 'Yemen',
+  'ZM': 'Zambia',
+  'ZW': 'Zimbabwe'
+};
+
+class SelectCountries extends react__WEBPACK_IMPORTED_MODULE_0___default.a.Component {
+  constructor(props) {
+    super(props);
+    this.state = {};
+    this.selectEl = react__WEBPACK_IMPORTED_MODULE_0___default.a.createRef();
+    this.showSelected = react__WEBPACK_IMPORTED_MODULE_0___default.a.createRef();
+    this.handleShipsToCountries = this.handleShipsToCountries.bind(this);
+    this.handleSelectEvt = this.handleSelectEvt.bind(this);
+    this.handleClearAllSelected = this.handleClearAllSelected.bind(this);
+  }
+
+  componentDidMount() {
+    let selectEl = this.selectEl.current;
+    let cnArr = this.props.shipsToCountries;
+    this.handleShipsToCountries(selectEl, cnArr);
+    this.handleSelectEvt(selectEl);
+  }
+
+  handleShipsToCountries(select, arr) {
+    let c = arr.map(i => {
+      if (countryName.hasOwnProperty(i)) {
+        let el = document.createElement('option');
+        el.style.padding = '5px 0';
+        el.setAttribute('value', i);
+        el.textContent = countryName[i];
+        select.insertAdjacentElement('afterbegin', el);
+        return countryName[i];
+      }
+    });
+  }
+
+  handleSelectEvt(el) {
+    const self = this;
+    const sp = this.showSelected.current;
+    el.addEventListener('change', function (evt) {
+      let selectedOpts = [];
+      let selectedArr = evt.target.selectedOptions;
+      sp.innerHTML = '';
+
+      for (let n = 0; n < selectedArr.length; n++) {
+        if (!selectedOpts.includes(selectedArr[n].value)) {
+          selectedOpts.push(selectedArr[n].value);
+          let selectedTxt = document.createElement('span');
+          selectedTxt.textContent = selectedArr[n].textContent + ', ';
+          sp.appendChild(selectedTxt);
+        }
+      }
+
+      ;
+      self.handleClearAllSelected(sp);
+      self.props.handleSelectedTargets(selectedOpts);
+    });
+  }
+
+  handleClearAllSelected(el) {
+    const self = this;
+    let ch = el.querySelectorAll('span');
+
+    if (ch.length > 0) {
+      let del = document.createElement('span');
+      del.textContent = 'Clear all selected locations';
+      del.setAttribute('style', "cursor:pointer;border:1px solid black;border-radius:5px;margin-left:3em;padding:2px 4px;");
+      el.appendChild(del);
+      del.addEventListener('click', function () {
+        el.innerHTML = '';
+        self.props.handleSelectedTargets([]);
+      });
+    }
+  }
+
+  render() {
+    return __jsx(_shopify_polaris__WEBPACK_IMPORTED_MODULE_1__["Card"].Section, null, __jsx("div", {
+      style: {
+        marginBottom: '1em',
+        fontSize: '1.1em'
+      }
+    }, "Target locations:"), __jsx("div", {
+      style: {
+        lineHeight: '2em'
+      }
+    }, "You have selected: ", __jsx("span", {
+      ref: this.showSelected,
+      style: {
+        fontWeight: '700'
+      }
+    })), __jsx("select", {
+      name: "targetCountries",
+      id: "targetCountries",
+      multiple: true,
+      ref: this.selectEl,
+      style: {
+        height: '100px',
+        width: '50%',
+        paddingLeft: '.6em',
+        marginTop: '.8em'
+      }
+    }), __jsx("div", {
+      style: {
+        marginTop: '5px'
+      }
+    }, "Please hold ", __jsx("span", {
+      style: {
+        backgroundColor: '#ddd',
+        borderRadius: '5px'
+      }
+    }, "Ctrl"), " to select multiple locations. Leave it blank if you want to target ALL countires."));
+  }
+
+}
+
+/* harmony default export */ __webpack_exports__["default"] = (SelectCountries);
 
 /***/ }),
 

@@ -1,5 +1,4 @@
-import { useState } from 'react'
-import { TextField, Card, DisplayText, Form, FormLayout } from '@shopify/polaris'
+import { Card, Form, FormLayout } from '@shopify/polaris'
 
 class CustomCodePage extends React.Component{
   constructor(props){
