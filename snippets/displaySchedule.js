@@ -9,7 +9,7 @@ function Choose(props){
   const renderDatePicker = useCallback(
     (isSelected) =>
       isSelected && (
-        <Schedule />
+        <Schedule handleTimeSetting={props.handleTimeSetting}/>
       )
   )
 
@@ -101,13 +101,22 @@ function Schedule(props){
     }
   };
 
+  const [{start_h,start_m},setStartTime] = useState({
+    start_h:0,
+    start_m:0
+  });
+  const [{end_h,end_m},setEndTime] = useState({
+    end_h:0,
+    end_m:0
+  })
+
   const handleTimeSelection = () => {
     const startH = document.getElementById('start_hour'),
           startM = document.getElementById('start_min'),
           endH = document.getElementById('end_hour'),
           endM = document.getElementById('end_min');
     let startT={}, endT={};
-    startH.addEventListener('input',function(e){
+    startH.addEventListener('change',function(e){
       let num = e.target.valueAsNumber;
       num > 23?
         startT.hour = 23
@@ -116,8 +125,9 @@ function Schedule(props){
           startT.hour = 0
           :
           startT.hour = num;
+      setStartTime({start_m,start_h:startT.hour});
     });
-    startM.addEventListener('input',function(e){
+    startM.addEventListener('change',function(e){
       let num = e.target.valueAsNumber;
       num > 59?
         startT.min = 59
@@ -126,8 +136,9 @@ function Schedule(props){
           startT.min = 0
           :
           startT.min = num;
+      setStartTime({start_h,start_m:startT.min});
     });
-    endH.addEventListener('input',function(e){
+    endH.addEventListener('change',function(e){
       let num = e.target.valueAsNumber;
       num > 23?
         endT.hour = 23
@@ -136,8 +147,9 @@ function Schedule(props){
           endT.hour = 0
           :
           endT.hour = num;
+      setEndTime({end_m,end_h:endT.hour});
     });
-    endM.addEventListener('input',function(e){
+    endM.addEventListener('change',function(e){
       let num = e.target.valueAsNumber;
       num > 59?
         endT.min = 59
@@ -146,18 +158,18 @@ function Schedule(props){
           endT.min = 0
           :
           endT.min = num;
+      setEndTime({end_h,end_m:endT.min});
     });
-    return {startT,endT}
   }
 
   useEffect(()=>{
-    console.log('selected dates are',selectedDates);
     let startD = new Date(selectedDates.start);
     let endD = new Date(selectedDates.end);
-    let time = handleTimeSelection();
-    startD = startD.getFullYear()+'/'
-    console.log(time);
-  },[selectedDates]);
+    handleTimeSelection();
+    startD = startD.getFullYear()+'/'+(startD.getMonth()+1)+'/'+startD.getDate()+' '+start_h+':'+start_m;
+    endD = endD.getFullYear()+'/'+(endD.getMonth()+1)+'/'+endD.getDate()+' '+end_h+':'+end_m;
+    props.handleTimeSetting({start:startD,end:endD});
+  },[selectedDates,start_h,start_m,end_h,end_m]);
 
 
   return (
@@ -190,7 +202,7 @@ class DisplaySchedule extends React.Component{
     return (
       <Card.Section>
         <div style={{marginBottom:'1em',fontSize:'1.1em'}}>Display schedule:</div>
-        <Choose />
+        <Choose handleTimeSetting={this.props.handleTimeSetting}/>
         <div>Define the Start Time and End Time of the display period. Must select at least two days.</div>
       </Card.Section>
     )

@@ -50,7 +50,7 @@ class ImageDropZone extends React.Component{
   render(){
     return (
       <Card.Section>
-        <label htmlFor="backgroundImg">Click the drop zone to continue uploading more images:</label>
+        <label htmlFor="backgroundImg" style={{marginBottom:'5px'}}>Click the drop zone to continue uploading more images:</label>
         <div>
           <input id="backgroundImg" type="file" accept="image/*" name="bgImg" ref={this.inputRef}/>
           <div className="imgs"></div>

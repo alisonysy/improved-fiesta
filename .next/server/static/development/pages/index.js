@@ -239,7 +239,7 @@ function NameField(props) {
   Object(react__WEBPACK_IMPORTED_MODULE_2__["useEffect"])(() => {
     props.handleName(name);
   }, [name]);
-  return __jsx(_shopify_polaris__WEBPACK_IMPORTED_MODULE_3__["FormLayout"].Group, null, __jsx(_shopify_polaris__WEBPACK_IMPORTED_MODULE_3__["TextField"], {
+  return __jsx(_shopify_polaris__WEBPACK_IMPORTED_MODULE_3__["Card"].Section, null, __jsx(_shopify_polaris__WEBPACK_IMPORTED_MODULE_3__["TextField"], {
     label: "Name: ",
     value: name,
     onChange: nw => setName(nw)
@@ -257,7 +257,7 @@ function FreeShippingGoal(props) {
     props.handleGoalChange(newGoal);
   };
 
-  return __jsx(_shopify_polaris__WEBPACK_IMPORTED_MODULE_3__["FormLayout"].Group, null, __jsx(_shopify_polaris__WEBPACK_IMPORTED_MODULE_3__["TextField"], {
+  return __jsx(_shopify_polaris__WEBPACK_IMPORTED_MODULE_3__["Card"].Section, null, __jsx(_shopify_polaris__WEBPACK_IMPORTED_MODULE_3__["TextField"], {
     label: "Free Shipping Goal: ",
     type: "number",
     value: goal,
@@ -280,7 +280,7 @@ function InitialMsg(props) {
       initialMsg2: added
     });
   }, [msg, added]);
-  return __jsx(_shopify_polaris__WEBPACK_IMPORTED_MODULE_3__["FormLayout"].Group, null, __jsx(_shopify_polaris__WEBPACK_IMPORTED_MODULE_3__["Stack"], {
+  return __jsx(_shopify_polaris__WEBPACK_IMPORTED_MODULE_3__["Card"].Section, null, __jsx(_shopify_polaris__WEBPACK_IMPORTED_MODULE_3__["Stack"], {
     alignment: "center",
     distribution: "fill"
   }, __jsx(_shopify_polaris__WEBPACK_IMPORTED_MODULE_3__["TextField"], {
@@ -317,7 +317,7 @@ function ProgressMsg(props) {
       prgMsg2: added
     });
   }, [msg, added]);
-  return __jsx(_shopify_polaris__WEBPACK_IMPORTED_MODULE_3__["FormLayout"].Group, {
+  return __jsx(_shopify_polaris__WEBPACK_IMPORTED_MODULE_3__["Card"].Section, {
     condensed: true
   }, __jsx(_shopify_polaris__WEBPACK_IMPORTED_MODULE_3__["Stack"], {
     alignment: "center",
@@ -350,7 +350,7 @@ function GoalAchieved(props) {
       achievedMsg: msg
     });
   }, [msg]);
-  return __jsx(_shopify_polaris__WEBPACK_IMPORTED_MODULE_3__["FormLayout"].Group, null, __jsx(_shopify_polaris__WEBPACK_IMPORTED_MODULE_3__["TextField"], {
+  return __jsx(_shopify_polaris__WEBPACK_IMPORTED_MODULE_3__["Card"].Section, null, __jsx(_shopify_polaris__WEBPACK_IMPORTED_MODULE_3__["TextField"], {
     label: "Goal Achieved Message: ",
     type: "text",
     value: msg,
@@ -394,12 +394,13 @@ function AddLinkToBar(props) {
     props.handleBarLinkChange(val);
   };
 
-  return __jsx(_shopify_polaris__WEBPACK_IMPORTED_MODULE_3__["FormLayout"].Group, null, __jsx(_shopify_polaris__WEBPACK_IMPORTED_MODULE_3__["Select"], {
+  return __jsx(_shopify_polaris__WEBPACK_IMPORTED_MODULE_3__["Card"].Section, null, __jsx(_shopify_polaris__WEBPACK_IMPORTED_MODULE_3__["Select"], {
     label: "Add Link to the Bar: ",
     options: opts,
     onChange: handleSwitch,
     value: havLink
-  }), havLink ? __jsx(_shopify_polaris__WEBPACK_IMPORTED_MODULE_3__["FormLayout"].Group, null, __jsx(_shopify_polaris__WEBPACK_IMPORTED_MODULE_3__["TextField"], {
+  }), havLink ? // <FormLayout.Group>
+  __jsx("div", null, __jsx(_shopify_polaris__WEBPACK_IMPORTED_MODULE_3__["TextField"], {
     label: "Link URL: ",
     type: "url",
     value: url,
@@ -412,7 +413,8 @@ function AddLinkToBar(props) {
     label: "Open the link in a NEW tab when clicked",
     checked: checkbox,
     onChange: nw => handleCheckbox(nw)
-  })) : null);
+  })) // </FormLayout.Group>
+  : null);
 }
 
 function SetPosition(props) {
@@ -446,7 +448,7 @@ function SetPosition(props) {
   Object(react__WEBPACK_IMPORTED_MODULE_2__["useEffect"])(() => {
     props.handleBarPosition(isSelected);
   }, [isSelected]);
-  return __jsx(_shopify_polaris__WEBPACK_IMPORTED_MODULE_3__["FormLayout"].Group, null, __jsx(_shopify_polaris__WEBPACK_IMPORTED_MODULE_3__["ChoiceList"], {
+  return __jsx(_shopify_polaris__WEBPACK_IMPORTED_MODULE_3__["Card"].Section, null, __jsx(_shopify_polaris__WEBPACK_IMPORTED_MODULE_3__["ChoiceList"], {
     title: 'Select a Display Position: ',
     choices: choices,
     selected: isSelected,
@@ -511,8 +513,8 @@ class ContentConfigPage extends react__WEBPACK_IMPORTED_MODULE_2___default.a.Com
     const {
       frShGl
     } = this.state;
-    return __jsx(_shopify_polaris__WEBPACK_IMPORTED_MODULE_3__["Card"], null, __jsx(_shopify_polaris__WEBPACK_IMPORTED_MODULE_3__["Form"], {
-      onSubmit: () => {}
+    return __jsx(_shopify_polaris__WEBPACK_IMPORTED_MODULE_3__["Card"], {
+      Sectioned: true
     }, __jsx(_shopify_polaris__WEBPACK_IMPORTED_MODULE_3__["FormLayout"], null, __jsx(NameField, {
       handleName: name => this.props.handleName(name)
     }), __jsx(FreeShippingGoal, {
@@ -531,7 +533,7 @@ class ContentConfigPage extends react__WEBPACK_IMPORTED_MODULE_2___default.a.Com
       handleBarLinkChange: this.handleBarLinkChange
     }), __jsx(SetPosition, {
       handleBarPosition: val => this.props.handleBarPosition(val)
-    }))));
+    })));
   }
 
 }
@@ -564,6 +566,7 @@ class CustomCodePage extends react__WEBPACK_IMPORTED_MODULE_0___default.a.Compon
       customCode: ''
     };
     this.handleCustomCode = this.handleCustomCode.bind(this);
+    this.parseCssString = this.parseCssString.bind(this);
   }
 
   handleCustomCode(val) {
@@ -581,7 +584,53 @@ class CustomCodePage extends react__WEBPACK_IMPORTED_MODULE_0___default.a.Compon
       styleTxt = val.slice(styleStart + 7, styleEnd).trim();
     }
 
+    styleTxt = this.parseCssString(styleTxt);
     this.props.handleCustomCode(scriptTxt, styleTxt);
+  }
+
+  parseCssString(code) {
+    let style = code,
+        selectors = [];
+    if (!style) return;
+    let styleArr = style.split('}');
+    let sl_regExp = /(.+)\s*{/;
+    styleArr.map(i => {
+      if (i.trim() !== '') {
+        let re = i.match(sl_regExp);
+
+        if (re) {
+          let selector = re[1],
+              selectorObj = {};
+          let propStr = i.slice(selector.length + 1);
+          propStr = propStr.split(';');
+
+          if (propStr.length) {
+            propStr = propStr.map(i => {
+              let prop_name,
+                  prop_val,
+                  reg = /.+/; //handle extra {
+
+              let a = i.indexOf('{');
+              a !== -1 ? i = i.slice(a + 1) : i = i; //handle carriage return
+
+              if (!i.match(reg)) return;
+              i = i.match(reg)[0]; //handle colons inside property value;
+
+              let notUrl = /:[^\/]/;
+              let re_notUrl = i.match(notUrl);
+              if (!re_notUrl) return;
+              prop_name = i.substring(0, re_notUrl.index);
+              prop_val = i.substring(re_notUrl.index + 1);
+              selectorObj[prop_name] = prop_val;
+            });
+            selectors.push({
+              [selector]: selectorObj
+            });
+          }
+        }
+      }
+    });
+    return selectors;
   }
 
   render() {
@@ -635,6 +684,27 @@ class PreviewPage extends react__WEBPACK_IMPORTED_MODULE_0___default.a.Component
   constructor(props) {
     super(props);
     this.state = {};
+    this.parseCssString = this.parseCssString.bind(this);
+  }
+
+  parseCssString(code) {
+    console.log('start parsing');
+    let style = code.style,
+        selectors = [];
+    console.log(style);
+    let styleArr = style.split('}');
+    let regExp = /(.+)[\s]*\{(.+)/;
+    styleArr.map(i => {
+      if (i.trim() !== '') {
+        let re = i.match(regExp);
+        let prop_name = re[1],
+            prop_val = re[2];
+        selectors.push({
+          [prop_name]: prop_val
+        });
+      }
+    });
+    console.log(selectors);
   }
 
   render() {
@@ -644,7 +714,14 @@ class PreviewPage extends react__WEBPACK_IMPORTED_MODULE_0___default.a.Component
       barLink
     } = this.props.contentConfig;
     const bgImg = this.props.bgImg;
-    console.log(this.props.styleConfig);
+    console.log('preview page - style', this.props.styleConfig);
+    console.log('preview page - code', this.props.customCode);
+
+    if (this.props.customCode.style !== '' && this.props.customCode.style !== undefined) {
+      console.log('parsing ready to start');
+      this.parseCssString(this.props.customCode);
+    }
+
     return __jsx(_shopify_polaris__WEBPACK_IMPORTED_MODULE_1__["Card"], null, __jsx(_shopify_polaris__WEBPACK_IMPORTED_MODULE_1__["Form"], null, __jsx(_shopify_polaris__WEBPACK_IMPORTED_MODULE_1__["FormLayout"], null, __jsx(_snippets_previewBar__WEBPACK_IMPORTED_MODULE_2__["default"], {
       barConfig: {
         bgColor: this.props.styleConfig.colorConfig.bgColor,
@@ -659,7 +736,8 @@ class PreviewPage extends react__WEBPACK_IMPORTED_MODULE_0___default.a.Component
         paddingUpDown: this.props.styleConfig.fontConfig.barPadding,
         fontSize: this.props.styleConfig.fontConfig.fontSize
       },
-      barLink: barLink
+      barLink: barLink,
+      parseCssString: this.parseCssString
     }), __jsx(_snippets_previewBar__WEBPACK_IMPORTED_MODULE_2__["default"], {
       barConfig: {
         bgColor: this.props.styleConfig.colorConfig.bgColor,
@@ -674,7 +752,8 @@ class PreviewPage extends react__WEBPACK_IMPORTED_MODULE_0___default.a.Component
         paddingUpDown: this.props.styleConfig.fontConfig.barPadding,
         fontSize: this.props.styleConfig.fontConfig.fontSize
       },
-      barLink: barLink
+      barLink: barLink,
+      parseCssString: this.parseCssString
     }), __jsx(_snippets_previewBar__WEBPACK_IMPORTED_MODULE_2__["default"], {
       barConfig: {
         bgColor: this.props.styleConfig.colorConfig.bgColor,
@@ -682,13 +761,13 @@ class PreviewPage extends react__WEBPACK_IMPORTED_MODULE_0___default.a.Component
         spColor: this.props.styleConfig.colorConfig.specialColor,
         opacity: this.props.styleConfig.colorConfig.bgOpacity,
         inpTxt: barTxtConfig.achievedMsg,
-        addedHtml: barTxtConfig.initialMsg2,
         bgImg: bgImg,
         fontFamily: this.props.styleConfig.fontConfig.fontFamily,
         paddingUpDown: this.props.styleConfig.fontConfig.barPadding,
         fontSize: this.props.styleConfig.fontConfig.fontSize
       },
-      barLink: barLink
+      barLink: barLink,
+      parseCssString: this.parseCssString
     }))));
   }
 
@@ -753,6 +832,33 @@ function ColorPickers(props) {
     onChange: setColor,
     color: color
   }));
+}
+
+function OpacitySlider(props) {
+  const {
+    0: rangeValue,
+    1: setRangeValue
+  } = Object(react__WEBPACK_IMPORTED_MODULE_3__["useState"])(100);
+  const handleRangeSliderChange = Object(react__WEBPACK_IMPORTED_MODULE_3__["useCallback"])(value => setRangeValue(value), []);
+  const suffixStyles = {
+    minWidth: '24px',
+    textAlign: 'right'
+  };
+  Object(react__WEBPACK_IMPORTED_MODULE_3__["useEffect"])(() => {
+    props.handleBgOpacity(rangeValue);
+  }, [rangeValue]);
+  return __jsx(_shopify_polaris__WEBPACK_IMPORTED_MODULE_4__["RangeSlider"], {
+    output: true,
+    label: "Background Opacity",
+    min: 0,
+    max: 100,
+    value: rangeValue,
+    onChange: handleRangeSliderChange,
+    prefix: __jsx("p", null, "0"),
+    suffix: __jsx("p", {
+      style: suffixStyles
+    }, rangeValue)
+  });
 }
 
 function BackgroundSetting(props) {
@@ -833,7 +939,7 @@ function BackgroundSetting(props) {
   const {
     0: bgOpacity,
     1: setBgOpacity
-  } = Object(react__WEBPACK_IMPORTED_MODULE_3__["useState"])('100');
+  } = Object(react__WEBPACK_IMPORTED_MODULE_3__["useState"])(100);
   const {
     0: txtColor,
     1: setTxtColor
@@ -858,7 +964,20 @@ function BackgroundSetting(props) {
   Object(react__WEBPACK_IMPORTED_MODULE_3__["useEffect"])(() => {
     setTxtColor(rgbToHex(txtColorFrmProps));
   }, [txtColorFrmProps]);
-  return __jsx(_shopify_polaris__WEBPACK_IMPORTED_MODULE_4__["Card"].Section, null, __jsx(_shopify_polaris__WEBPACK_IMPORTED_MODULE_4__["Stack"], null, __jsx("div", null, __jsx("h3", null, "Background color:"), __jsx("div", {
+  return __jsx(_shopify_polaris__WEBPACK_IMPORTED_MODULE_4__["Card"].Section, null, __jsx("div", {
+    style: {
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'flex-start',
+      marginBottom: '1em'
+    }
+  }, __jsx("div", {
+    style: {
+      width: '30%'
+    }
+  }, __jsx("h3", null, "Background color:"), __jsx(_shopify_polaris__WEBPACK_IMPORTED_MODULE_4__["Stack"], {
+    alignment: "center"
+  }, __jsx("div", {
     style: {
       position: 'relative'
     }
@@ -882,16 +1001,25 @@ function BackgroundSetting(props) {
   }) : null), __jsx(_shopify_polaris__WEBPACK_IMPORTED_MODULE_4__["TextField"], {
     value: bgColor,
     onChange: nw => setBgColor(nw)
-  })), __jsx("div", null, __jsx("h3", null, "Background opacity:"), __jsx("div", {
+  }))), __jsx("div", {
     style: {
-      display: 'inline-block'
+      width: '50%'
     }
-  }, bgOpacity), __jsx(_shopify_polaris__WEBPACK_IMPORTED_MODULE_4__["TextField"], {
-    value: bgOpacity,
-    onChange: nw => setBgOpacity(nw),
-    type: "number",
-    helpText: "0 is transparent, 100 is opaque."
-  }))), __jsx(_shopify_polaris__WEBPACK_IMPORTED_MODULE_4__["Stack"], null, __jsx("div", null, __jsx("h3", null, "Text color:"), __jsx("div", {
+  }, __jsx(OpacitySlider, {
+    handleBgOpacity: val => setBgOpacity(val)
+  }))), __jsx("div", {
+    style: {
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'flex-start'
+    }
+  }, __jsx("div", {
+    style: {
+      width: '30%'
+    }
+  }, __jsx("h3", null, "Text color:"), __jsx(_shopify_polaris__WEBPACK_IMPORTED_MODULE_4__["Stack"], {
+    alignment: "center"
+  }, __jsx("div", {
     style: {
       position: 'relative'
     }
@@ -915,7 +1043,13 @@ function BackgroundSetting(props) {
   }) : null), __jsx(_shopify_polaris__WEBPACK_IMPORTED_MODULE_4__["TextField"], {
     value: txtColor,
     onChange: nw => setTxtColor(nw)
-  })), __jsx("div", null, __jsx("h3", null, "Special text color:"), __jsx("div", {
+  }))), __jsx("div", {
+    style: {
+      width: '30%'
+    }
+  }, __jsx("h3", null, "Special text color:"), __jsx(_shopify_polaris__WEBPACK_IMPORTED_MODULE_4__["Stack"], {
+    alignment: "center"
+  }, __jsx("div", {
     style: {
       position: 'relative'
     }
@@ -939,7 +1073,7 @@ function BackgroundSetting(props) {
   }) : null), __jsx(_shopify_polaris__WEBPACK_IMPORTED_MODULE_4__["TextField"], {
     value: rgbToHex(specialColor),
     onChange: nw => setSpecialColor(nw)
-  }))));
+  })))));
 }
 
 function Fonts(props) {
@@ -971,23 +1105,35 @@ function Fonts(props) {
       barPadding: padding
     });
   }, [fontFam, fontSize, padding]);
-  return __jsx(_shopify_polaris__WEBPACK_IMPORTED_MODULE_4__["Card"].Section, null, __jsx("div", null, "Font family:"), __jsx(_shopify_polaris__WEBPACK_IMPORTED_MODULE_4__["Button"], {
+  return __jsx(_shopify_polaris__WEBPACK_IMPORTED_MODULE_4__["Card"].Section, null, __jsx("div", {
+    style: {
+      marginBottom: '5px'
+    }
+  }, "Font family:"), __jsx("span", {
+    style: {
+      marginRight: '.6em'
+    }
+  }, __jsx(_shopify_polaris__WEBPACK_IMPORTED_MODULE_4__["Button"], {
     onClick: () => handleFontFam('Montserrat')
-  }, "Montserrat"), __jsx(_shopify_polaris__WEBPACK_IMPORTED_MODULE_4__["Button"], {
+  }, "Montserrat")), __jsx("span", null, __jsx(_shopify_polaris__WEBPACK_IMPORTED_MODULE_4__["Button"], {
     onClick: () => handleFontFam('sans-serif')
-  }, "Sans serif"), __jsx(_shopify_polaris__WEBPACK_IMPORTED_MODULE_4__["TextField"], {
+  }, "Sans serif")), __jsx("div", {
+    style: {
+      margin: '1em 0'
+    }
+  }, __jsx(_shopify_polaris__WEBPACK_IMPORTED_MODULE_4__["TextField"], {
     label: "Font size:",
     suffix: "px",
     type: "number",
     value: fontSize,
     onChange: handleFontSize
-  }), __jsx(_shopify_polaris__WEBPACK_IMPORTED_MODULE_4__["TextField"], {
+  })), __jsx("div", null, __jsx(_shopify_polaris__WEBPACK_IMPORTED_MODULE_4__["TextField"], {
     label: "Bar padding:",
     suffix: "px",
     type: "number",
     value: padding,
     onChange: handlePadding
-  }));
+  })));
 }
 
 class StyleConfigPage extends react__WEBPACK_IMPORTED_MODULE_3___default.a.Component {
@@ -1163,7 +1309,9 @@ class TargetConfigPage extends react__WEBPACK_IMPORTED_MODULE_0___default.a.Comp
     }), __jsx(_snippets_selectCountries__WEBPACK_IMPORTED_MODULE_2__["default"], {
       shipsToCountries: this.props.shipsToCountries,
       handleSelectedTargets: this.props.handleSelectedTargets
-    }), __jsx(_snippets_displaySchedule__WEBPACK_IMPORTED_MODULE_3__["default"], null))));
+    }), __jsx(_snippets_displaySchedule__WEBPACK_IMPORTED_MODULE_3__["default"], {
+      handleTimeSetting: this.props.handleTimeSetting
+    }))));
   }
 
 }
@@ -1561,7 +1709,7 @@ function SaveUserPreference(props) {
       //   variables:{
       //     input:{
       //       displayScope:'ONLINE_STORE',
-      //       src:'https://ec9baf76.ngrok.io/_next/static/chunks/topBarInjection.js'
+      //       src:'https://a208eaa5.ngrok.io/_next/static/chunks/topBarInjection.js'
       //     }
       //   }
       // })
@@ -1610,7 +1758,8 @@ class Index extends react__WEBPACK_IMPORTED_MODULE_2___default.a.Component {
         url: ''
       },
       shipsToCountries: [],
-      selectedTargets: []
+      selectedTargets: [],
+      scheduleTime: {}
     };
     this.baseState = this.state;
     this.finalBars = react__WEBPACK_IMPORTED_MODULE_2___default.a.createRef();
@@ -1635,7 +1784,9 @@ class Index extends react__WEBPACK_IMPORTED_MODULE_2___default.a.Component {
       savedName,
       barPosition,
       dspOnPage,
-      selectedTargets
+      selectedTargets,
+      scheduleTime,
+      customCode
     } = this.state;
     return __jsx(_shopify_polaris__WEBPACK_IMPORTED_MODULE_3__["Page"], null, __jsx(_shopify_polaris__WEBPACK_IMPORTED_MODULE_3__["Layout"].Section, null, __jsx(_components_barList__WEBPACK_IMPORTED_MODULE_7__["default"], {
       handleEditId: id => this.handleEditId(id),
@@ -1662,7 +1813,11 @@ class Index extends react__WEBPACK_IMPORTED_MODULE_2___default.a.Component {
         savedName,
         barPosition,
         dspOnPage,
-        selectedTargets
+        selectedTargets,
+        scheduleTime
+      },
+      customCode: {
+        customCode
       },
       contentConfig: {
         barTxtConfig,
@@ -1710,8 +1865,9 @@ class Index extends react__WEBPACK_IMPORTED_MODULE_2___default.a.Component {
       shipsToCountries: this.state.shipsToCountries,
       handleSelectedTargets: val => this.setState({
         selectedTargets: val
-      }, function () {
-        console.log('selected targets are', this.state.selectedTargets);
+      }),
+      handleTimeSetting: timeObj => this.setState({
+        scheduleTime: timeObj
       })
     }), __jsx(_components_customCode__WEBPACK_IMPORTED_MODULE_12__["default"], {
       handleCustomCode: (script, style) => {
@@ -1739,6 +1895,17 @@ class Index extends react__WEBPACK_IMPORTED_MODULE_2___default.a.Component {
 
 /***/ }),
 
+/***/ "./snippets/demo.css":
+/*!***************************!*\
+  !*** ./snippets/demo.css ***!
+  \***************************/
+/*! no static exports found */
+/***/ (function(module, exports) {
+
+
+
+/***/ }),
+
 /***/ "./snippets/displaySchedule.js":
 /*!*************************************!*\
   !*** ./snippets/displaySchedule.js ***!
@@ -1763,7 +1930,9 @@ function Choose(props) {
     1: setSelected
   } = Object(react__WEBPACK_IMPORTED_MODULE_0__["useState"])(['always']);
   const handleChange = Object(react__WEBPACK_IMPORTED_MODULE_0__["useCallback"])(value => setSelected(value), []);
-  const renderDatePicker = Object(react__WEBPACK_IMPORTED_MODULE_0__["useCallback"])(isSelected => isSelected && __jsx(Schedule, null));
+  const renderDatePicker = Object(react__WEBPACK_IMPORTED_MODULE_0__["useCallback"])(isSelected => isSelected && __jsx(Schedule, {
+    handleTimeSetting: props.handleTimeSetting
+  }));
   return __jsx(_shopify_polaris__WEBPACK_IMPORTED_MODULE_1__["ChoiceList"], {
     choices: [{
       label: 'Always display',
@@ -1929,6 +2098,27 @@ function Schedule(props) {
     }
   };
 
+  const {
+    0: {
+      start_h,
+      start_m
+    },
+    1: setStartTime
+  } = Object(react__WEBPACK_IMPORTED_MODULE_0__["useState"])({
+    start_h: 0,
+    start_m: 0
+  });
+  const {
+    0: {
+      end_h,
+      end_m
+    },
+    1: setEndTime
+  } = Object(react__WEBPACK_IMPORTED_MODULE_0__["useState"])({
+    end_h: 0,
+    end_m: 0
+  });
+
   const handleTimeSelection = () => {
     const startH = document.getElementById('start_hour'),
           startM = document.getElementById('start_min'),
@@ -1936,36 +2126,51 @@ function Schedule(props) {
           endM = document.getElementById('end_min');
     let startT = {},
         endT = {};
-    startH.addEventListener('input', function (e) {
+    startH.addEventListener('change', function (e) {
       let num = e.target.valueAsNumber;
       num > 23 ? startT.hour = 23 : num < 0 ? startT.hour = 0 : startT.hour = num;
+      setStartTime({
+        start_m,
+        start_h: startT.hour
+      });
     });
-    startM.addEventListener('input', function (e) {
+    startM.addEventListener('change', function (e) {
       let num = e.target.valueAsNumber;
       num > 59 ? startT.min = 59 : num < 0 ? startT.min = 0 : startT.min = num;
+      setStartTime({
+        start_h,
+        start_m: startT.min
+      });
     });
-    endH.addEventListener('input', function (e) {
+    endH.addEventListener('change', function (e) {
       let num = e.target.valueAsNumber;
       num > 23 ? endT.hour = 23 : num < 0 ? endT.hour = 0 : endT.hour = num;
+      setEndTime({
+        end_m,
+        end_h: endT.hour
+      });
     });
-    endM.addEventListener('input', function (e) {
+    endM.addEventListener('change', function (e) {
       let num = e.target.valueAsNumber;
       num > 59 ? endT.min = 59 : num < 0 ? endT.min = 0 : endT.min = num;
+      setEndTime({
+        end_h,
+        end_m: endT.min
+      });
     });
-    return {
-      startT,
-      endT
-    };
   };
 
   Object(react__WEBPACK_IMPORTED_MODULE_0__["useEffect"])(() => {
-    console.log('selected dates are', selectedDates);
     let startD = new Date(selectedDates.start);
     let endD = new Date(selectedDates.end);
-    let time = handleTimeSelection();
-    startD = startD.getFullYear() + '/';
-    console.log(time);
-  }, [selectedDates]);
+    handleTimeSelection();
+    startD = startD.getFullYear() + '/' + (startD.getMonth() + 1) + '/' + startD.getDate() + ' ' + start_h + ':' + start_m;
+    endD = endD.getFullYear() + '/' + (endD.getMonth() + 1) + '/' + endD.getDate() + ' ' + end_h + ':' + end_m;
+    props.handleTimeSetting({
+      start: startD,
+      end: endD
+    });
+  }, [selectedDates, start_h, start_m, end_h, end_m]);
   return __jsx("div", null, __jsx("div", {
     style: {
       display: 'flex',
@@ -2005,7 +2210,9 @@ class DisplaySchedule extends react__WEBPACK_IMPORTED_MODULE_0___default.a.Compo
         marginBottom: '1em',
         fontSize: '1.1em'
       }
-    }, "Display schedule:"), __jsx(Choose, null), __jsx("div", null, "Define the Start Time and End Time of the display period. Must select at least two days."));
+    }, "Display schedule:"), __jsx(Choose, {
+      handleTimeSetting: this.props.handleTimeSetting
+    }), __jsx("div", null, "Define the Start Time and End Time of the display period. Must select at least two days."));
   }
 
 }
@@ -2080,7 +2287,10 @@ class ImageDropZone extends react__WEBPACK_IMPORTED_MODULE_0___default.a.Compone
 
   render() {
     return __jsx(_shopify_polaris__WEBPACK_IMPORTED_MODULE_1__["Card"].Section, null, __jsx("label", {
-      htmlFor: "backgroundImg"
+      htmlFor: "backgroundImg",
+      style: {
+        marginBottom: '5px'
+      }
     }, "Click the drop zone to continue uploading more images:"), __jsx("div", null, __jsx("input", {
       id: "backgroundImg",
       type: "file",
@@ -2107,27 +2317,33 @@ class ImageDropZone extends react__WEBPACK_IMPORTED_MODULE_0___default.a.Compone
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! react */ "react");
-/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_0__);
-/* harmony import */ var _css_fonts_css__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../css/fonts.css */ "./css/fonts.css");
-/* harmony import */ var _css_fonts_css__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(_css_fonts_css__WEBPACK_IMPORTED_MODULE_1__);
+/* harmony import */ var _babel_runtime_corejs2_helpers_esm_objectSpread__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @babel/runtime-corejs2/helpers/esm/objectSpread */ "./node_modules/@babel/runtime-corejs2/helpers/esm/objectSpread.js");
+/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! react */ "react");
+/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_1__);
+/* harmony import */ var _css_fonts_css__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../css/fonts.css */ "./css/fonts.css");
+/* harmony import */ var _css_fonts_css__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(_css_fonts_css__WEBPACK_IMPORTED_MODULE_2__);
+/* harmony import */ var _snippets_demo_css__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../snippets/demo.css */ "./snippets/demo.css");
+/* harmony import */ var _snippets_demo_css__WEBPACK_IMPORTED_MODULE_3___default = /*#__PURE__*/__webpack_require__.n(_snippets_demo_css__WEBPACK_IMPORTED_MODULE_3__);
 
-var __jsx = react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement;
+
+var __jsx = react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement;
 
 
-class PreviewBar extends react__WEBPACK_IMPORTED_MODULE_0___default.a.Component {
+
+class PreviewBar extends react__WEBPACK_IMPORTED_MODULE_1___default.a.Component {
   constructor(props) {
     super(props);
-    this.state = {
-      animReq: null
-    };
-    this.htmlRef = react__WEBPACK_IMPORTED_MODULE_0___default.a.createRef();
-    this.closeBtn = react__WEBPACK_IMPORTED_MODULE_0___default.a.createRef();
-    this.topBar = react__WEBPACK_IMPORTED_MODULE_0___default.a.createRef();
+    this.state = {};
+    this.htmlRef = react__WEBPACK_IMPORTED_MODULE_1___default.a.createRef();
+    this.firstLineRefwG = react__WEBPACK_IMPORTED_MODULE_1___default.a.createRef();
+    this.firstLineRefGA = react__WEBPACK_IMPORTED_MODULE_1___default.a.createRef();
+    this.closeBtn = react__WEBPACK_IMPORTED_MODULE_1___default.a.createRef();
+    this.topBar = react__WEBPACK_IMPORTED_MODULE_1___default.a.createRef();
     this.injectHtml = this.injectHtml.bind(this);
     this.setAnimation = this.setAnimation.bind(this);
     this.renderBarFirstLine = this.renderBarFirstLine.bind(this);
     this.renderInnerBar = this.renderInnerBar.bind(this);
+    this.handleLinkContainer = this.handleLinkContainer.bind(this);
     this._hexToRgba = this._hexToRgba.bind(this);
   }
 
@@ -2159,33 +2375,18 @@ class PreviewBar extends react__WEBPACK_IMPORTED_MODULE_0___default.a.Component 
 
   componentDidMount() {
     // handle injected html
-    if (this.htmlRef.current) {
-      let injectedHtmlElCollection = this.htmlRef.current.children; // object
-
-      for (let n = 0; n < injectedHtmlElCollection.length; n++) {
-        let el = injectedHtmlElCollection[n];
-
-        if (el.classList.contains('link-container')) {
-          el.setAttribute("style", "height:22px;overflow:hidden;line-height:22px;");
-
-          if (el.children[0].tagName === 'UL') {
-            let ul = el.children[0];
-            this.setAnimation(ul, 'li');
-          }
-        }
-      }
-    } // handle closing action
-
+    this.handleLinkContainer(this.htmlRef);
+    this.handleLinkContainer(this.firstLineRefwG);
+    this.handleLinkContainer(this.firstLineRefGA); // handle closing action
 
     let closeBtn = this.closeBtn.current;
     closeBtn.addEventListener('click', e => {// #todo add script when appending to page to hide the bar element
     });
   }
 
-  componentDidUpdate() {
-    // handle injected html
-    if (this.htmlRef.current) {
-      let injectedHtmlElCollection = this.htmlRef.current.children; // object
+  handleLinkContainer(sp) {
+    if (sp.current) {
+      let injectedHtmlElCollection = sp.current.children; // object
 
       for (let n = 0; n < injectedHtmlElCollection.length; n++) {
         let el = injectedHtmlElCollection[n];
@@ -2193,31 +2394,36 @@ class PreviewBar extends react__WEBPACK_IMPORTED_MODULE_0___default.a.Component 
         if (el.classList.contains('link-container')) {
           el.setAttribute("style", "height:22px;overflow:hidden;line-height:22px;");
 
-          if (el.children[0].tagName === 'UL') {
+          if (el.children[0] && el.children[0].tagName === 'UL') {
             let ul = el.children[0];
-            this.setAnimation(ul, 'li');
+            ul.setAttribute('style', "margin:0;");
+
+            if (ul.children[1]) {
+              this.setAnimation(ul, 'li');
+            }
           }
         }
       }
     }
+  }
 
-    console.log('finished top bar', this.topBar.current);
+  componentDidUpdate() {
+    this.handleLinkContainer(this.htmlRef);
+    this.handleLinkContainer(this.firstLineRefwG);
+    this.handleLinkContainer(this.firstLineRefGA);
+    console.log('finished top bar', this.topBar.current); // this.props.parseCssString(this.props.customCode);
   }
 
   injectHtml(html) {
-    let contExp = /link\-container/;
-    let havCont = contExp.test(html);
-
-    if (havCont) {}
-
+    let style_basic = {
+      textAlign: 'center'
+    };
     return __jsx("span", {
       dangerouslySetInnerHTML: {
         __html: html
       },
       ref: this.htmlRef,
-      style: {
-        textAlign: 'center'
-      }
+      style: style_basic
     });
   }
 
@@ -2227,7 +2433,12 @@ class PreviewBar extends react__WEBPACK_IMPORTED_MODULE_0___default.a.Component 
       inpTxt,
       spColor
     } = barConfig;
-    return __jsx("span", null, inpTxt, __jsx("span", {
+    return __jsx("span", null, __jsx("span", {
+      dangerouslySetInnerHTML: {
+        __html: inpTxt
+      },
+      ref: this.firstLineRefwG
+    }), __jsx("span", {
       style: {
         color: spColor,
         fontWeight: 400
@@ -2262,19 +2473,28 @@ class PreviewBar extends react__WEBPACK_IMPORTED_MODULE_0___default.a.Component 
       imgUrl = 'url("' + window.URL.createObjectURL(bgImg) + '")';
     }
 
+    let barStyle = {
+      padding: padding,
+      fontSize: fontSize ? fontSize + 'px' : '18px',
+      lineHeight: '22.5px',
+      textAlign: 'center',
+      position: 'relative',
+      backgroundColor: bgColor,
+      color: ftColor,
+      backgroundImage: imgUrl,
+      fontFamily: fontFamily
+    }; // overriding old style works!
+
+    let inputStyle = {};
     return __jsx("div", {
-      style: {
-        padding: padding,
-        fontSize: fontSize ? fontSize + 'px' : '18px',
-        lineHeight: '22.5px',
-        textAlign: 'center',
-        position: 'relative',
-        backgroundColor: bgColor,
-        color: ftColor,
-        backgroundImage: imgUrl,
-        fontFamily: fontFamily
-      }
-    }, goal ? this.renderBarFirstLine(barConfig) : inpTxt, addedHtml ? this.injectHtml(addedHtml) : null, __jsx("div", {
+      style: Object(_babel_runtime_corejs2_helpers_esm_objectSpread__WEBPACK_IMPORTED_MODULE_0__["default"])({}, barStyle, inputStyle),
+      id: "ptk_bar"
+    }, goal ? this.renderBarFirstLine(barConfig) : __jsx("span", {
+      dangerouslySetInnerHTML: {
+        __html: inpTxt
+      },
+      ref: this.firstLineRefGA
+    }), addedHtml ? this.injectHtml(addedHtml) : null, __jsx("div", {
       style: {
         position: 'absolute',
         top: '8px',

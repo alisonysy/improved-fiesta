@@ -1,16 +1,21 @@
 import '../css/fonts.css';
+import '../snippets/demo.css';
 
 class PreviewBar extends React.Component{
   constructor(props){
     super(props);
-    this.state = {animReq:null};
+    this.state = {
+    };
     this.htmlRef = React.createRef();
+    this.firstLineRefwG = React.createRef();
+    this.firstLineRefGA = React.createRef();
     this.closeBtn = React.createRef();
     this.topBar = React.createRef();
     this.injectHtml = this.injectHtml.bind(this);
     this.setAnimation = this.setAnimation.bind(this);
     this.renderBarFirstLine = this.renderBarFirstLine.bind(this);
     this.renderInnerBar = this.renderInnerBar.bind(this);
+    this.handleLinkContainer = this.handleLinkContainer.bind(this);
     this._hexToRgba = this._hexToRgba.bind(this);
   }
 
@@ -42,19 +47,9 @@ class PreviewBar extends React.Component{
 
   componentDidMount(){
     // handle injected html
-    if(this.htmlRef.current){
-      let injectedHtmlElCollection = this.htmlRef.current.children; // object
-      for(let n=0;n<injectedHtmlElCollection.length;n++){
-        let el = injectedHtmlElCollection[n];
-        if(el.classList.contains('link-container')){
-          el.setAttribute("style","height:22px;overflow:hidden;line-height:22px;");
-          if(el.children[0].tagName==='UL'){
-            let ul = el.children[0];
-            this.setAnimation(ul,'li');
-          }
-        }
-      }
-    }
+    this.handleLinkContainer(this.htmlRef);
+    this.handleLinkContainer(this.firstLineRefwG);
+    this.handleLinkContainer(this.firstLineRefGA);
     
     // handle closing action
     let closeBtn = this.closeBtn.current;
@@ -63,41 +58,45 @@ class PreviewBar extends React.Component{
     })
   }
 
-  componentDidUpdate(){
-    // handle injected html
-    if(this.htmlRef.current){
-      let injectedHtmlElCollection = this.htmlRef.current.children; // object
+  handleLinkContainer(sp){
+    if(sp.current){
+      let injectedHtmlElCollection = sp.current.children; // object
       for(let n=0;n<injectedHtmlElCollection.length;n++){
         let el = injectedHtmlElCollection[n];
         if(el.classList.contains('link-container')){
           el.setAttribute("style","height:22px;overflow:hidden;line-height:22px;");
-          if(el.children[0].tagName==='UL'){
+          if(el.children[0] && el.children[0].tagName==='UL'){
             let ul = el.children[0];
-            this.setAnimation(ul,'li');
+            ul.setAttribute('style',"margin:0;");
+            if(ul.children[1]){
+              this.setAnimation(ul,'li');
+            }
           }
         }
       }
     }
+  }
 
+  componentDidUpdate(){
+    this.handleLinkContainer(this.htmlRef);
+    this.handleLinkContainer(this.firstLineRefwG);
+    this.handleLinkContainer(this.firstLineRefGA);
     console.log('finished top bar',this.topBar.current);
+    // this.props.parseCssString(this.props.customCode);
   }
 
 
   injectHtml(html){
-    let contExp = /link\-container/;
-    let havCont = contExp.test(html);
-    if(havCont){
-
-    }
+    let style_basic = {textAlign:'center'};
     return (
-      <span dangerouslySetInnerHTML={{__html:html}} ref={this.htmlRef} style={{textAlign:'center'}}></span>
+      <span dangerouslySetInnerHTML={{__html:html}} ref={this.htmlRef} style={style_basic}></span>
     )
   }
 
   renderBarFirstLine(barConfig){
     const {goal,inpTxt,spColor} = barConfig;
     return (
-      <span>{inpTxt}<span style={{color:spColor,fontWeight:400}}>${goal}</span></span>
+      <span><span dangerouslySetInnerHTML={{__html:inpTxt}} ref={this.firstLineRefwG}></span><span style={{color:spColor,fontWeight:400}}>${goal}</span></span>
     )
   }
 
@@ -113,13 +112,19 @@ class PreviewBar extends React.Component{
     if(imgSize){
       imgUrl = 'url("'+window.URL.createObjectURL(bgImg)+'")';
     }
-    
+
+    let barStyle = {padding:padding,fontSize:fontSize? fontSize+'px' : '18px',lineHeight:'22.5px',textAlign:'center',position:'relative',backgroundColor:bgColor,color:ftColor,backgroundImage:imgUrl,fontFamily:fontFamily};
+    // overriding old style works!
+    let inputStyle = {}
     return (
-      <div style={{padding:padding,fontSize:fontSize? fontSize+'px' : '18px',lineHeight:'22.5px',textAlign:'center',position:'relative',backgroundColor:bgColor,color:ftColor,backgroundImage:imgUrl,fontFamily:fontFamily}}>
+      <div 
+        style={{...barStyle,...inputStyle}}
+        id="ptk_bar"
+      >
         { goal?
           this.renderBarFirstLine(barConfig)
           :
-          inpTxt
+          <span dangerouslySetInnerHTML={{__html:inpTxt}} ref={this.firstLineRefGA}></span>
         }
         { addedHtml?
             this.injectHtml(addedHtml) 

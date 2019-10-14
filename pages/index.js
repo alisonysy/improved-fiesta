@@ -67,7 +67,7 @@ function SaveUserPreference(props){
             //   variables:{
             //     input:{
             //       displayScope:'ONLINE_STORE',
-            //       src:'https://19f03c79.ngrok.io/_next/static/chunks/topBarInjection.js'
+            //       src:'https://26d92420.ngrok.io/_next/static/chunks/topBarInjection.js'
             //     }
             //   }
             // })
@@ -101,7 +101,8 @@ class Index extends React.Component {
       customCode:{script:'',style:''},
       dspOnPage:{selected:'',url:''},
       shipsToCountries:[],
-      selectedTargets:[]
+      selectedTargets:[],
+      scheduleTime:{}
     };
     this.baseState = this.state;
     this.finalBars = React.createRef();
@@ -115,7 +116,7 @@ class Index extends React.Component {
 
   render(){
     const emptyState = !store.get('ids');
-    const {barTxtConfig,barFrShGl,barLink,styleConfig,bgImg,savedName,barPosition,dspOnPage,selectedTargets} = this.state;
+    const {barTxtConfig,barFrShGl,barLink,styleConfig,bgImg,savedName,barPosition,dspOnPage,selectedTargets,scheduleTime,customCode} = this.state;
     return (
       <Page>
         <Layout.Section>
@@ -128,7 +129,8 @@ class Index extends React.Component {
             <div style={{marginTop:'3em'}}>
               <TemplateStyle handleClickedLi={(bg,ftColor) => this.setState({styleConfig:{...this.state.styleConfig,colorConfig:{...this.state.styleConfig.colorConfig,bgColor:bg,txtColor:ftColor}}})}/>
               <PreviewPage 
-                others={{savedName,barPosition,dspOnPage,selectedTargets}}
+                others={{savedName,barPosition,dspOnPage,selectedTargets,scheduleTime}}
+                customCode={{customCode}}
                 contentConfig={{barTxtConfig,barFrShGl,barLink}} 
                 styleConfig = {{...styleConfig}}
                 bgImg = {bgImg}
@@ -151,7 +153,8 @@ class Index extends React.Component {
               <TargetConfigPage 
                 handleDisplayOnPage={(sec,url)=>this.setState({dspOnPage:{selected:sec,url:url}})}
                 shipsToCountries={this.state.shipsToCountries}
-                handleSelectedTargets={(val)=>this.setState({selectedTargets:val},function(){console.log('selected targets are',this.state.selectedTargets)})}
+                handleSelectedTargets={(val)=>this.setState({selectedTargets:val})}
+                handleTimeSetting={(timeObj) => this.setState({scheduleTime:timeObj})}
               />
               <CustomCodePage handleCustomCode={(script,style) => {this.setState({customCode:{script:script,style:style}})}}/>
               <SaveUserPreference 

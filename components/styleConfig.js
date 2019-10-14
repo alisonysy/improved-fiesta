@@ -1,4 +1,4 @@
-import { Card, Stack, TextField, Button, Form, FormLayout, ColorPicker} from '@shopify/polaris';
+import { Card, Stack, TextField, Button, Form, FormLayout, ColorPicker, RangeSlider} from '@shopify/polaris';
 import { useState, useCallback, useEffect } from 'react';
 import ImageDropZone from '../snippets/imageDropZone';
 import '../css/fonts.css';
@@ -19,6 +19,37 @@ function ColorPickers(props){
     <div style={{height:'100px',width:'auto',position:'absolute',top:'25px',left:'0',zIndex:'99'}}>
       <ColorPicker onChange={setColor} color={color} />
     </div>
+  );
+}
+
+function OpacitySlider(props){
+  const [rangeValue, setRangeValue] = useState(100);
+
+  const handleRangeSliderChange = useCallback(
+    (value) => setRangeValue(value),
+    [],
+  );
+
+  const suffixStyles = {
+    minWidth: '24px',
+    textAlign: 'right',
+  };
+
+  useEffect(()=>{
+    props.handleBgOpacity(rangeValue);
+  },[rangeValue])
+
+  return (
+      <RangeSlider
+        output
+        label="Background Opacity"
+        min={0}
+        max={100}
+        value={rangeValue}
+        onChange={handleRangeSliderChange}
+        prefix={<p>0</p>}
+        suffix={<p style={suffixStyles}>{rangeValue}</p>}
+      />
   );
 }
 
@@ -70,7 +101,7 @@ function BackgroundSetting(props){
   const [showTxtPicker,setTxtPicker] = useState(false);
   const [showSpTxtPicker,setSpTxtPicker] = useState(false);
   const [bgColor, setBgColor] = useState('#000');
-  const [bgOpacity, setBgOpacity] = useState('100');
+  const [bgOpacity, setBgOpacity] = useState(100);
 
   const [txtColor, setTxtColor] = useState('#b31219');
   const [specialColor, setSpecialColor] = useState('#fff');
@@ -97,86 +128,85 @@ function BackgroundSetting(props){
 
   return (
     <Card.Section>
-      <Stack>
-        <div>
+      <div style={{display:'flex',alignItems:'center',justifyContent:'flex-start',marginBottom:'1em'}}>
+        <div style={{width:'30%'}}>
           <h3>Background color:</h3>
-          <div style={{position:'relative'}}>
-            <div style={{height:'25px',width:'25px',borderWidth:'1px',borderStyle:'solid',borderColor:'#ddd',display:'inline-block',backgroundColor:bgColor,cursor:'pointer'}} 
-              onClick={() => setBgPicker(!showBgPicker)}
-            ></div>
-            { showBgPicker? 
-              <ColorPickers 
-                handleColorChange={(hslCl) => {
-                  let cRgb = hslToRgb(hslCl.hue,hslCl.saturation,hslCl.brightness);
-                  setBgColor(cRgb);
-                }}
-              />
-              :
-              null
-            }
-          </div>
-          <TextField
-            value={bgColor}
-            onChange={nw => setBgColor(nw)}
-          />
+          <Stack alignment="center">
+            <div style={{position:'relative'}}>
+              <div style={{height:'25px',width:'25px',borderWidth:'1px',borderStyle:'solid',borderColor:'#ddd',display:'inline-block',backgroundColor:bgColor,cursor:'pointer'}} 
+                onClick={() => setBgPicker(!showBgPicker)}
+              ></div>
+              { showBgPicker? 
+                <ColorPickers 
+                  handleColorChange={(hslCl) => {
+                    let cRgb = hslToRgb(hslCl.hue,hslCl.saturation,hslCl.brightness);
+                    setBgColor(cRgb);
+                  }}
+                />
+                :
+                null
+              }
+            </div>
+            <TextField
+              value={bgColor}
+              onChange={nw => setBgColor(nw)}
+            />
+          </Stack>
         </div>
-        <div>
-          <h3>Background opacity:</h3>
-          <div style={{display:'inline-block'}}>{bgOpacity}</div>
-          <TextField 
-            value={bgOpacity}
-            onChange={nw => setBgOpacity(nw)}
-            type="number"
-            helpText="0 is transparent, 100 is opaque."
-          />
+        <div style={{width:'50%'}}>
+          <OpacitySlider handleBgOpacity={(val) => setBgOpacity(val)} />
         </div>
-      </Stack>
-      <Stack>
-        <div>
+      </div>
+      <div style={{display:'flex',alignItems:'center',justifyContent:'flex-start'}}>
+        <div style={{width:'30%'}}>
           <h3>Text color:</h3>
-          <div style={{position:'relative'}}>
-           <div style={{height:'25px',width:'25px',borderWidth:'1px',borderStyle:'solid',borderColor:'#ddd',display:'inline-block',backgroundColor:txtColor,cursor:'pointer'}}
-            onClick={()=>setTxtPicker(!showTxtPicker)}
-           ></div>
-            { showTxtPicker?
-              <ColorPickers 
-                handleColorChange={(hslCl) => {
-                  let cRgb = hslToRgb(hslCl.hue,hslCl.saturation,hslCl.brightness);
-                  setTxtColor(cRgb);
-                }}
-              />
-              :
-              null
-            }
-          </div>
-          <TextField 
-            value={txtColor}
-            onChange={nw => setTxtColor(nw)}
-          />
-        </div>
-        <div>
-          <h3>Special text color:</h3>
-          <div style={{position:'relative'}}>
-            <div style={{height:'25px',width:'25px',borderWidth:'1px',borderStyle:'solid',borderColor:'#ddd',display:'inline-block',backgroundColor:specialColor,cursor:'pointer'}}
-              onClick={()=>setSpTxtPicker(!showSpTxtPicker)}
+          <Stack alignment="center">
+            <div style={{position:'relative'}}>
+            <div style={{height:'25px',width:'25px',borderWidth:'1px',borderStyle:'solid',borderColor:'#ddd',display:'inline-block',backgroundColor:txtColor,cursor:'pointer'}}
+              onClick={()=>setTxtPicker(!showTxtPicker)}
             ></div>
-            { showSpTxtPicker?
-              <ColorPickers 
-                handleColorChange={(hslCl) => {
-                  let cRgb = hslToRgb(hslCl.hue,hslCl.saturation,hslCl.brightness);
-                  setSpecialColor(cRgb);
-                }}
-              />
-              :
-              null
-            }
-          </div>
-          <TextField 
-            value={rgbToHex(specialColor)}
-            onChange={nw => setSpecialColor(nw)}
-          />
+              { showTxtPicker?
+                <ColorPickers 
+                  handleColorChange={(hslCl) => {
+                    let cRgb = hslToRgb(hslCl.hue,hslCl.saturation,hslCl.brightness);
+                    setTxtColor(cRgb);
+                  }}
+                />
+                :
+                null
+              }
+            </div>
+            <TextField 
+              value={txtColor}
+              onChange={nw => setTxtColor(nw)}
+            />
+          </Stack>
         </div>
-      </Stack>
+        <div style={{width:'30%'}}>
+          <h3>Special text color:</h3>
+          <Stack  alignment="center">
+            <div style={{position:'relative'}}>
+              <div style={{height:'25px',width:'25px',borderWidth:'1px',borderStyle:'solid',borderColor:'#ddd',display:'inline-block',backgroundColor:specialColor,cursor:'pointer'}}
+                onClick={()=>setSpTxtPicker(!showSpTxtPicker)}
+              ></div>
+              { showSpTxtPicker?
+                <ColorPickers 
+                  handleColorChange={(hslCl) => {
+                    let cRgb = hslToRgb(hslCl.hue,hslCl.saturation,hslCl.brightness);
+                    setSpecialColor(cRgb);
+                  }}
+                />
+                :
+                null
+              }
+            </div>
+            <TextField 
+              value={rgbToHex(specialColor)}
+              onChange={nw => setSpecialColor(nw)}
+            />
+          </Stack>
+        </div>
+      </div>
     </Card.Section>
   )
 }
@@ -213,23 +243,27 @@ function Fonts(props){
 
   return (
     <Card.Section>
-      <div>Font family:</div>
-      <Button onClick={() => handleFontFam('Montserrat')}>Montserrat</Button>
-      <Button onClick={() => handleFontFam('sans-serif')}>Sans serif</Button>
-      <TextField 
-        label="Font size:"
-        suffix="px"
-        type="number"
-        value={fontSize}
-        onChange={handleFontSize}
-      />
-      <TextField 
-        label="Bar padding:"
-        suffix="px"
-        type="number"
-        value={padding}
-        onChange={handlePadding}
-      />
+      <div style={{marginBottom:'5px'}}>Font family:</div>
+      <span style={{marginRight:'.6em'}}><Button onClick={() => handleFontFam('Montserrat')}>Montserrat</Button></span>
+      <span><Button onClick={() => handleFontFam('sans-serif')}>Sans serif</Button></span>
+      <div style={{margin:'1em 0'}}>
+        <TextField 
+          label="Font size:"
+          suffix="px"
+          type="number"
+          value={fontSize}
+          onChange={handleFontSize}
+        />
+      </div>
+      <div>
+        <TextField 
+          label="Bar padding:"
+          suffix="px"
+          type="number"
+          value={padding}
+          onChange={handlePadding}
+        />
+      </div>
     </Card.Section>
   )
 }

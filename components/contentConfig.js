@@ -9,9 +9,9 @@ function NameField(props){
   },[name]);
 
   return ( 
-    <FormLayout.Group>
+    <Card.Section>
       <TextField label="Name: " value={name} onChange={ (nw) => setName(nw)} />
-    </FormLayout.Group>
+    </Card.Section>
   )
 }
 
@@ -22,14 +22,14 @@ function FreeShippingGoal(props){
     props.handleGoalChange(newGoal)
   }
   return (
-    <FormLayout.Group>
+    <Card.Section>
       <TextField 
         label="Free Shipping Goal: " 
         type="number"
         value={goal} 
         onChange={(nw) => _handleGoalChange(nw)} 
       />
-    </FormLayout.Group>
+    </Card.Section>
   );
 }
 
@@ -42,7 +42,7 @@ function InitialMsg(props){
   },[msg,added])
 
   return (
-    <FormLayout.Group>
+    <Card.Section>
       <Stack alignment="center" distribution="fill">
         <TextField
           label="Initial message: "
@@ -59,7 +59,7 @@ function InitialMsg(props){
           onChange={(nw) => setAdded(nw)}
         />
       </Stack>
-    </FormLayout.Group>
+    </Card.Section>
   )
 }
 
@@ -73,7 +73,7 @@ function ProgressMsg(props){
   },[msg,added])
 
   return (
-    <FormLayout.Group condensed>
+    <Card.Section condensed>
       <Stack alignment="center" distribution="fill">
         <TextField
           label="Progress message: "
@@ -90,7 +90,7 @@ function ProgressMsg(props){
           onChange={(nw) => setAdded(nw)}
         />
       </Stack>
-    </FormLayout.Group>
+    </Card.Section>
   )
 }
 
@@ -102,7 +102,7 @@ function GoalAchieved(props){
   },[msg])
 
   return (
-    <FormLayout.Group>
+    <Card.Section>
       <TextField
         label="Goal Achieved Message: "
         type="text"
@@ -110,7 +110,7 @@ function GoalAchieved(props){
         onChange={(nw) => setMsg(nw)}
         helpText="Displays when cart value is greater than goal"
       />
-    </FormLayout.Group>
+    </Card.Section>
   )
 }
 
@@ -138,7 +138,7 @@ function AddLinkToBar(props){
   }
 
   return(
-    <FormLayout.Group>
+    <Card.Section>
       <Select 
         label="Add Link to the Bar: "
         options={opts}
@@ -147,7 +147,8 @@ function AddLinkToBar(props){
       />
       {
         havLink?
-        <FormLayout.Group>
+        // <FormLayout.Group>
+        <div>
           <TextField
             label="Link URL: "
             type="url"
@@ -160,11 +161,12 @@ function AddLinkToBar(props){
             checked={checkbox}
             onChange={(nw) => handleCheckbox(nw)}
           />
-        </FormLayout.Group>
+        </div>
+        // </FormLayout.Group>
         :
         null
       }
-    </FormLayout.Group>
+    </Card.Section>
   )
 }
 
@@ -193,14 +195,14 @@ function SetPosition(props){
   },[isSelected])
 
   return (
-    <FormLayout.Group>
+    <Card.Section>
       <ChoiceList 
         title={'Select a Display Position: '}
         choices={choices}
         selected={isSelected}
         onChange={(nw) => setSelected(nw)}
       />
-    </FormLayout.Group>
+    </Card.Section>
   )
 }
 
@@ -246,8 +248,7 @@ class ContentConfigPage extends React.Component{
   render(){
     const {frShGl} = this.state;
     return (
-      <Card>
-        <Form onSubmit={() => {}}>
+      <Card Sectioned> 
           <FormLayout>
 
             <NameField handleName={(name)=> this.props.handleName(name)}/>
@@ -270,7 +271,6 @@ class ContentConfigPage extends React.Component{
             <SetPosition handleBarPosition={(val)=>this.props.handleBarPosition(val)}/>
 
           </FormLayout>
-        </Form>
       </Card>
     )
   }
