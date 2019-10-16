@@ -1,77 +1,78 @@
-import { Card, Form, FormLayout } from '@shopify/polaris'
+import { Card, Form, FormLayout, Collapsible, Button } from '@shopify/polaris';
+import SectionHead from '../snippets/sectionHead';
 
 class CustomCodePage extends React.Component{
   constructor(props){
     super(props)
     this.state={
-      customCode:''
+      customCode:'',
+      sectionActive:true
     }
     this.handleCustomCode = this.handleCustomCode.bind(this);
-    this.parseCssString = this.parseCssString.bind(this);
   }
 
-  handleCustomCode(val){
-    let scriptStart = val.indexOf('<script>'), scriptEnd = val.indexOf('</script>'), styleStart = val.indexOf('<style>'), styleEnd = val.indexOf('</style>');
+  handleCustomCode(val,type){
+    const self = this;
     let scriptTxt, styleTxt;
-    if(scriptStart !== -1 && scriptEnd !== -1){
-      scriptTxt = val.slice(scriptStart+8,scriptEnd).trim();
+    switch(type){
+      case 'style':
+        styleTxt = val;
+        break;
+      case 'script':
+        scriptTxt = va;
+        break;
     }
-    if(styleStart !== -1 && styleEnd !== -1){
-      styleTxt = val.slice(styleStart+7,styleEnd).trim();
-    } 
-    styleTxt = this.parseCssString(styleTxt);
-    this.props.handleCustomCode(scriptTxt,styleTxt);
+    if(this.state.timer){
+      clearTimeout(this.state.timer);
+    };
+    this.setState(()=>{
+      let timerN = setTimeout(() => {
+        console.log('codes are sent');
+        self.props.handleCustomCode(scriptTxt,styleTxt);
+      }, 5000);
+      return {timer:timerN}
+    });
   }
 
-  parseCssString(code){
-    let style = code,selectors=[];
-    if(!style) return;
-    let styleArr = style.split('}');
-    let sl_regExp = /(.+)\s*{/;
-    styleArr.map( i => {
-      if(i.trim()!==''){
-        let re = i.match(sl_regExp);
-        if(re){
-          let selector = re[1],selectorObj={};
-          let propStr =  i.slice(selector.length+1);
-          propStr = propStr.split(';');
-          if(propStr.length){
-            propStr = propStr.map( i => {
-              let prop_name,prop_val,reg=/.+/;
-              //handle extra {
-              let a = i.indexOf('{');
-              a !== -1 ? 
-              i=i.slice(a+1)
-              :
-              i=i;
-              //handle carriage return
-              if(!i.match(reg)) return;
-              i = i.match(reg)[0];              
-              //handle colons inside property value;
-              let notUrl = /:[^\/]/;
-              let re_notUrl = i.match(notUrl);
-              if(!re_notUrl) return;
-              prop_name = i.substring(0,re_notUrl.index);
-              prop_val = i.substring(re_notUrl.index+1);
-              selectorObj[prop_name] = prop_val;
-            });
-            selectors.push({[selector]:selectorObj})
-          }
-        }
-      }
-    });
-    return selectors;
-  };
 
   render(){
     return (
       <Card>
-        <Form onSubmit={v => console.log(v)}>
+        <SectionHead 
+          handleToggle={(active) => this.setState({sectionActive:active})}
+          headerTxt='Custom code'
+          sectionActive={this.state.sectionActive}
+        />
+        <Collapsible open={this.state.sectionActive} >
           <FormLayout>
-            <div style={{fontSize:'18px',padding:'1.5em 0 0 1em'}}>Custom Codes</div>
-            <textarea rows="10" cols="80" placeholder="Please put your custom codes here..." style={{marginLeft:'1em'}} onChange={(evt) => {evt.persist();this.handleCustomCode(evt.nativeEvent.target.value)}}></textarea>
+            <Card.Section>
+              <div style={{fontSize:'16px',padding:'0 0 7px 1em'}}>Style</div>
+              <div style={{fontSize:'14px',padding:'0 0 4px 1em'}}>&lt;style&gt;</div>
+              <textarea rows="10" cols="80" placeholder="Please put your custom codes here..." 
+                style={{marginLeft:'1em',border:'1px solid #bbb',borderRadius:'5px',width:'calc(100% - 2em)',marginBottom:'5px'}} 
+                onChange={(evt) => {
+                  evt.persist();
+                  this.setState({timer:null})
+                  this.handleCustomCode(evt.nativeEvent.target.value,'style')
+                }}
+              />
+              <div style={{fontSize:'14px',padding:'0 0 0 1em'}}>&lt;/style&gt;</div>
+            </Card.Section>
+            <Card.Section>
+              <div style={{fontSize:'16px',padding:'0 0 7px 1em'}}>Script</div>
+              <div style={{fontSize:'14px',padding:'0 0 4px 1em'}}>&lt;script&gt;</div>
+              <textarea rows="10" cols="80" placeholder="Please put your custom codes here..." 
+                style={{marginLeft:'1em',border:'1px solid #bbb',borderRadius:'5px',width:'calc(100% - 2em)',marginBottom:'5px'}} 
+                onChange={(evt) => {
+                  evt.persist();
+                  this.setState({timer:null})
+                  this.handleCustomCode(evt.nativeEvent.target.value,'script')
+                }}
+              />
+              <div style={{fontSize:'14px',padding:'0 0 0 1em'}}>&lt;/script&gt;</div>
+            </Card.Section>
           </FormLayout>
-        </Form>
+        </Collapsible>
       </Card>
     )
   }

@@ -224,10 +224,12 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var react__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_2__);
 /* harmony import */ var _shopify_polaris__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! @shopify/polaris */ "@shopify/polaris");
 /* harmony import */ var _shopify_polaris__WEBPACK_IMPORTED_MODULE_3___default = /*#__PURE__*/__webpack_require__.n(_shopify_polaris__WEBPACK_IMPORTED_MODULE_3__);
+/* harmony import */ var _snippets_sectionHead__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../snippets/sectionHead */ "./snippets/sectionHead.js");
 
 
 
 var __jsx = react__WEBPACK_IMPORTED_MODULE_2___default.a.createElement;
+
 
 
 
@@ -442,7 +444,15 @@ function SetPosition(props) {
     label: 'Manual placement',
     value: 'manual',
     renderChildren: isSelected => {
-      return isSelected && __jsx("div", null, "Place the code");
+      return isSelected && __jsx("div", null, "Place ", __jsx("span", {
+        style: {
+          fontFamily: 'monospace',
+          fontWeight: 800,
+          backgroundColor: '#ddd',
+          borderRadius: '5px',
+          padding: '2px 4px'
+        }
+      }, "<div id=\"fsb_placeholder\"></div>"), " where you prefer in your theme file.");
     }
   }];
   Object(react__WEBPACK_IMPORTED_MODULE_2__["useEffect"])(() => {
@@ -467,7 +477,8 @@ class ContentConfigPage extends react__WEBPACK_IMPORTED_MODULE_2___default.a.Com
         prgMsg1: 'Only ',
         prgMsg2: ' away from free shipping',
         achievedMsg: 'Free Shipping Worldwide'
-      }
+      },
+      sectionActive: true
     };
     this.handleGoalChange = this.handleGoalChange.bind(this);
     this.handleMsgChange = this.handleMsgChange.bind(this);
@@ -475,7 +486,7 @@ class ContentConfigPage extends react__WEBPACK_IMPORTED_MODULE_2___default.a.Com
   }
 
   handleGoalChange(newGoal) {
-    if (_babel_runtime_corejs2_core_js_parse_float__WEBPACK_IMPORTED_MODULE_1___default()(newGoal) !== 0) {
+    if (_babel_runtime_corejs2_core_js_parse_float__WEBPACK_IMPORTED_MODULE_1___default()(newGoal) >= 0) {
       this.setState(state => {
         return {
           frShGl: _babel_runtime_corejs2_core_js_parse_float__WEBPACK_IMPORTED_MODULE_1___default()(newGoal)
@@ -515,6 +526,14 @@ class ContentConfigPage extends react__WEBPACK_IMPORTED_MODULE_2___default.a.Com
     } = this.state;
     return __jsx(_shopify_polaris__WEBPACK_IMPORTED_MODULE_3__["Card"], {
       Sectioned: true
+    }, __jsx(_snippets_sectionHead__WEBPACK_IMPORTED_MODULE_4__["default"], {
+      handleToggle: active => this.setState({
+        sectionActive: active
+      }),
+      headerTxt: "Content configuration",
+      sectionActive: this.state.sectionActive
+    }), __jsx(_shopify_polaris__WEBPACK_IMPORTED_MODULE_3__["Collapsible"], {
+      open: this.state.sectionActive
     }, __jsx(_shopify_polaris__WEBPACK_IMPORTED_MODULE_3__["FormLayout"], null, __jsx(NameField, {
       handleName: name => this.props.handleName(name)
     }), __jsx(FreeShippingGoal, {
@@ -533,7 +552,7 @@ class ContentConfigPage extends react__WEBPACK_IMPORTED_MODULE_2___default.a.Com
       handleBarLinkChange: this.handleBarLinkChange
     }), __jsx(SetPosition, {
       handleBarPosition: val => this.props.handleBarPosition(val)
-    })));
+    }))));
   }
 
 }
@@ -555,104 +574,128 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_0__);
 /* harmony import */ var _shopify_polaris__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @shopify/polaris */ "@shopify/polaris");
 /* harmony import */ var _shopify_polaris__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(_shopify_polaris__WEBPACK_IMPORTED_MODULE_1__);
+/* harmony import */ var _snippets_sectionHead__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../snippets/sectionHead */ "./snippets/sectionHead.js");
 
 var __jsx = react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement;
+
 
 
 class CustomCodePage extends react__WEBPACK_IMPORTED_MODULE_0___default.a.Component {
   constructor(props) {
     super(props);
     this.state = {
-      customCode: ''
+      customCode: '',
+      sectionActive: true
     };
     this.handleCustomCode = this.handleCustomCode.bind(this);
-    this.parseCssString = this.parseCssString.bind(this);
   }
 
-  handleCustomCode(val) {
-    let scriptStart = val.indexOf('<script>'),
-        scriptEnd = val.indexOf('</script>'),
-        styleStart = val.indexOf('<style>'),
-        styleEnd = val.indexOf('</style>');
+  handleCustomCode(val, type) {
+    const self = this;
     let scriptTxt, styleTxt;
 
-    if (scriptStart !== -1 && scriptEnd !== -1) {
-      scriptTxt = val.slice(scriptStart + 8, scriptEnd).trim();
+    switch (type) {
+      case 'style':
+        styleTxt = val;
+        break;
+
+      case 'script':
+        scriptTxt = va;
+        break;
     }
 
-    if (styleStart !== -1 && styleEnd !== -1) {
-      styleTxt = val.slice(styleStart + 7, styleEnd).trim();
+    if (this.state.timer) {
+      clearTimeout(this.state.timer);
     }
 
-    styleTxt = this.parseCssString(styleTxt);
-    this.props.handleCustomCode(scriptTxt, styleTxt);
-  }
-
-  parseCssString(code) {
-    let style = code,
-        selectors = [];
-    if (!style) return;
-    let styleArr = style.split('}');
-    let sl_regExp = /(.+)\s*{/;
-    styleArr.map(i => {
-      if (i.trim() !== '') {
-        let re = i.match(sl_regExp);
-
-        if (re) {
-          let selector = re[1],
-              selectorObj = {};
-          let propStr = i.slice(selector.length + 1);
-          propStr = propStr.split(';');
-
-          if (propStr.length) {
-            propStr = propStr.map(i => {
-              let prop_name,
-                  prop_val,
-                  reg = /.+/; //handle extra {
-
-              let a = i.indexOf('{');
-              a !== -1 ? i = i.slice(a + 1) : i = i; //handle carriage return
-
-              if (!i.match(reg)) return;
-              i = i.match(reg)[0]; //handle colons inside property value;
-
-              let notUrl = /:[^\/]/;
-              let re_notUrl = i.match(notUrl);
-              if (!re_notUrl) return;
-              prop_name = i.substring(0, re_notUrl.index);
-              prop_val = i.substring(re_notUrl.index + 1);
-              selectorObj[prop_name] = prop_val;
-            });
-            selectors.push({
-              [selector]: selectorObj
-            });
-          }
-        }
-      }
+    ;
+    this.setState(() => {
+      let timerN = setTimeout(() => {
+        console.log('codes are sent');
+        self.props.handleCustomCode(scriptTxt, styleTxt);
+      }, 5000);
+      return {
+        timer: timerN
+      };
     });
-    return selectors;
   }
 
   render() {
-    return __jsx(_shopify_polaris__WEBPACK_IMPORTED_MODULE_1__["Card"], null, __jsx(_shopify_polaris__WEBPACK_IMPORTED_MODULE_1__["Form"], {
-      onSubmit: v => console.log(v)
-    }, __jsx(_shopify_polaris__WEBPACK_IMPORTED_MODULE_1__["FormLayout"], null, __jsx("div", {
+    return __jsx(_shopify_polaris__WEBPACK_IMPORTED_MODULE_1__["Card"], null, __jsx(_snippets_sectionHead__WEBPACK_IMPORTED_MODULE_2__["default"], {
+      handleToggle: active => this.setState({
+        sectionActive: active
+      }),
+      headerTxt: "Custom code",
+      sectionActive: this.state.sectionActive
+    }), __jsx(_shopify_polaris__WEBPACK_IMPORTED_MODULE_1__["Collapsible"], {
+      open: this.state.sectionActive
+    }, __jsx(_shopify_polaris__WEBPACK_IMPORTED_MODULE_1__["FormLayout"], null, __jsx(_shopify_polaris__WEBPACK_IMPORTED_MODULE_1__["Card"].Section, null, __jsx("div", {
       style: {
-        fontSize: '18px',
-        padding: '1.5em 0 0 1em'
+        fontSize: '16px',
+        padding: '0 0 7px 1em'
       }
-    }, "Custom Codes"), __jsx("textarea", {
+    }, "Style"), __jsx("div", {
+      style: {
+        fontSize: '14px',
+        padding: '0 0 4px 1em'
+      }
+    }, "<style>"), __jsx("textarea", {
       rows: "10",
       cols: "80",
       placeholder: "Please put your custom codes here...",
       style: {
-        marginLeft: '1em'
+        marginLeft: '1em',
+        border: '1px solid #bbb',
+        borderRadius: '5px',
+        width: 'calc(100% - 2em)',
+        marginBottom: '5px'
       },
       onChange: evt => {
         evt.persist();
-        this.handleCustomCode(evt.nativeEvent.target.value);
+        this.setState({
+          timer: null
+        });
+        this.handleCustomCode(evt.nativeEvent.target.value, 'style');
       }
-    }))));
+    }), __jsx("div", {
+      style: {
+        fontSize: '14px',
+        padding: '0 0 0 1em'
+      }
+    }, "</style>")), __jsx(_shopify_polaris__WEBPACK_IMPORTED_MODULE_1__["Card"].Section, null, __jsx("div", {
+      style: {
+        fontSize: '16px',
+        padding: '0 0 7px 1em'
+      }
+    }, "Script"), __jsx("div", {
+      style: {
+        fontSize: '14px',
+        padding: '0 0 4px 1em'
+      }
+    }, "<script>"), __jsx("textarea", {
+      rows: "10",
+      cols: "80",
+      placeholder: "Please put your custom codes here...",
+      style: {
+        marginLeft: '1em',
+        border: '1px solid #bbb',
+        borderRadius: '5px',
+        width: 'calc(100% - 2em)',
+        marginBottom: '5px'
+      },
+      onChange: evt => {
+        evt.persist();
+        this.setState({
+          timer: null
+        });
+        this.handleCustomCode(evt.nativeEvent.target.value, 'script');
+      }
+    }), __jsx("div", {
+      style: {
+        fontSize: '14px',
+        padding: '0 0 0 1em'
+      }
+    }, "</script>")))));
   }
 
 }
@@ -670,41 +713,64 @@ class CustomCodePage extends react__WEBPACK_IMPORTED_MODULE_0___default.a.Compon
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! react */ "react");
-/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_0__);
-/* harmony import */ var _shopify_polaris__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @shopify/polaris */ "@shopify/polaris");
-/* harmony import */ var _shopify_polaris__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(_shopify_polaris__WEBPACK_IMPORTED_MODULE_1__);
-/* harmony import */ var _snippets_previewBar__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../snippets/previewBar */ "./snippets/previewBar.js");
+/* harmony import */ var _babel_runtime_corejs2_helpers_esm_objectSpread__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @babel/runtime-corejs2/helpers/esm/objectSpread */ "./node_modules/@babel/runtime-corejs2/helpers/esm/objectSpread.js");
+/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! react */ "react");
+/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_1__);
+/* harmony import */ var _shopify_polaris__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! @shopify/polaris */ "@shopify/polaris");
+/* harmony import */ var _shopify_polaris__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(_shopify_polaris__WEBPACK_IMPORTED_MODULE_2__);
+/* harmony import */ var _snippets_previewBar__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../snippets/previewBar */ "./snippets/previewBar.js");
+/* harmony import */ var jquery__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! jquery */ "jquery");
+/* harmony import */ var jquery__WEBPACK_IMPORTED_MODULE_4___default = /*#__PURE__*/__webpack_require__.n(jquery__WEBPACK_IMPORTED_MODULE_4__);
 
-var __jsx = react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement;
+
+var __jsx = react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement;
 
 
 
-class PreviewPage extends react__WEBPACK_IMPORTED_MODULE_0___default.a.Component {
+
+class PreviewPage extends react__WEBPACK_IMPORTED_MODULE_1___default.a.Component {
   constructor(props) {
     super(props);
-    this.state = {};
-    this.parseCssString = this.parseCssString.bind(this);
+    this.state = {
+      scriptCode: ''
+    };
   }
 
-  parseCssString(code) {
-    console.log('start parsing');
-    let style = code.style,
-        selectors = [];
-    console.log(style);
-    let styleArr = style.split('}');
-    let regExp = /(.+)[\s]*\{(.+)/;
-    styleArr.map(i => {
-      if (i.trim() !== '') {
-        let re = i.match(regExp);
-        let prop_name = re[1],
-            prop_val = re[2];
-        selectors.push({
-          [prop_name]: prop_val
-        });
-      }
-    });
-    console.log(selectors);
+  static getDerivedStateFromProps(nextProps, prevState) {
+    let scriptC = nextProps.customCode.customCode.script;
+
+    if (scriptC && scriptC !== prevState.scriptCode) {
+      PreviewPage.injectScript(scriptC);
+      return Object(_babel_runtime_corejs2_helpers_esm_objectSpread__WEBPACK_IMPORTED_MODULE_0__["default"])({}, prevState, {
+        scriptCode: scriptC
+      });
+    } else {
+      return Object(_babel_runtime_corejs2_helpers_esm_objectSpread__WEBPACK_IMPORTED_MODULE_0__["default"])({}, prevState, {
+        scriptCode: null
+      });
+    }
+  }
+
+  static injectScript(scriptCode) {
+    let scriptEl = document.createElement('script');
+    scriptEl.setAttribute('data-custom', '');
+    let al_script = document.body.querySelector('script[data-custom]');
+
+    if (scriptCode && scriptCode.length !== 0) {
+      scriptEl.textContent = `
+        try{
+          ${scriptCode}
+        }catch(err){
+          console.error(err);
+        }
+      `;
+    }
+
+    if (al_script) {
+      document.body.removeChild(al_script);
+    }
+
+    document.body.appendChild(scriptEl);
   }
 
   render() {
@@ -714,15 +780,12 @@ class PreviewPage extends react__WEBPACK_IMPORTED_MODULE_0___default.a.Component
       barLink
     } = this.props.contentConfig;
     const bgImg = this.props.bgImg;
-    console.log('preview page - style', this.props.styleConfig);
-    console.log('preview page - code', this.props.customCode);
-
-    if (this.props.customCode.style !== '' && this.props.customCode.style !== undefined) {
-      console.log('parsing ready to start');
-      this.parseCssString(this.props.customCode);
-    }
-
-    return __jsx(_shopify_polaris__WEBPACK_IMPORTED_MODULE_1__["Card"], null, __jsx(_shopify_polaris__WEBPACK_IMPORTED_MODULE_1__["Form"], null, __jsx(_shopify_polaris__WEBPACK_IMPORTED_MODULE_1__["FormLayout"], null, __jsx(_snippets_previewBar__WEBPACK_IMPORTED_MODULE_2__["default"], {
+    return __jsx(_shopify_polaris__WEBPACK_IMPORTED_MODULE_2__["Card"], null, __jsx(_shopify_polaris__WEBPACK_IMPORTED_MODULE_2__["Form"], null, __jsx(_shopify_polaris__WEBPACK_IMPORTED_MODULE_2__["FormLayout"], null, __jsx("div", {
+      style: {
+        fontSize: '18px',
+        padding: '1.5em 0 0 1em'
+      }
+    }, "Preview"), __jsx(_shopify_polaris__WEBPACK_IMPORTED_MODULE_2__["Card"].Section, null, barFrShGl ? __jsx("div", null, __jsx(_snippets_previewBar__WEBPACK_IMPORTED_MODULE_3__["default"], {
       barConfig: {
         bgColor: this.props.styleConfig.colorConfig.bgColor,
         ftColor: this.props.styleConfig.colorConfig.txtColor,
@@ -737,8 +800,8 @@ class PreviewPage extends react__WEBPACK_IMPORTED_MODULE_0___default.a.Component
         fontSize: this.props.styleConfig.fontConfig.fontSize
       },
       barLink: barLink,
-      parseCssString: this.parseCssString
-    }), __jsx(_snippets_previewBar__WEBPACK_IMPORTED_MODULE_2__["default"], {
+      codes: Object(_babel_runtime_corejs2_helpers_esm_objectSpread__WEBPACK_IMPORTED_MODULE_0__["default"])({}, this.props.customCode)
+    }), __jsx(_snippets_previewBar__WEBPACK_IMPORTED_MODULE_3__["default"], {
       barConfig: {
         bgColor: this.props.styleConfig.colorConfig.bgColor,
         ftColor: this.props.styleConfig.colorConfig.txtColor,
@@ -753,8 +816,8 @@ class PreviewPage extends react__WEBPACK_IMPORTED_MODULE_0___default.a.Component
         fontSize: this.props.styleConfig.fontConfig.fontSize
       },
       barLink: barLink,
-      parseCssString: this.parseCssString
-    }), __jsx(_snippets_previewBar__WEBPACK_IMPORTED_MODULE_2__["default"], {
+      codes: Object(_babel_runtime_corejs2_helpers_esm_objectSpread__WEBPACK_IMPORTED_MODULE_0__["default"])({}, this.props.customCode)
+    })) : null, barFrShGl ? __jsx(_snippets_previewBar__WEBPACK_IMPORTED_MODULE_3__["default"], {
       barConfig: {
         bgColor: this.props.styleConfig.colorConfig.bgColor,
         ftColor: this.props.styleConfig.colorConfig.txtColor,
@@ -767,8 +830,23 @@ class PreviewPage extends react__WEBPACK_IMPORTED_MODULE_0___default.a.Component
         fontSize: this.props.styleConfig.fontConfig.fontSize
       },
       barLink: barLink,
-      parseCssString: this.parseCssString
-    }))));
+      codes: Object(_babel_runtime_corejs2_helpers_esm_objectSpread__WEBPACK_IMPORTED_MODULE_0__["default"])({}, this.props.customCode)
+    }) : __jsx(_snippets_previewBar__WEBPACK_IMPORTED_MODULE_3__["default"], {
+      barConfig: {
+        bgColor: this.props.styleConfig.colorConfig.bgColor,
+        ftColor: this.props.styleConfig.colorConfig.txtColor,
+        spColor: this.props.styleConfig.colorConfig.specialColor,
+        opacity: this.props.styleConfig.colorConfig.bgOpacity,
+        goal: -1,
+        inpTxt: barTxtConfig.achievedMsg,
+        bgImg: bgImg,
+        fontFamily: this.props.styleConfig.fontConfig.fontFamily,
+        paddingUpDown: this.props.styleConfig.fontConfig.barPadding,
+        fontSize: this.props.styleConfig.fontConfig.fontSize
+      },
+      barLink: barLink,
+      codes: Object(_babel_runtime_corejs2_helpers_esm_objectSpread__WEBPACK_IMPORTED_MODULE_0__["default"])({}, this.props.customCode)
+    })))));
   }
 
 }
@@ -795,13 +873,15 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _shopify_polaris__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! @shopify/polaris */ "@shopify/polaris");
 /* harmony import */ var _shopify_polaris__WEBPACK_IMPORTED_MODULE_4___default = /*#__PURE__*/__webpack_require__.n(_shopify_polaris__WEBPACK_IMPORTED_MODULE_4__);
 /* harmony import */ var _snippets_imageDropZone__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ../snippets/imageDropZone */ "./snippets/imageDropZone.js");
-/* harmony import */ var _css_fonts_css__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ../css/fonts.css */ "./css/fonts.css");
-/* harmony import */ var _css_fonts_css__WEBPACK_IMPORTED_MODULE_6___default = /*#__PURE__*/__webpack_require__.n(_css_fonts_css__WEBPACK_IMPORTED_MODULE_6__);
+/* harmony import */ var _snippets_sectionHead__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ../snippets/sectionHead */ "./snippets/sectionHead.js");
+/* harmony import */ var _css_fonts_css__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ../css/fonts.css */ "./css/fonts.css");
+/* harmony import */ var _css_fonts_css__WEBPACK_IMPORTED_MODULE_7___default = /*#__PURE__*/__webpack_require__.n(_css_fonts_css__WEBPACK_IMPORTED_MODULE_7__);
 
 
 
 
 var __jsx = react__WEBPACK_IMPORTED_MODULE_3___default.a.createElement;
+
 
 
 
@@ -1142,7 +1222,8 @@ class StyleConfigPage extends react__WEBPACK_IMPORTED_MODULE_3___default.a.Compo
     this.state = {
       colorConfig: {},
       fontConfig: {},
-      bgImg: {}
+      bgImg: {},
+      sectionActive: true
     };
     this.handleStyleConfig = this.handleStyleConfig.bind(this);
     this.uploadBgImg = this.uploadBgImg.bind(this);
@@ -1177,12 +1258,15 @@ class StyleConfigPage extends react__WEBPACK_IMPORTED_MODULE_3___default.a.Compo
   }
 
   render() {
-    return __jsx(_shopify_polaris__WEBPACK_IMPORTED_MODULE_4__["Card"], null, __jsx(_shopify_polaris__WEBPACK_IMPORTED_MODULE_4__["Form"], null, __jsx(_shopify_polaris__WEBPACK_IMPORTED_MODULE_4__["FormLayout"], null, __jsx("div", {
-      style: {
-        fontSize: '18px',
-        padding: '1.5em 0 0 1em'
-      }
-    }, "Style Configuration"), __jsx(BackgroundSetting, Object(_babel_runtime_corejs2_helpers_esm_extends__WEBPACK_IMPORTED_MODULE_0__["default"])({
+    return __jsx(_shopify_polaris__WEBPACK_IMPORTED_MODULE_4__["Card"], null, __jsx(_snippets_sectionHead__WEBPACK_IMPORTED_MODULE_6__["default"], {
+      handleToggle: active => this.setState({
+        sectionActive: active
+      }),
+      headerTxt: "Style configuration",
+      sectionActive: this.state.sectionActive
+    }), __jsx(_shopify_polaris__WEBPACK_IMPORTED_MODULE_4__["Collapsible"], {
+      open: this.state.sectionActive
+    }, __jsx(_shopify_polaris__WEBPACK_IMPORTED_MODULE_4__["FormLayout"], null, __jsx(BackgroundSetting, Object(_babel_runtime_corejs2_helpers_esm_extends__WEBPACK_IMPORTED_MODULE_0__["default"])({
       handleStyleConfig: this.handleStyleConfig
     }, this.props.styleConfig)), __jsx(_snippets_imageDropZone__WEBPACK_IMPORTED_MODULE_5__["default"], {
       uploadBgImg: this.uploadBgImg
@@ -1212,8 +1296,10 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _shopify_polaris__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(_shopify_polaris__WEBPACK_IMPORTED_MODULE_1__);
 /* harmony import */ var _snippets_selectCountries__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../snippets/selectCountries */ "./snippets/selectCountries.js");
 /* harmony import */ var _snippets_displaySchedule__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../snippets/displaySchedule */ "./snippets/displaySchedule.js");
+/* harmony import */ var _snippets_sectionHead__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../snippets/sectionHead */ "./snippets/sectionHead.js");
 
 var __jsx = react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement;
+
 
 
 
@@ -1295,16 +1381,21 @@ function IncludePage(props) {
 class TargetConfigPage extends react__WEBPACK_IMPORTED_MODULE_0___default.a.Component {
   constructor(props) {
     super(props);
-    this.state = {};
+    this.state = {
+      sectionActive: true
+    };
   }
 
   render() {
-    return __jsx(_shopify_polaris__WEBPACK_IMPORTED_MODULE_1__["Card"], null, __jsx(_shopify_polaris__WEBPACK_IMPORTED_MODULE_1__["Form"], null, __jsx(_shopify_polaris__WEBPACK_IMPORTED_MODULE_1__["FormLayout"], null, __jsx("div", {
-      style: {
-        fontSize: '18px',
-        padding: '1.5em 0 0 1em'
-      }
-    }, "Target Configuration"), __jsx(IncludePage, {
+    return __jsx(_shopify_polaris__WEBPACK_IMPORTED_MODULE_1__["Card"], null, __jsx(_snippets_sectionHead__WEBPACK_IMPORTED_MODULE_4__["default"], {
+      handleToggle: active => this.setState({
+        sectionActive: active
+      }),
+      headerTxt: "Target configuration",
+      sectionActive: this.state.sectionActive
+    }), __jsx(_shopify_polaris__WEBPACK_IMPORTED_MODULE_1__["Collapsible"], {
+      open: this.state.sectionActive
+    }, __jsx(_shopify_polaris__WEBPACK_IMPORTED_MODULE_1__["FormLayout"], null, __jsx(IncludePage, {
       handleDisplayOnPage: (sec, url) => this.props.handleDisplayOnPage(sec, url)
     }), __jsx(_snippets_selectCountries__WEBPACK_IMPORTED_MODULE_2__["default"], {
       shipsToCountries: this.props.shipsToCountries,
@@ -1450,6 +1541,17 @@ module.exports = __webpack_require__(/*! core-js/library/fn/object/assign */ "co
 /***/ (function(module, exports, __webpack_require__) {
 
 module.exports = __webpack_require__(/*! core-js/library/fn/object/define-property */ "core-js/library/fn/object/define-property");
+
+/***/ }),
+
+/***/ "./node_modules/@babel/runtime-corejs2/core-js/object/entries.js":
+/*!***********************************************************************!*\
+  !*** ./node_modules/@babel/runtime-corejs2/core-js/object/entries.js ***!
+  \***********************************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+module.exports = __webpack_require__(/*! core-js/library/fn/object/entries */ "core-js/library/fn/object/entries");
 
 /***/ }),
 
@@ -1709,7 +1811,7 @@ function SaveUserPreference(props) {
       //   variables:{
       //     input:{
       //       displayScope:'ONLINE_STORE',
-      //       src:'https://a208eaa5.ngrok.io/_next/static/chunks/topBarInjection.js'
+      //       src:'https://5c3aa12b.ngrok.io/_next/static/chunks/topBarInjection.js'
       //     }
       //   }
       // })
@@ -1892,17 +1994,6 @@ class Index extends react__WEBPACK_IMPORTED_MODULE_2___default.a.Component {
 
 ;
 /* harmony default export */ __webpack_exports__["default"] = (Index);
-
-/***/ }),
-
-/***/ "./snippets/demo.css":
-/*!***************************!*\
-  !*** ./snippets/demo.css ***!
-  \***************************/
-/*! no static exports found */
-/***/ (function(module, exports) {
-
-
 
 /***/ }),
 
@@ -2317,34 +2408,35 @@ class ImageDropZone extends react__WEBPACK_IMPORTED_MODULE_0___default.a.Compone
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony import */ var _babel_runtime_corejs2_helpers_esm_objectSpread__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @babel/runtime-corejs2/helpers/esm/objectSpread */ "./node_modules/@babel/runtime-corejs2/helpers/esm/objectSpread.js");
-/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! react */ "react");
-/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_1__);
-/* harmony import */ var _css_fonts_css__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../css/fonts.css */ "./css/fonts.css");
-/* harmony import */ var _css_fonts_css__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(_css_fonts_css__WEBPACK_IMPORTED_MODULE_2__);
-/* harmony import */ var _snippets_demo_css__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../snippets/demo.css */ "./snippets/demo.css");
-/* harmony import */ var _snippets_demo_css__WEBPACK_IMPORTED_MODULE_3___default = /*#__PURE__*/__webpack_require__.n(_snippets_demo_css__WEBPACK_IMPORTED_MODULE_3__);
-
-
-var __jsx = react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement;
+/* harmony import */ var _babel_runtime_corejs2_core_js_object_entries__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @babel/runtime-corejs2/core-js/object/entries */ "./node_modules/@babel/runtime-corejs2/core-js/object/entries.js");
+/* harmony import */ var _babel_runtime_corejs2_core_js_object_entries__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_babel_runtime_corejs2_core_js_object_entries__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var _babel_runtime_corejs2_helpers_esm_objectSpread__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @babel/runtime-corejs2/helpers/esm/objectSpread */ "./node_modules/@babel/runtime-corejs2/helpers/esm/objectSpread.js");
+/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! react */ "react");
+/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_2__);
+/* harmony import */ var _css_fonts_css__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../css/fonts.css */ "./css/fonts.css");
+/* harmony import */ var _css_fonts_css__WEBPACK_IMPORTED_MODULE_3___default = /*#__PURE__*/__webpack_require__.n(_css_fonts_css__WEBPACK_IMPORTED_MODULE_3__);
 
 
 
-class PreviewBar extends react__WEBPACK_IMPORTED_MODULE_1___default.a.Component {
+var __jsx = react__WEBPACK_IMPORTED_MODULE_2___default.a.createElement;
+ // import '../snippets/demo.css';
+
+class PreviewBar extends react__WEBPACK_IMPORTED_MODULE_2___default.a.Component {
   constructor(props) {
     super(props);
-    this.state = {};
-    this.htmlRef = react__WEBPACK_IMPORTED_MODULE_1___default.a.createRef();
-    this.firstLineRefwG = react__WEBPACK_IMPORTED_MODULE_1___default.a.createRef();
-    this.firstLineRefGA = react__WEBPACK_IMPORTED_MODULE_1___default.a.createRef();
-    this.closeBtn = react__WEBPACK_IMPORTED_MODULE_1___default.a.createRef();
-    this.topBar = react__WEBPACK_IMPORTED_MODULE_1___default.a.createRef();
+    this.state = Object(_babel_runtime_corejs2_helpers_esm_objectSpread__WEBPACK_IMPORTED_MODULE_1__["default"])({}, props.barConfig, {
+      styleCode: ''
+    });
+    this.htmlRef = react__WEBPACK_IMPORTED_MODULE_2___default.a.createRef();
+    this.firstLineRefwG = react__WEBPACK_IMPORTED_MODULE_2___default.a.createRef();
+    this.firstLineRefGA = react__WEBPACK_IMPORTED_MODULE_2___default.a.createRef();
+    this.closeBtn = react__WEBPACK_IMPORTED_MODULE_2___default.a.createRef();
+    this.topBar = react__WEBPACK_IMPORTED_MODULE_2___default.a.createRef();
     this.injectHtml = this.injectHtml.bind(this);
     this.setAnimation = this.setAnimation.bind(this);
     this.renderBarFirstLine = this.renderBarFirstLine.bind(this);
     this.renderInnerBar = this.renderInnerBar.bind(this);
     this.handleLinkContainer = this.handleLinkContainer.bind(this);
-    this._hexToRgba = this._hexToRgba.bind(this);
   }
 
   setAnimation(el, childToQuery) {
@@ -2407,11 +2499,35 @@ class PreviewBar extends react__WEBPACK_IMPORTED_MODULE_1___default.a.Component 
     }
   }
 
+  static getDerivedStateFromProps(nextProps, prevState) {
+    let ifChange = false;
+
+    for (var [key, val] of _babel_runtime_corejs2_core_js_object_entries__WEBPACK_IMPORTED_MODULE_0___default()(nextProps.barConfig)) {
+      if (nextProps.barConfig[key] !== prevState[key]) {
+        ifChange = true;
+      }
+    }
+
+    if (nextProps.codes.customCode.style && nextProps.codes.customCode.style !== prevState.styleCode) {
+      PreviewBar.injectStylesheet(nextProps.barConfig, nextProps.codes.customCode.style);
+      return Object(_babel_runtime_corejs2_helpers_esm_objectSpread__WEBPACK_IMPORTED_MODULE_1__["default"])({}, prevState, {
+        styleCode: nextProps.codes.customCode.style
+      });
+    }
+
+    if (ifChange) {
+      PreviewBar.injectStylesheet(nextProps.barConfig, nextProps.codes.customCode.style);
+      return Object(_babel_runtime_corejs2_helpers_esm_objectSpread__WEBPACK_IMPORTED_MODULE_1__["default"])({}, prevState, nextProps.barConfig);
+    } else {
+      return null;
+    }
+  }
+
   componentDidUpdate() {
     this.handleLinkContainer(this.htmlRef);
     this.handleLinkContainer(this.firstLineRefwG);
     this.handleLinkContainer(this.firstLineRefGA);
-    console.log('finished top bar', this.topBar.current); // this.props.parseCssString(this.props.customCode);
+    console.log('finished top bar', this.topBar.current);
   }
 
   injectHtml(html) {
@@ -2450,46 +2566,12 @@ class PreviewBar extends react__WEBPACK_IMPORTED_MODULE_1___default.a.Component 
     const {
       inpTxt,
       addedHtml,
-      ftColor,
-      goal,
-      opacity,
-      bgImg,
-      fontFamily,
-      paddingUpDown,
-      fontSize
+      goal
     } = barConfig;
-    let {
-      bgColor
-    } = barConfig,
-        imgSize = bgImg.size,
-        imgUrl;
-    let padding = paddingUpDown ? `${paddingUpDown}px 5px` : '8px 5px';
-
-    if (opacity.toString() !== '100') {
-      bgColor = this._hexToRgba(bgColor, opacity);
-    }
-
-    if (imgSize) {
-      imgUrl = 'url("' + window.URL.createObjectURL(bgImg) + '")';
-    }
-
-    let barStyle = {
-      padding: padding,
-      fontSize: fontSize ? fontSize + 'px' : '18px',
-      lineHeight: '22.5px',
-      textAlign: 'center',
-      position: 'relative',
-      backgroundColor: bgColor,
-      color: ftColor,
-      backgroundImage: imgUrl,
-      fontFamily: fontFamily
-    }; // overriding old style works!
-
-    let inputStyle = {};
     return __jsx("div", {
-      style: Object(_babel_runtime_corejs2_helpers_esm_objectSpread__WEBPACK_IMPORTED_MODULE_0__["default"])({}, barStyle, inputStyle),
-      id: "ptk_bar"
-    }, goal ? this.renderBarFirstLine(barConfig) : __jsx("span", {
+      id: "ptk_bar",
+      className: "ptkBar"
+    }, goal >= 0 ? this.renderBarFirstLine(barConfig) : __jsx("span", {
       dangerouslySetInnerHTML: {
         __html: inpTxt
       },
@@ -2505,7 +2587,59 @@ class PreviewBar extends react__WEBPACK_IMPORTED_MODULE_1___default.a.Component 
     }, "X"));
   }
 
-  _hexToRgba(h, op) {
+  static injectStylesheet(barConfig, styleCode) {
+    const {
+      ftColor,
+      opacity,
+      bgImg,
+      fontFamily,
+      paddingUpDown,
+      fontSize
+    } = barConfig;
+    let {
+      bgColor
+    } = barConfig,
+        imgSize = bgImg.size,
+        imgUrl;
+    let padding = paddingUpDown ? `${paddingUpDown}px 5px` : '8px 5px';
+
+    if (opacity.toString() !== '100') {
+      bgColor = PreviewBar._hexToRgba(bgColor, opacity);
+    }
+
+    if (imgSize) {
+      imgUrl = 'url("' + window.URL.createObjectURL(bgImg) + '")';
+    }
+
+    let styleSheet = document.createElement('style');
+    styleSheet.setAttribute('data-style', '');
+    let al_stylesheet = document.body.querySelector('style[data-style]');
+    styleSheet.textContent = `
+      #ptk_bar{
+        padding:${padding};
+        font-size:${fontSize ? fontSize + 'px' : '18px'};
+        line-height:22.5px;
+        text-align:center;
+        position:relative;
+        background-color:${bgColor};
+        color:${ftColor};
+        background-image:${imgUrl};
+        font-family:${fontFamily};
+      }
+    `;
+
+    if (styleCode) {
+      styleSheet.textContent += styleCode;
+    }
+
+    if (!al_stylesheet) {
+      document.body.prepend(styleSheet);
+    } else {
+      document.body.replaceChild(styleSheet, al_stylesheet);
+    }
+  }
+
+  static _hexToRgba(h, op) {
     let r = 0,
         g = 0,
         b = 0; // 3 digits
@@ -2543,6 +2677,85 @@ class PreviewBar extends react__WEBPACK_IMPORTED_MODULE_1___default.a.Component 
 }
 
 /* harmony default export */ __webpack_exports__["default"] = (PreviewBar);
+
+/***/ }),
+
+/***/ "./snippets/sectionHead.js":
+/*!*********************************!*\
+  !*** ./snippets/sectionHead.js ***!
+  \*********************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! react */ "react");
+/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var _shopify_polaris__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @shopify/polaris */ "@shopify/polaris");
+/* harmony import */ var _shopify_polaris__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(_shopify_polaris__WEBPACK_IMPORTED_MODULE_1__);
+
+var __jsx = react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement;
+
+
+
+function SectionHead(props) {
+  const {
+    0: active,
+    1: setActive
+  } = Object(react__WEBPACK_IMPORTED_MODULE_0__["useState"])(props.sectionActive);
+  Object(react__WEBPACK_IMPORTED_MODULE_0__["useEffect"])(() => {
+    props.handleToggle(active);
+  }, [active]);
+  return __jsx("div", {
+    style: {
+      display: 'flex',
+      flexFlow: 'row wrap',
+      alignItems: 'center',
+      justifyContent: 'space-between',
+      padding: '1.5em 1em 1em 1em'
+    }
+  }, __jsx("div", {
+    style: {
+      fontSize: '20px'
+    }
+  }, props.headerTxt), __jsx(_shopify_polaris__WEBPACK_IMPORTED_MODULE_1__["Button"], {
+    onClick: () => setActive(!active),
+    ariaExpanded: active,
+    ariaControls: "basic-collapsible"
+  }, __jsx("span", {
+    style: {
+      transition: 'all .3s ease-in'
+    }
+  }, active ? __jsx("svg", {
+    viewBox: "0 0 448 512",
+    "aria-hidden": "true",
+    focusable: "false",
+    xmlns: "http://www.w3.org/2000/svg",
+    role: "img",
+    style: {
+      height: '1.5em',
+      width: '1.5em'
+    }
+  }, __jsx("path", {
+    d: "M240.971 130.524l194.343 194.343c9.373 9.373 9.373 24.569 0 33.941l-22.667 22.667c-9.357 9.357-24.522 9.375-33.901.04L224 227.495 69.255 381.516c-9.379 9.335-24.544 9.317-33.901-.04l-22.667-22.667c-9.373-9.373-9.373-24.569 0-33.941L207.03 130.525c9.372-9.373 24.568-9.373 33.941-.001z",
+    fill: "#000"
+  })) : __jsx("svg", {
+    viewBox: "0 0 448 512",
+    "aria-hidden": "true",
+    focusable: "false",
+    xmlns: "http://www.w3.org/2000/svg",
+    role: "img",
+    style: {
+      height: '1.5em',
+      width: '1.5em'
+    }
+  }, __jsx("path", {
+    d: "M207.029 381.476L12.686 187.132c-9.373-9.373-9.373-24.569 0-33.941l22.667-22.667c9.357-9.357 24.522-9.375 33.901-.04L224 284.505l154.745-154.021c9.379-9.335 24.544-9.317 33.901.04l22.667 22.667c9.373 9.373 9.373 24.569 0 33.941L240.971 381.476c-9.373 9.372-24.569 9.372-33.942 0z",
+    fill: "#000"
+  })))));
+}
+
+/* harmony default export */ __webpack_exports__["default"] = (SectionHead);
 
 /***/ }),
 
@@ -2919,7 +3132,8 @@ class SelectCountries extends react__WEBPACK_IMPORTED_MODULE_0___default.a.Compo
     }, "Please hold ", __jsx("span", {
       style: {
         backgroundColor: '#ddd',
-        borderRadius: '5px'
+        borderRadius: '5px',
+        padding: '2px .5em'
       }
     }, "Ctrl"), " to select multiple locations. Leave it blank if you want to target ALL countires."));
   }
@@ -2972,6 +3186,17 @@ module.exports = require("core-js/library/fn/object/assign");
 /***/ (function(module, exports) {
 
 module.exports = require("core-js/library/fn/object/define-property");
+
+/***/ }),
+
+/***/ "core-js/library/fn/object/entries":
+/*!****************************************************!*\
+  !*** external "core-js/library/fn/object/entries" ***!
+  \****************************************************/
+/*! no static exports found */
+/***/ (function(module, exports) {
+
+module.exports = require("core-js/library/fn/object/entries");
 
 /***/ }),
 
@@ -3038,6 +3263,17 @@ module.exports = require("core-js/library/fn/parse-int");
 /***/ (function(module, exports) {
 
 module.exports = require("graphql-tag");
+
+/***/ }),
+
+/***/ "jquery":
+/*!*************************!*\
+  !*** external "jquery" ***!
+  \*************************/
+/*! no static exports found */
+/***/ (function(module, exports) {
+
+module.exports = require("jquery");
 
 /***/ }),
 

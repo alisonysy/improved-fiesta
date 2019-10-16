@@ -1,7 +1,8 @@
-import { Card, DisplayText, ChoiceList, TextField,Form, FormLayout } from '@shopify/polaris';
+import { Card, Collapsible, ChoiceList, TextField,Form, FormLayout } from '@shopify/polaris';
 import { useCallback, useState, useEffect } from 'react';
 import SelectCountries from '../snippets/selectCountries';
 import DisplaySchedule from '../snippets/displaySchedule';
+import SectionHead from '../snippets/sectionHead';
 
 function IncludePage(props) {
   const [selected, setSelected] = useState(['all']);
@@ -84,20 +85,26 @@ function IncludePage(props) {
 class TargetConfigPage extends React.Component{
   constructor(props){
     super(props)
-    this.state = {};
+    this.state = {
+      sectionActive:true,
+    };
   }
 
   render(){
     return (
       <Card>
-        <Form>
-          <FormLayout>
-            <div style={{fontSize:'18px',padding:'1.5em 0 0 1em'}}>Target Configuration</div>
+        <SectionHead 
+          handleToggle={(active) => this.setState({sectionActive:active})}
+          headerTxt="Target configuration"
+          sectionActive={this.state.sectionActive}
+        />
+        <Collapsible open={this.state.sectionActive} >
+          <FormLayout> 
             <IncludePage handleDisplayOnPage={(sec,url)=> this.props.handleDisplayOnPage(sec,url)}/>
             <SelectCountries shipsToCountries={this.props.shipsToCountries} handleSelectedTargets={this.props.handleSelectedTargets}/>
             <DisplaySchedule handleTimeSetting={this.props.handleTimeSetting}/>
           </FormLayout>
-        </Form>
+        </Collapsible>  
       </Card>
     )
   }

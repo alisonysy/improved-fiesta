@@ -1,6 +1,7 @@
-import { Card, Stack, TextField, Button, Form, FormLayout, ColorPicker, RangeSlider} from '@shopify/polaris';
+import { Card, Stack, TextField, Button, Form, FormLayout, ColorPicker, RangeSlider, Collapsible} from '@shopify/polaris';
 import { useState, useCallback, useEffect } from 'react';
 import ImageDropZone from '../snippets/imageDropZone';
+import SectionHead from '../snippets/sectionHead';
 import '../css/fonts.css';
 
 function ColorPickers(props){
@@ -274,7 +275,8 @@ class StyleConfigPage extends React.Component{
     this.state = {
       colorConfig:{},
       fontConfig:{},
-      bgImg:{}
+      bgImg:{},
+      sectionActive:true
     }
     this.handleStyleConfig = this.handleStyleConfig.bind(this);
     this.uploadBgImg = this.uploadBgImg.bind(this);
@@ -303,14 +305,18 @@ class StyleConfigPage extends React.Component{
   render(){
     return (
       <Card>
-        <Form>
+        <SectionHead 
+          handleToggle={(active) => this.setState({sectionActive:active})}
+          headerTxt='Style configuration'
+          sectionActive={this.state.sectionActive}
+        />
+        <Collapsible open={this.state.sectionActive} >
           <FormLayout>
-            <div style={{fontSize:'18px',padding:'1.5em 0 0 1em'}}>Style Configuration</div>
             <BackgroundSetting handleStyleConfig={this.handleStyleConfig} {...this.props.styleConfig}/>
             <ImageDropZone uploadBgImg={this.uploadBgImg}/>
             <Fonts  handleStyleConfig={this.handleStyleConfig}/>
           </FormLayout>
-        </Form>
+        </Collapsible>
       </Card>
     )
   }

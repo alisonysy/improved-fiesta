@@ -1,5 +1,6 @@
-import { Card, TextField, DisplayText, Stack, Form, FormLayout, Button, Select, Checkbox, ChoiceList } from '@shopify/polaris';
+import { Card, TextField, Stack, Form, FormLayout, Select, Checkbox, ChoiceList, Collapsible } from '@shopify/polaris';
 import { useState, useCallback, useEffect } from 'react';
+import SectionHead from '../snippets/sectionHead';
 
 function NameField(props){
   const [name,setName] = useState('');
@@ -184,7 +185,7 @@ function SetPosition(props){
       renderChildren:(isSelected)=>{
         return (
           isSelected && (
-            <div>Place the code</div>
+            <div>Place <span style={{fontFamily:'monospace',fontWeight:800,backgroundColor:'#ddd',borderRadius:'5px',padding:'2px 4px'}}>&lt;div id="fsb_placeholder"&gt;&lt;/div&gt;</span> where you prefer in your theme file.</div>
           )
         )
       }}
@@ -209,14 +210,24 @@ function SetPosition(props){
 class ContentConfigPage extends React.Component{
   constructor(props){
     super(props);
-    this.state = {frShGl:30,msgText:{initialMsg1:'Free Shipping on All Orders Over ',initialMsg2:'',prgMsg1:'Only ',prgMsg2:' away from free shipping',achievedMsg:'Free Shipping Worldwide'}}
+    this.state = {
+      frShGl:30,
+      msgText:{
+        initialMsg1:'Free Shipping on All Orders Over ',
+        initialMsg2:'',
+        prgMsg1:'Only ',
+        prgMsg2:' away from free shipping',
+        achievedMsg:'Free Shipping Worldwide'
+      },
+      sectionActive:true
+    }
     this.handleGoalChange = this.handleGoalChange.bind(this);
     this.handleMsgChange = this.handleMsgChange.bind(this);
     this.handleBarLinkChange = this.handleBarLinkChange.bind(this);
   }
 
   handleGoalChange(newGoal){
-    if(parseFloat(newGoal) !== 0){
+    if(parseFloat(newGoal) >= 0){
       this.setState((state) => {
         return {frShGl:parseFloat(newGoal)}
       },function(){
@@ -249,12 +260,15 @@ class ContentConfigPage extends React.Component{
     const {frShGl} = this.state;
     return (
       <Card Sectioned> 
+        <SectionHead 
+          handleToggle={(active) => this.setState({sectionActive:active})}
+          headerTxt='Content configuration'
+          sectionActive={this.state.sectionActive}
+        />
+        <Collapsible open={this.state.sectionActive} >
           <FormLayout>
-
             <NameField handleName={(name)=> this.props.handleName(name)}/>
-
             <FreeShippingGoal handleGoalChange={this.handleGoalChange}/>
-
             { frShGl? 
               <FormLayout>
                 <InitialMsg goal={frShGl} currency="$" handleMsgChange={this.handleMsgChange}/>
@@ -263,14 +277,11 @@ class ContentConfigPage extends React.Component{
               :
               null
             }
-            
             <GoalAchieved handleMsgChange={this.handleMsgChange} />
-
             <AddLinkToBar handleBarLinkChange={this.handleBarLinkChange} />
-
             <SetPosition handleBarPosition={(val)=>this.props.handleBarPosition(val)}/>
-
           </FormLayout>
+        </Collapsible>
       </Card>
     )
   }

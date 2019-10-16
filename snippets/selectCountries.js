@@ -327,7 +327,7 @@ class SelectCountries extends React.Component{
         <div style={{lineHeight:'2em'}}>You have selected: <span ref={this.showSelected} style={{fontWeight:'700'}}></span></div>
         <select name="targetCountries" id="targetCountries" multiple={true} ref={this.selectEl} style={{height:'100px',width:'50%',paddingLeft:'.6em',marginTop:'.8em'}}>
         </select>
-        <div style={{marginTop:'5px'}}>Please hold <span style={{backgroundColor:'#ddd',borderRadius:'5px',}}>Ctrl</span> to select multiple locations. Leave it blank if you want to target ALL countires.</div>
+        <div style={{marginTop:'5px'}}>Please hold <span style={{backgroundColor:'#ddd',borderRadius:'5px',padding:'2px .5em'}}>Ctrl</span> to select multiple locations. Leave it blank if you want to target ALL countires.</div>
       </Card.Section>
     )
   }

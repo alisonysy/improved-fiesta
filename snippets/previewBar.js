@@ -1,10 +1,12 @@
 import '../css/fonts.css';
-import '../snippets/demo.css';
+// import '../snippets/demo.css';
 
 class PreviewBar extends React.Component{
   constructor(props){
     super(props);
     this.state = {
+      ...props.barConfig,
+      styleCode:'',
     };
     this.htmlRef = React.createRef();
     this.firstLineRefwG = React.createRef();
@@ -16,7 +18,6 @@ class PreviewBar extends React.Component{
     this.renderBarFirstLine = this.renderBarFirstLine.bind(this);
     this.renderInnerBar = this.renderInnerBar.bind(this);
     this.handleLinkContainer = this.handleLinkContainer.bind(this);
-    this._hexToRgba = this._hexToRgba.bind(this);
   }
 
   setAnimation(el,childToQuery){
@@ -50,6 +51,7 @@ class PreviewBar extends React.Component{
     this.handleLinkContainer(this.htmlRef);
     this.handleLinkContainer(this.firstLineRefwG);
     this.handleLinkContainer(this.firstLineRefGA);
+
     
     // handle closing action
     let closeBtn = this.closeBtn.current;
@@ -77,12 +79,30 @@ class PreviewBar extends React.Component{
     }
   }
 
+  static getDerivedStateFromProps(nextProps,prevState){
+    let ifChange = false;
+    for(var [key,val] of Object.entries(nextProps.barConfig)){
+      if(nextProps.barConfig[key] !== prevState[key]){
+        ifChange = true;
+      }
+    }
+    if(nextProps.codes.customCode.style && nextProps.codes.customCode.style !== prevState.styleCode){
+      PreviewBar.injectStylesheet(nextProps.barConfig,nextProps.codes.customCode.style);
+      return {...prevState,styleCode:nextProps.codes.customCode.style}
+    }
+    if(ifChange){
+      PreviewBar.injectStylesheet(nextProps.barConfig,nextProps.codes.customCode.style);
+      return {...prevState,...nextProps.barConfig};
+    }else{
+      return null;
+    }
+  }
+
   componentDidUpdate(){
     this.handleLinkContainer(this.htmlRef);
     this.handleLinkContainer(this.firstLineRefwG);
     this.handleLinkContainer(this.firstLineRefGA);
     console.log('finished top bar',this.topBar.current);
-    // this.props.parseCssString(this.props.customCode);
   }
 
 
@@ -101,27 +121,13 @@ class PreviewBar extends React.Component{
   }
 
   renderInnerBar(barConfig){
-    const {inpTxt,addedHtml,ftColor,goal,opacity,bgImg,fontFamily,paddingUpDown,fontSize} = barConfig;
-    let {bgColor} = barConfig,imgSize=bgImg.size,imgUrl;
-    let padding = paddingUpDown? `${paddingUpDown}px 5px` : '8px 5px';
-
-    if(opacity.toString() !== '100'){
-      bgColor = this._hexToRgba(bgColor,opacity);
-    }
-    
-    if(imgSize){
-      imgUrl = 'url("'+window.URL.createObjectURL(bgImg)+'")';
-    }
-
-    let barStyle = {padding:padding,fontSize:fontSize? fontSize+'px' : '18px',lineHeight:'22.5px',textAlign:'center',position:'relative',backgroundColor:bgColor,color:ftColor,backgroundImage:imgUrl,fontFamily:fontFamily};
-    // overriding old style works!
-    let inputStyle = {}
+    const {inpTxt,addedHtml,goal} = barConfig;
     return (
       <div 
-        style={{...barStyle,...inputStyle}}
         id="ptk_bar"
+        className="ptkBar"
       >
-        { goal?
+        { goal >= 0 ?
           this.renderBarFirstLine(barConfig)
           :
           <span dangerouslySetInnerHTML={{__html:inpTxt}} ref={this.firstLineRefGA}></span>
@@ -134,9 +140,50 @@ class PreviewBar extends React.Component{
         <div style={{position:'absolute',top:'8px',right:'8px',cursor:'pointer'}} ref={this.closeBtn}>X</div>
       </div>
     )
-  }
+  };
 
-  _hexToRgba(h,op){
+  static injectStylesheet(barConfig,styleCode){
+    const {ftColor,opacity,bgImg,fontFamily,paddingUpDown,fontSize} = barConfig;
+    let {bgColor} = barConfig,imgSize=bgImg.size,imgUrl;
+    let padding = paddingUpDown? `${paddingUpDown}px 5px` : '8px 5px';
+
+    if(opacity.toString() !== '100'){
+      bgColor = PreviewBar._hexToRgba(bgColor,opacity);
+    }
+    
+    if(imgSize){
+      imgUrl = 'url("'+window.URL.createObjectURL(bgImg)+'")';
+    }
+
+    let styleSheet = document.createElement('style');
+    styleSheet.setAttribute('data-style','')
+    let al_stylesheet = document.body.querySelector('style[data-style]');
+    styleSheet.textContent = `
+      #ptk_bar{
+        padding:${padding};
+        font-size:${fontSize? fontSize +'px' : '18px'};
+        line-height:22.5px;
+        text-align:center;
+        position:relative;
+        background-color:${bgColor};
+        color:${ftColor};
+        background-image:${imgUrl};
+        font-family:${fontFamily};
+      }
+    `;
+    if(styleCode){
+      styleSheet.textContent += styleCode;
+    }
+    if(!al_stylesheet){
+      document.body.prepend(styleSheet);
+    }else{
+      document.body.replaceChild(styleSheet,al_stylesheet);
+    }
+  };
+
+  
+
+  static _hexToRgba(h,op){
     let r = 0, g = 0, b = 0;
 
     // 3 digits
