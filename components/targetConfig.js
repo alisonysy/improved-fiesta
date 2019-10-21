@@ -5,9 +5,24 @@ import DisplaySchedule from '../snippets/displaySchedule';
 import SectionHead from '../snippets/sectionHead';
 
 function IncludePage(props) {
-  const [selected, setSelected] = useState(['all']);
-  const [urlInp, setUrlInp] = useState('');
-  const [urlExc, setUrlExc] = useState('');
+  const [selected, setSelected] = useState(
+    props.dspOnPage.selected && props.dspOnPage.selected.length >0?
+      props.dspOnPage.selected
+      :
+      ['all']
+    );
+  const [urlInp, setUrlInp] = useState(
+    props.dspOnPage && props.dspOnPage.url && props.dspOnPage.url.length > 0?
+      props.dspOnPage.url
+      :
+      ''
+    );
+  const [urlExc, setUrlExc] = useState(
+    props.dspOnPage && props.dspOnPage.url && props.dspOnPage.url.length > 0?
+      props.dspOnPage.url
+      :
+      ''
+    );
 
   const handleUrlInp = useCallback(
     (value) => {
@@ -100,9 +115,19 @@ class TargetConfigPage extends React.Component{
         />
         <Collapsible open={this.state.sectionActive} >
           <FormLayout> 
-            <IncludePage handleDisplayOnPage={(sec,url)=> this.props.handleDisplayOnPage(sec,url)}/>
-            <SelectCountries shipsToCountries={this.props.shipsToCountries} handleSelectedTargets={this.props.handleSelectedTargets}/>
-            <DisplaySchedule handleTimeSetting={this.props.handleTimeSetting}/>
+            <IncludePage 
+              handleDisplayOnPage={(sec,url)=> this.props.handleDisplayOnPage(sec,url)}
+              dspOnPage={this.props.dspOnPage}
+            />
+            <SelectCountries 
+              shipsToCountries={this.props.shipsToCountries} 
+              handleSelectedTargets={this.props.handleSelectedTargets}
+              selectedTargets={this.props.selectedTargets}
+            />
+            <DisplaySchedule 
+              handleTimeSetting={this.props.handleTimeSetting}
+              scheduleTime={this.props.scheduleTime}
+            />
           </FormLayout>
         </Collapsible>  
       </Card>

@@ -2,14 +2,27 @@ import {Card, DatePicker, ChoiceList} from '@shopify/polaris';
 import {useCallback, useState, useEffect}  from 'react';
 
 function Choose(props){
-  const [selected, setSelected] = useState(['always']);
+  const [selected, setSelected] = useState(
+    props.scheduleTime && props.scheduleTime.start?
+      ['scheduled']
+      :
+      ['always']
+    );
 
-  const handleChange = useCallback((value) => setSelected(value), []);
+  const handleChange = useCallback((value) => {
+    setSelected(value);
+    if(value.includes('always')){
+      props.handleTimeSetting({start:null,end:null})
+    }
+  }, [selected]);
 
   const renderDatePicker = useCallback(
     (isSelected) =>
       isSelected && (
-        <Schedule handleTimeSetting={props.handleTimeSetting}/>
+        <Schedule 
+          handleTimeSetting={props.handleTimeSetting}
+          scheduleTime={props.scheduleTime}
+        />
       )
   )
 
@@ -26,13 +39,31 @@ function Choose(props){
 };
 
 function SelectTime(props){
-  
+  useEffect(()=>{
+    if(props.scheduleTime){
+      let start_h = document.getElementById('start_hour'),
+          start_m = document.getElementById('start_min'),
+          end_h = document.getElementById('end_hour'),
+          end_m = document.getElementById('end_min');
+      start_h.value = props.scheduleTime.start.hour;
+      start_m.value = props.scheduleTime.start.min;
+      end_h.value = props.scheduleTime.end.hour;
+      end_m.value = props.scheduleTime.end.min;
+    }
+  },[props.scheduleTime])
+
   return (
     <div style={{margin:'1em 0'}}>
       <div>Please enter the hour (from 0 to 23) and minute (from 0 to 59) that the display <strong>starts</strong>:</div>
       <div style={{marginTop:'.5em'}}>
         <span style={{marginRight:'.3em'}}>Hour:</span>
-        <input id="start_hour" type='number' min={0} max={23}  style={{marginRight:'1em'}}/>
+        <input 
+          id="start_hour" 
+          type='number' 
+          min={0} 
+          max={23}  
+          style={{marginRight:'1em'}}
+        />
         <span style={{marginRight:'.3em'}}>Minute:</span>
         <input id="start_min" type='number' min={0} max={59}/>
       </div>
@@ -48,18 +79,59 @@ function SelectTime(props){
 }
 
 function Schedule(props){
-  const [{ month, year }, setDate] = useState({
-    month: 9,
-    year: 2019
-  });
-  const [selectedDates, setSelectedDates] = useState({
-    start: new Date(),
-    end: new Date()
-  });
+  const timeStrToDateObj = (timeObj) =>{
+    if(timeObj.start && timeObj.start.length > 0){
+      let start = new Date(timeObj.start);
+      let end = new Date(timeObj.end);
+      return {
+        start:{
+          year: start.getFullYear(),
+          month: start.getMonth(),
+          date:start.getDate(),
+          hour:start.getHours(),
+          min:start.getMinutes()
+        },
+        end:{
+          year: end.getFullYear(),
+          month: end.getMonth(),
+          date:end.getDate(),
+          hour:end.getHours(),
+          min:end.getMinutes()
+        }
+      }
+    }
+    return null;
+  }
+
+  const [{ month, year }, setDate] = useState(
+    timeStrToDateObj(props.scheduleTime)?
+      {
+        month: timeStrToDateObj(props.scheduleTime).start.month,
+        year:timeStrToDateObj(props.scheduleTime).start.year
+      }
+      :
+      {
+        month: (new Date()).getMonth(),
+        year: (new Date()).getFullYear()
+      }
+  );
+  const [selectedDates, setSelectedDates] = useState(
+    props.scheduleTime && props.scheduleTime.start ?
+      {
+        start: new Date(props.scheduleTime.start),
+        end: new Date(props.scheduleTime.end)
+      }
+      :
+      {
+      start: new Date(),
+      end: new Date()
+      }
+  );
   const [{leftMon,rightMon},setMonth] = useState({
     leftMon:month+1,
     rightMon:month+2
-  })
+  });
+
 
   const handleMonthChange = useCallback((month, year) => {
     setDate({ month, year });
@@ -101,14 +173,30 @@ function Schedule(props){
     }
   };
 
-  const [{start_h,start_m},setStartTime] = useState({
-    start_h:0,
-    start_m:0
-  });
-  const [{end_h,end_m},setEndTime] = useState({
-    end_h:0,
-    end_m:0
-  })
+  const [{start_h,start_m},setStartTime] = useState(
+    timeStrToDateObj(props.scheduleTime)?
+      {
+        start_h:timeStrToDateObj(props.scheduleTime).start.hour,
+        start_m:timeStrToDateObj(props.scheduleTime).start.min
+      }
+      :
+      {
+        start_h:0,
+        start_m:0
+      }
+  );
+  const [{end_h,end_m},setEndTime] = useState(
+    timeStrToDateObj(props.scheduleTime)?
+      {
+        end_h:timeStrToDateObj(props.scheduleTime).end.hour,
+        end_m:timeStrToDateObj(props.scheduleTime).end.min
+      }
+      :
+      {
+        end_h:0,
+        end_m:0
+      }
+  )
 
   const handleTimeSelection = () => {
     const startH = document.getElementById('start_hour'),
@@ -172,6 +260,7 @@ function Schedule(props){
   },[selectedDates,start_h,start_m,end_h,end_m]);
 
 
+
   return (
     <div>
       <div style={{display:'flex',flexFlow:'row nowrap',justifyContent:'stretch'}}>
@@ -179,15 +268,18 @@ function Schedule(props){
         <div style={{width:'50%',textAlign:'center'}}>{transpileMonth(rightMon)}</div>
       </div>
       <DatePicker 
-      month={month} 
-      year={year} 
-      onChange={setSelectedDates} 
-      onMonthChange={handleMonthChange} 
-      selected={selectedDates} 
-      multiMonth={true} 
-      allowRange={true} 
+        month={month} 
+        year={year} 
+        onChange={setSelectedDates} 
+        onMonthChange={handleMonthChange} 
+        selected={selectedDates} 
+        multiMonth={true} 
+        allowRange={true} 
       />
-      <SelectTime />
+      <SelectTime 
+        scheduleTime={timeStrToDateObj(props.scheduleTime)}
+      />
+      <div>Define the Start Time and End Time of the display period. Must select at least two days.</div>
     </div>
   );
 }
@@ -202,8 +294,10 @@ class DisplaySchedule extends React.Component{
     return (
       <Card.Section>
         <div style={{marginBottom:'1em',fontSize:'1.1em'}}>Display schedule:</div>
-        <Choose handleTimeSetting={this.props.handleTimeSetting}/>
-        <div>Define the Start Time and End Time of the display period. Must select at least two days.</div>
+        <Choose 
+          handleTimeSetting={this.props.handleTimeSetting}
+          scheduleTime={this.props.scheduleTime}
+        />
       </Card.Section>
     )
   }

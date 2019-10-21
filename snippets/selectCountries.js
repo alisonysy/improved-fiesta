@@ -268,11 +268,11 @@ class SelectCountries extends React.Component{
   componentDidMount(){
     let selectEl = this.selectEl.current;
     let cnArr = this.props.shipsToCountries;
-    this.handleShipsToCountries(selectEl,cnArr);
+    this.handleShipsToCountries(selectEl,cnArr,this.props.selectedTargets);
     this.handleSelectEvt(selectEl);
   }
 
-  handleShipsToCountries(select,arr){
+  handleShipsToCountries(select,arr,selectedArr){
     let c = arr.map((i) => {
       if(countryName.hasOwnProperty(i)){
         let el=document.createElement('option');
@@ -283,6 +283,18 @@ class SelectCountries extends React.Component{
         return countryName[i];
       }
     });
+    if(selectedArr && selectedArr.length > 0){
+      const sp = this.showSelected.current;
+      sp.innerHTML = '';
+      selectedArr.map( (i,idx,arr) => {
+        let op = select.querySelector(`option[value=${i}]`);
+        op.setAttribute('selected',true);
+        let selectedTxt = document.createElement('span');
+        selectedTxt.textContent = op.textContent + ', ';
+        sp.appendChild(selectedTxt);
+      })
+      this.handleClearAllSelected(sp);
+    }
   }
 
   handleSelectEvt(el){
@@ -325,7 +337,13 @@ class SelectCountries extends React.Component{
       <Card.Section>
         <div style={{marginBottom:'1em',fontSize:'1.1em'}}>Target locations:</div>
         <div style={{lineHeight:'2em'}}>You have selected: <span ref={this.showSelected} style={{fontWeight:'700'}}></span></div>
-        <select name="targetCountries" id="targetCountries" multiple={true} ref={this.selectEl} style={{height:'100px',width:'50%',paddingLeft:'.6em',marginTop:'.8em'}}>
+        <select 
+          name="targetCountries" 
+          id="targetCountries" 
+          multiple={true} 
+          ref={this.selectEl} 
+          style={{height:'100px',width:'50%',paddingLeft:'.6em',marginTop:'.8em'}}
+        >
         </select>
         <div style={{marginTop:'5px'}}>Please hold <span style={{backgroundColor:'#ddd',borderRadius:'5px',padding:'2px .5em'}}>Ctrl</span> to select multiple locations. Leave it blank if you want to target ALL countires.</div>
       </Card.Section>

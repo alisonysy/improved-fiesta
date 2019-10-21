@@ -63,14 +63,14 @@ function SaveUserPreference(props){
           onClick={(e)=>{
             e.preventDefault();
             console.log('calling useMutation hooks');
-            // injectScriptTag({
-            //   variables:{
-            //     input:{
-            //       displayScope:'ONLINE_STORE',
-            //       src:'https://5c3aa12b.ngrok.io/_next/static/chunks/topBarInjection.js'
-            //     }
-            //   }
-            // })
+            injectScriptTag({
+              variables:{
+                input:{
+                  displayScope:'ONLINE_STORE',
+                  src:'https://3ea47c01.ngrok.io/_next/static/chunks/topBarInjection.js'
+                }
+              }
+            })
             props.handleSaving();
           }}
         >
@@ -130,7 +130,7 @@ class Index extends React.Component {
               <TemplateStyle handleClickedLi={(bg,ftColor) => this.setState({styleConfig:{...this.state.styleConfig,colorConfig:{...this.state.styleConfig.colorConfig,bgColor:bg,txtColor:ftColor}}})}/>
               <PreviewPage 
                 others={{savedName,barPosition,dspOnPage,selectedTargets,scheduleTime}}
-                customCode={{customCode}}
+                customCode={customCode}
                 contentConfig={{barTxtConfig,barFrShGl,barLink}} 
                 styleConfig = {{...styleConfig}}
                 bgImg = {bgImg}
@@ -138,25 +138,39 @@ class Index extends React.Component {
               />
               <ContentConfigPage 
                 handleContentConfig_msg={(msg)=> this.setState({barTxtConfig:{...this.barTxtConfig,...msg}})} 
+                barTxt={this.state.barTxtConfig}
                 handleContentConfig_goal={(gl) => this.setState({barFrShGl:gl})}
+                goal={this.state.barFrShGl}
                 handleContentConfig_link={(val)=> this.setState({barLink:{...this.state.barLink,...val}})}
+                link={this.state.barLink}
                 handleName={(name)=> this.setState({savedName:name})}
+                name={this.state.savedName}
                 handleBarPosition={(p)=> this.setState({barPosition:p})}
+                barPosi={this.state.barPosition}
               />
               <StyleConfigPage 
                 handleStyleConfig={(colorCf,fontCf) => {
                   this.setState({styleConfig:{colorConfig:colorCf,fontConfig:fontCf}})
                 }}
+                styleConfig={this.state.styleConfig}
                 uploadBgImg={(bgFile) => this.setState({bgImg:bgFile})}
-                {...this.state}
+                bgImg={this.state.bgImg}
               />
               <TargetConfigPage 
                 handleDisplayOnPage={(sec,url)=>this.setState({dspOnPage:{selected:sec,url:url}})}
+                dspOnPage={this.state.dspOnPage}
                 shipsToCountries={this.state.shipsToCountries}
+                selectedTargets={this.state.selectedTargets}
                 handleSelectedTargets={(val)=>this.setState({selectedTargets:val})}
                 handleTimeSetting={(timeObj) => this.setState({scheduleTime:timeObj})}
+                scheduleTime={this.state.scheduleTime}
               />
-              <CustomCodePage handleCustomCode={(script,style) => {this.setState({customCode:{script:script,style:style}})}}/>
+              <CustomCodePage 
+                handleCustomCode={(script,style) => {
+                  this.setState({customCode:{script:script,style:style}})
+                }}
+                customCode={this.state.customCode}
+              />
               <SaveUserPreference 
                 handleEdit={()=> {
                   this.setState(this.baseState);

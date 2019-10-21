@@ -10,11 +10,8 @@ class PreviewPage extends React.Component{
     };
   };
 
-  
-
-
   static getDerivedStateFromProps(nextProps,prevState){
-    let scriptC = nextProps.customCode.customCode.script;
+    let scriptC = nextProps.customCode.script;
     if(scriptC && scriptC !== prevState.scriptCode){
       PreviewPage.injectScript(scriptC);
       return {...prevState,scriptCode:scriptC}

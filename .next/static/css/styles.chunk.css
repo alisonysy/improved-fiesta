@@ -1,4 +1,8 @@
 @import url(https://fonts.googleapis.com/css?family=Montserrat&display=swap);
+@import url(https://fonts.googleapis.com/css?family=Lato&display=swap);
+@import url(https://fonts.googleapis.com/css?family=Raleway&display=swap);
+@import url(https://fonts.googleapis.com/css?family=Righteous&display=swap);
+@import url(https://fonts.googleapis.com/css?family=Josefin+Sans&display=swap);
 :root{
   --polaris-version-number:'4.2.1'; }
 
@@ -7715,6 +7719,13 @@ body{
     display:none; } }
 
 
+.codeChoices{
+  color:#00adff;
+  cursor: pointer;
+}
 
+.codeChoices:hover{
+  color:#0078ff
+}
 
 /*# sourceMappingURL=styles.chunk.css.map*/

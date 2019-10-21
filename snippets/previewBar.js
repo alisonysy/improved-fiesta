@@ -86,12 +86,12 @@ class PreviewBar extends React.Component{
         ifChange = true;
       }
     }
-    if(nextProps.codes.customCode.style && nextProps.codes.customCode.style !== prevState.styleCode){
-      PreviewBar.injectStylesheet(nextProps.barConfig,nextProps.codes.customCode.style);
-      return {...prevState,styleCode:nextProps.codes.customCode.style}
+    if(nextProps.codes.style && nextProps.codes.style !== prevState.styleCode){
+      PreviewBar.injectStylesheet(nextProps.barConfig,nextProps.codes.style);
+      return {...prevState,styleCode:nextProps.codes.style}
     }
     if(ifChange){
-      PreviewBar.injectStylesheet(nextProps.barConfig,nextProps.codes.customCode.style);
+      PreviewBar.injectStylesheet(nextProps.barConfig,nextProps.codes.style);
       return {...prevState,...nextProps.barConfig};
     }else{
       return null;
@@ -168,7 +168,7 @@ class PreviewBar extends React.Component{
         background-color:${bgColor};
         color:${ftColor};
         background-image:${imgUrl};
-        font-family:${fontFamily};
+        font-family:${fontFamily},sans-serif;
       }
     `;
     if(styleCode){

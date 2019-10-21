@@ -1,0 +1,8 @@
+.codeChoices{
+  color:#00adff;
+  cursor: pointer;
+}
+
+.codeChoices:hover{
+  color:#0078ff
+}

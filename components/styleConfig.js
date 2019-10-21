@@ -1,6 +1,7 @@
 import { Card, Stack, TextField, Button, Form, FormLayout, ColorPicker, RangeSlider, Collapsible} from '@shopify/polaris';
 import { useState, useCallback, useEffect } from 'react';
 import ImageDropZone from '../snippets/imageDropZone';
+import Fonts from '../snippets/fonts';
 import SectionHead from '../snippets/sectionHead';
 import '../css/fonts.css';
 
@@ -101,12 +102,33 @@ function BackgroundSetting(props){
   const [showBgPicker,setBgPicker] = useState(false);
   const [showTxtPicker,setTxtPicker] = useState(false);
   const [showSpTxtPicker,setSpTxtPicker] = useState(false);
-  const [bgColor, setBgColor] = useState('#000');
-  const [bgOpacity, setBgOpacity] = useState(100);
+  const [bgColor, setBgColor] = useState(
+    props.styleConfig.colorConfig && props.styleConfig.colorConfig.bgColor?
+      props.styleConfig.colorConfig.bgColor
+      :
+      '#000'
+    );
+  const [bgOpacity, setBgOpacity] = useState(
+    props.styleConfig.colorConfig && props.styleConfig.colorConfig.bgOpacity?
+      props.styleConfig.colorConfig.bgOpacity
+      :
+      100
+    );
 
-  const [txtColor, setTxtColor] = useState('#b31219');
-  const [specialColor, setSpecialColor] = useState('#fff');
-  let bgColorFrmProps = props.colorConfig.bgColor, txtColorFrmProps = props.colorConfig.txtColor;
+  const [txtColor, setTxtColor] = useState(
+    props.styleConfig.colorConfig && props.styleConfig.colorConfig.txtColor?
+      props.styleConfig.colorConfig.txtColor
+      :
+      '#b31219'
+    );
+  const [specialColor, setSpecialColor] = useState(
+    props.styleConfig.colorConfig && props.styleConfig.colorConfig.specialColor?
+      props.styleConfig.colorConfig.specialColor
+      :
+      '#fff'
+    );
+  let bgColorFrmProps = props.styleConfig.colorConfig.bgColor, 
+      txtColorFrmProps = props.styleConfig.colorConfig.txtColor;
 
   useEffect(()=>{
     props.handleStyleConfig({
@@ -212,62 +234,6 @@ function BackgroundSetting(props){
   )
 }
 
-function Fonts(props){
-  const [fontSize,setFontSize] = useState(18);
-  const [padding,setPadding] = useState(10);
-  const [fontFam,setFontFam] = useState('sans-serif');
-
-  const handleFontFam = useCallback(
-    (val) => {
-      setFontFam(val);
-    },
-    [fontFam]
-  )
-
-  const handleFontSize = useCallback(
-    (val) => {
-      setFontSize(val);
-    },
-    [fontSize]
-  );
-
-  const handlePadding = useCallback(
-    (val) => {
-      setPadding(val);
-    },
-    [padding]
-  );
-
-  useEffect(()=>{
-    props.handleStyleConfig(undefined,{fontFamily:fontFam,fontSize:fontSize,barPadding:padding});
-  },[fontFam,fontSize,padding])
-
-  return (
-    <Card.Section>
-      <div style={{marginBottom:'5px'}}>Font family:</div>
-      <span style={{marginRight:'.6em'}}><Button onClick={() => handleFontFam('Montserrat')}>Montserrat</Button></span>
-      <span><Button onClick={() => handleFontFam('sans-serif')}>Sans serif</Button></span>
-      <div style={{margin:'1em 0'}}>
-        <TextField 
-          label="Font size:"
-          suffix="px"
-          type="number"
-          value={fontSize}
-          onChange={handleFontSize}
-        />
-      </div>
-      <div>
-        <TextField 
-          label="Bar padding:"
-          suffix="px"
-          type="number"
-          value={padding}
-          onChange={handlePadding}
-        />
-      </div>
-    </Card.Section>
-  )
-}
 
 class StyleConfigPage extends React.Component{
   constructor(props){
@@ -312,9 +278,9 @@ class StyleConfigPage extends React.Component{
         />
         <Collapsible open={this.state.sectionActive} >
           <FormLayout>
-            <BackgroundSetting handleStyleConfig={this.handleStyleConfig} {...this.props.styleConfig}/>
-            <ImageDropZone uploadBgImg={this.uploadBgImg}/>
-            <Fonts  handleStyleConfig={this.handleStyleConfig}/>
+            <BackgroundSetting handleStyleConfig={this.handleStyleConfig} styleConfig={this.props.styleConfig}/>
+            <ImageDropZone uploadBgImg={this.uploadBgImg} bgImg={this.props.bgImg}/>
+            <Fonts  handleStyleConfig={this.handleStyleConfig} styleConfig={this.props.styleConfig}/>
           </FormLayout>
         </Collapsible>
       </Card>

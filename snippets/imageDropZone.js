@@ -1,4 +1,4 @@
-import { DropZone, Banner, Stack, List, Thumbnail, Caption, Card } from '@shopify/polaris';
+import { Card } from '@shopify/polaris';
 
 class ImageDropZone extends React.Component{
   constructor(props){
@@ -9,16 +9,27 @@ class ImageDropZone extends React.Component{
     this.handleInpImg = this.handleInpImg.bind(this);
   }
 
+  componentDidMount(){
+    if(this.props.bgImg.size){
+      this.handleInpImg(this.inputRef.current,this.props.bgImg);
+    }
+  }
+
   componentDidUpdate(){
     const inputBtn = this.inputRef.current;
     const self = this;
     inputBtn.addEventListener('change',function(e){
-      self.handleInpImg(inputBtn);
+      self.handleInpImg(inputBtn,null);
     });
   }
 
-  handleInpImg(tg){
-    let img = tg.files[0],imgs,al;
+  handleInpImg(tg,file){
+    let img ,imgs,al;
+    if(tg.files && tg.files[0]){
+      img = tg.files[0];
+    }else if(file && file.size){
+      img = file;
+    }
     let imgWrapper = document.createElement('img');
     let delBtn = document.createElement('button');
     const self = this;

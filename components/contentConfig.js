@@ -1,9 +1,9 @@
-import { Card, TextField, Stack, Form, FormLayout, Select, Checkbox, ChoiceList, Collapsible } from '@shopify/polaris';
+import { Card, TextField, Stack, FormLayout, Select, Checkbox, ChoiceList, Collapsible, TextStyle } from '@shopify/polaris';
 import { useState, useCallback, useEffect } from 'react';
 import SectionHead from '../snippets/sectionHead';
 
 function NameField(props){
-  const [name,setName] = useState('');
+  const [name,setName] = useState(props.name);
 
   useEffect(()=>{
     props.handleName(name);
@@ -17,7 +17,7 @@ function NameField(props){
 }
 
 function FreeShippingGoal(props){
-  const [goal,setGoal] = useState(30);
+  const [goal,setGoal] = useState(props.goal? props.goal : 30);
   const _handleGoalChange = function(newGoal){
     setGoal(newGoal);
     props.handleGoalChange(newGoal)
@@ -35,8 +35,8 @@ function FreeShippingGoal(props){
 }
 
 function InitialMsg(props){
-  const [msg,setMsg] = useState('Free Shipping on All Orders Over ');
-  const [added,setAdded] = useState('');
+  const [msg,setMsg] = useState(props.barTxt.initialMsg1 && props.barTxt.initialMsg1.length > 0 ? props.barTxt.initialMsg1 :'Free Shipping on All Orders Over ');
+  const [added,setAdded] = useState(props.barTxt.initialMsg2 ? props.barTxt.initialMsg2 : '');
 
   useEffect(()=>{
     props.handleMsgChange({initialMsg1:msg,initialMsg2:added});
@@ -65,8 +65,18 @@ function InitialMsg(props){
 }
 
 function ProgressMsg(props){
-  const [msg,setMsg] = useState('Only ');
-  const [added,setAdded] = useState(' away from free shipping');
+  const [msg,setMsg] = useState(
+    props.barTxt.prgMsg1 && props.barTxt.prgMsg1.length > 0? 
+      props.barTxt.prgMsg1 
+      : 
+      'Only '
+    );
+  const [added,setAdded] = useState(
+    props.barTxt.prgMsg2 && props.barTxt.prgMsg2.length > 0 ? 
+      props.barTxt.prgMsg2 
+      : 
+      ' away from free shipping'
+    );
   const gl = props.goal;
 
   useEffect(()=>{
@@ -96,7 +106,12 @@ function ProgressMsg(props){
 }
 
 function GoalAchieved(props){
-  const [msg,setMsg] = useState('Free Shipping Worldwide');
+  const [msg,setMsg] = useState(
+    props.barTxt.achievedMsg && props.barTxt.achievedMsg.length > 0 ?
+      props.barTxt.achievedMsg
+      :
+      'Free Shipping Worldwide'
+    );
 
   useEffect(()=>{
     props.handleMsgChange({achievedMsg:msg})
@@ -116,9 +131,13 @@ function GoalAchieved(props){
 }
 
 function AddLinkToBar(props){
-  const [havLink,setHavLink] = useState(false);
-  const [url,setUrl] = useState('');
-  const [checkbox,setChecked] = useState(false);
+  const [havLink,setHavLink] = useState(
+    props.link.url && props.link.url.length > 0 ?
+      true
+      :
+      false);
+  const [url,setUrl] = useState(havLink? props.link.url : '');
+  const [checkbox,setChecked] = useState(havLink && props.link.openNew? true : false);
 
   const opts=[
     {label:'Off',value:false},
@@ -138,6 +157,10 @@ function AddLinkToBar(props){
     props.handleBarLinkChange(val);
   }
 
+  useEffect(()=>{
+    setUrl(props.link.url);
+  },[props.link.url])
+
   return(
     <Card.Section>
       <Select 
@@ -148,7 +171,6 @@ function AddLinkToBar(props){
       />
       {
         havLink?
-        // <FormLayout.Group>
         <div>
           <TextField
             label="Link URL: "
@@ -163,7 +185,6 @@ function AddLinkToBar(props){
             onChange={(nw) => handleCheckbox(nw)}
           />
         </div>
-        // </FormLayout.Group>
         :
         null
       }
@@ -172,7 +193,12 @@ function AddLinkToBar(props){
 }
 
 function SetPosition(props){
-  const [isSelected,setSelected] = useState(['push-down']);
+  const [isSelected,setSelected] = useState(
+    props.barPosi && props.barPosi.length > 0?
+      props.barPosi
+      :  
+      ['push-down']
+    );
 
   const choices = [
     {label:'Top bar pushes down the rest of the page',value:'push-down'}, //body padding-top equals to the height of the bar, position: absolute
@@ -185,7 +211,7 @@ function SetPosition(props){
       renderChildren:(isSelected)=>{
         return (
           isSelected && (
-            <div>Place <span style={{fontFamily:'monospace',fontWeight:800,backgroundColor:'#ddd',borderRadius:'5px',padding:'2px 4px'}}>&lt;div id="fsb_placeholder"&gt;&lt;/div&gt;</span> where you prefer in your theme file.</div>
+            <div>Place <TextStyle variation="code">&lt;div id="fsb_placeholder"&gt;&lt;/div&gt;</TextStyle> where you prefer in your theme file.</div>
           )
         )
       }}
@@ -219,12 +245,14 @@ class ContentConfigPage extends React.Component{
         prgMsg2:' away from free shipping',
         achievedMsg:'Free Shipping Worldwide'
       },
+      name:'',
       sectionActive:true
     }
     this.handleGoalChange = this.handleGoalChange.bind(this);
     this.handleMsgChange = this.handleMsgChange.bind(this);
     this.handleBarLinkChange = this.handleBarLinkChange.bind(this);
   }
+
 
   handleGoalChange(newGoal){
     if(parseFloat(newGoal) >= 0){
@@ -267,19 +295,25 @@ class ContentConfigPage extends React.Component{
         />
         <Collapsible open={this.state.sectionActive} >
           <FormLayout>
-            <NameField handleName={(name)=> this.props.handleName(name)}/>
-            <FreeShippingGoal handleGoalChange={this.handleGoalChange}/>
+            <NameField 
+              handleName={(name)=> this.props.handleName(name)}
+              name={this.props.name}
+            />
+            <FreeShippingGoal 
+              handleGoalChange={this.handleGoalChange}
+              goal={this.props.goal}
+            />
             { frShGl? 
               <FormLayout>
-                <InitialMsg goal={frShGl} currency="$" handleMsgChange={this.handleMsgChange}/>
-                <ProgressMsg goal={frShGl} currency="$" handleMsgChange={this.handleMsgChange} />
+                <InitialMsg goal={frShGl} currency="$" handleMsgChange={this.handleMsgChange} barTxt={this.props.barTxt}/>
+                <ProgressMsg goal={frShGl} currency="$" handleMsgChange={this.handleMsgChange}  barTxt={this.props.barTxt}/>
               </FormLayout>
               :
               null
             }
-            <GoalAchieved handleMsgChange={this.handleMsgChange} />
-            <AddLinkToBar handleBarLinkChange={this.handleBarLinkChange} />
-            <SetPosition handleBarPosition={(val)=>this.props.handleBarPosition(val)}/>
+            <GoalAchieved handleMsgChange={this.handleMsgChange}  barTxt={this.props.barTxt} />
+            <AddLinkToBar handleBarLinkChange={this.handleBarLinkChange} link={this.props.link}/>
+            <SetPosition handleBarPosition={(val)=>this.props.handleBarPosition(val)} barPosi={this.props.barPosi}/>
           </FormLayout>
         </Collapsible>
       </Card>
